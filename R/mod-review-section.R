@@ -19,29 +19,50 @@ mod_review_section_ui <- function(id) {
   # Sections
   sections <- list("1a", "1b", "2", "3")
 
-  # assemble UI elements
-  tagList(
-    selectInput(
-      ns("submission"),
-      "Select submission",
-      choices = submissions,
-      selected = "123-ABC"
+  tabPanel(
+    "Review & score",
+    fluidRow(
+      column(
+        4,
+        offset = 1,
+        selectInput(
+          ns("submission"),
+          "Select submission",
+          choices = submissions,
+          selected = "123-ABC"
+        )
+      ),
+      column(
+        4,
+        selectInput(
+          ns("section"),
+          "Select section",
+          choices = sections,
+          selected = "1a"
+        )
+      )
     ),
-    selectInput(
-      ns("section"),
-      "Select section",
-      choices = sections,
-      selected = "1a"
+
+    fluidRow(
+      column(
+        8,
+        reactable::reactableOutput(ns("data_section_subset"))
+      )
     ),
-    reactable::reactableOutput(ns("data_section_subset")),
-    numericInput(
-      inputId = ns("section_score"),
-      label = "Score",
-      value = 1
-    ),
-    textAreaInput(
-      inputId = ns("section_comments"),
-      label = "Comments"
+
+    fluidRow(
+      column(
+        4,
+        numericInput(
+          inputId = ns("section_score"),
+          label = "Score",
+          value = 1
+        ),
+        textAreaInput(
+          inputId = ns("section_comments"),
+          label = "Comments"
+        )
+      )
     )
   )
 }

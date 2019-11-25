@@ -7,10 +7,7 @@ app_ui <- function() {
     # List the first level UI elements here
     navbarPage(
       "STOP-AD submission reviewer",
-      tabPanel(
-        "Review & score",
         mod_review_section_ui("review_section")
-      )
     )
   )
 }
