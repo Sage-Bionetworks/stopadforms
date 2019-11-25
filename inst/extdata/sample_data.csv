@@ -1,0 +1,23 @@
+﻿submission,section,field,response
+123-ABC,1a,experiment_name,My Awesome Experiment
+123-ABC,1a,cell_line,sdlfjsdlkjf
+123-ABC,1a,binding_assay,an assay
+123-ABC,1b,experiment_name,A second experiment
+123-ABC,1b,cell_line,hjaldjdslk
+123-ABC,1b,binding_assay,another assay
+123-ABC,2,experiment_name,Toxicology experiment
+123-ABC,2,LD50,10.6
+123-ABC,3,experiment_name,An in vivo experiment
+123-ABC,3,species,rat
+123-ABC,3,model_strain,sdfljalsdfj
+456-DEF,1a,experiment_name,Another experiment
+456-DEF,1a,cell_line,Kara's awesome cell line
+456-DEF,1a,binding_assay,Kara's awesome binding assay
+456-DEF,1b,experiment_name,The best experiment
+456-DEF,1b,cell_line,asldsljlk
+456-DEF,1b,binding_assay,sdfsdfs
+789-GHI,3,experiment_name,Another in vivo experiment
+789-GHI,3,species,ferret
+789-GHI,3,model_strain,lsdjfsld
+789-GHI,2,experiment_name,Another toxicology experiment
+789-GHI,2,LD50,11.4
