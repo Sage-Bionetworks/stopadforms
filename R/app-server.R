@@ -14,16 +14,11 @@ app_server <- function(input, output, session) {
     )
   })
 
-  ## Get sample data
-  submission_data <- readr::read_csv(
-    system.file("extdata/sample_data.csv", package = "stopadforms")
-  )
-
   observeEvent(input$cookie, {
     ## Log in to Synapse
     syn$login(sessionToken = input$cookie)
 
     ## Show submission data
-    callModule(mod_review_section_server, "review_section", submission_data)
+    callModule(mod_review_section_server, "review_section")
   })
 }

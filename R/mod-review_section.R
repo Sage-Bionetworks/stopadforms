@@ -48,11 +48,14 @@ mod_review_section_ui <- function(id) {
 
 #' @rdname mod_review_section
 #' @keywords internal
-mod_review_section_server <- function(input, output, session, data) {
+mod_review_section_server <- function(input, output, session) {
   submission <- reactive({ input$submission })
   section <- reactive({ input$section })
   to_show <- reactive({
-    dplyr::filter(data, submission == submission() & section == section())
+    dplyr::filter(
+      submission_data,
+      submission == submission() & section == section()
+    )
   })
   output$data_section_subset <- reactable::renderReactable({
     reactable::reactable(to_show())
