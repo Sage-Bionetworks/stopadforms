@@ -19,6 +19,11 @@ app_server <- function(input, output, session) {
     syn$login(sessionToken = input$cookie)
 
     ## Show submission data
-    callModule(mod_review_section_server, "review_section")
+    callModule(
+      mod_review_section_server,
+      "review_section",
+      synapse = synapse,
+      syn = syn
+    )
   })
 }

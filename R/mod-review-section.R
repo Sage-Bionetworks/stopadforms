@@ -5,6 +5,9 @@
 #' @param input internal
 #' @param output internal
 #' @param session internal
+#' @param synapse Synapse client (e.g. output of
+#'   `reticulate::import("synapseclient")`)
+#' @param syn Synapse client object (e.g. output of `synapse$Synapse()`)
 #'
 #' @rdname mod_review_section
 #'
@@ -61,6 +64,12 @@ mod_review_section_ui <- function(id) {
         textAreaInput(
           inputId = ns("section_comments"),
           label = "Comments"
+        ),
+        dccvalidator::with_busy_indicator_ui(
+          actionButton(
+            inputId = ns("submit"),
+            label = "Submit"
+          )
         )
       )
     )
@@ -69,16 +78,34 @@ mod_review_section_ui <- function(id) {
 
 #' @rdname mod_review_section
 #' @keywords internal
-mod_review_section_server <- function(input, output, session) {
+mod_review_section_server <- function(input, output, session, synapse, syn) {
   submission <- reactive({ input$submission })
   section <- reactive({ input$section })
+
+  ## Show section
   to_show <- reactive({
     dplyr::filter(
       submission_data,
       submission == submission() & section == section()
     )
   })
+
   output$data_section_subset <- reactable::renderReactable({
     reactable::reactable(to_show())
+  })
+
+  ## Save new row to table
+  observeEvent(input$submit, {
+    dccvalidator::with_busy_indicator_server("submit", {
+      new_row <- data.frame(
+        submission = input$submission,
+        section = input$section,
+        scorer = syn$getUserProfile()$ownerId,
+        score = input$section_score,
+        comments = input$section_comments,
+        stringsAsFactors = FALSE
+      )
+      syn$store(synapse$Table("syn21314955", new_row))
+    })
   })
 }

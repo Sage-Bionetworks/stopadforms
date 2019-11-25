@@ -6,13 +6,16 @@ Description: Review and score submissions to the STOP-AD Compound Submission Por
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Imports: 
+Imports:
+    dccvalidator,
     dplyr,
     golem,
     reactable,
     readr,
     reticulate,
     shiny
+Remotes:
+    Sage-Bionetworks/dccvalidator
 RoxygenNote: 6.1.1
 Suggests: 
     testthat
