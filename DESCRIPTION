@@ -7,10 +7,12 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports: 
-    shiny,
-    reactable,
+    dplyr,
     golem,
-    dplyr
+    reactable,
+    readr,
+    reticulate,
+    shiny
 RoxygenNote: 6.1.1
 Suggests: 
     testthat

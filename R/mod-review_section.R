@@ -33,7 +33,16 @@ mod_review_section_ui <- function(id) {
       choices = sections,
       selected = "1a"
     ),
-    reactable::reactableOutput(ns("data_section_subset"))
+    reactable::reactableOutput(ns("data_section_subset")),
+    numericInput(
+      inputId = ns("section_score"),
+      label = "Score",
+      value = 1
+    ),
+    textAreaInput(
+      inputId = ns("section_comments"),
+      label = "Comments"
+    )
   )
 }
 
