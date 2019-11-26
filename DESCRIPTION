@@ -1,7 +1,13 @@
 Package: stopadforms
 Title: STOP-AD Forms
 Version: 0.0.0.9000
-Authors@R: person('Kara', 'Woo', email = 'kara.woo@sagebase.org', role = c('cre', 'aut'))
+Authors@R:
+    c(person(given = "Kara",
+             family = "Woo",
+             role = c("aut", "cre"),
+             email = "kara.woo@sagebase.org"),
+      person(given = "Sage Bionetworks",
+             role = "cph"))
 Description: Review and score submissions to the STOP-AD Compound Submission Portal.
 License: MIT + file LICENSE
 Encoding: UTF-8
