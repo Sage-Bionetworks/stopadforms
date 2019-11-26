@@ -5,6 +5,8 @@
 #' @param input internal
 #' @param output internal
 #' @param session internal
+#' @param submissions Character vector of available submissions
+#' @param sections Character vector of sections within submissions
 #' @param synapse Synapse client (e.g. output of
 #'   `reticulate::import("synapseclient")`)
 #' @param syn Synapse client object (e.g. output of `synapse$Synapse()`)
@@ -14,14 +16,8 @@
 #'
 #' @keywords internal
 #' @importFrom shiny NS tagList 
-mod_review_section_ui <- function(id) {
+mod_review_section_ui <- function(id, submissions, sections) {
   ns <- NS(id)
-
-  # Submissions
-  submissions <- list("123-ABC", "456-DEF", "789-GHI")
-
-  # Sections
-  sections <- list("1a", "1b", "2", "3")
 
   tabPanel(
     "Review & score",

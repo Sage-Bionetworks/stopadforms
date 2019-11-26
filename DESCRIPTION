@@ -9,10 +9,14 @@ LazyData: true
 Imports:
     dccvalidator,
     dplyr,
+    glue,
     golem,
+    magrittr,
+    purrr,
     reactable,
     readr,
     reticulate,
+    rlang,
     shiny
 Remotes:
     Sage-Bionetworks/dccvalidator

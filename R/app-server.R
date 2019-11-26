@@ -26,5 +26,13 @@ app_server <- function(input, output, session) {
       syn = syn,
       reviews_table = "syn21314955"
     )
+
+    callModule(
+      mod_panel_section_server,
+      "panel_section",
+      synapse = synapse,
+      syn = syn,
+      reviews_table = "syn21314955"
+    )
   })
 }
