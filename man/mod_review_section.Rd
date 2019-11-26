@@ -7,7 +7,8 @@
 \usage{
 mod_review_section_ui(id)
 
-mod_review_section_server(input, output, session, synapse, syn)
+mod_review_section_server(input, output, session, synapse, syn,
+  reviews_table)
 }
 \arguments{
 \item{id}{shiny id}
@@ -22,6 +23,8 @@ mod_review_section_server(input, output, session, synapse, syn)
 `reticulate::import("synapseclient")`)}
 
 \item{syn}{Synapse client object (e.g. output of `synapse$Synapse()`)}
+
+\item{reviews_table}{Synapse table that stores the scores and comments}
 }
 \description{
 Review and score the selected section of a submission

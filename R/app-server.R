@@ -23,7 +23,8 @@ app_server <- function(input, output, session) {
       mod_review_section_server,
       "review_section",
       synapse = synapse,
-      syn = syn
+      syn = syn,
+      reviews_table = "syn21314955"
     )
   })
 }

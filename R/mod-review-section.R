@@ -8,6 +8,7 @@
 #' @param synapse Synapse client (e.g. output of
 #'   `reticulate::import("synapseclient")`)
 #' @param syn Synapse client object (e.g. output of `synapse$Synapse()`)
+#' @param reviews_table Synapse table that stores the scores and comments
 #'
 #' @rdname mod_review_section
 #'
@@ -78,7 +79,8 @@ mod_review_section_ui <- function(id) {
 
 #' @rdname mod_review_section
 #' @keywords internal
-mod_review_section_server <- function(input, output, session, synapse, syn) {
+mod_review_section_server <- function(input, output, session, synapse, syn,
+                                      reviews_table) {
   submission <- reactive({ input$submission })
   section <- reactive({ input$section })
 
@@ -97,15 +99,30 @@ mod_review_section_server <- function(input, output, session, synapse, syn) {
   ## Save new row to table
   observeEvent(input$submit, {
     dccvalidator::with_busy_indicator_server("submit", {
-      new_row <- data.frame(
-        submission = input$submission,
-        section = input$section,
-        scorer = syn$getUserProfile()$ownerId,
-        score = input$section_score,
-        comments = input$section_comments,
-        stringsAsFactors = FALSE
+      result <- readr::read_csv(
+        syn$tableQuery(
+          glue::glue(
+            "SELECT * FROM {reviews_table} WHERE (scorer = {syn$getUserProfile()$ownerId} AND submission = '{input$submission}' AND section = '{input$section}')"
+          )
+        )$filepath
       )
-      syn$store(synapse$Table("syn21314955", new_row))
+      if (nrow(result) == 0 ) {
+        new_row <- data.frame(
+          submission = input$submission,
+          section = input$section,
+          scorer = syn$getUserProfile()$ownerId,
+          score = input$section_score,
+          comments = input$section_comments,
+          stringsAsFactors = FALSE
+        )
+      } else if (nrow(result) == 1) {
+        new_row <- result
+        new_row$score <- input$section_score
+        new_row$comments <- input$section_comments
+      } else {
+        stop("Unable to update score: duplicate scores were found for this section from a single reviewer")
+      }
+      syn$store(synapse$Table(reviews_table, new_row))
     })
   })
 }
