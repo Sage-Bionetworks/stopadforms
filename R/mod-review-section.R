@@ -45,7 +45,8 @@ mod_review_section_ui <- function(id, submissions, sections) {
 
     fluidRow(
       column(
-        8,
+        7,
+        offset = 1,
         reactable::reactableOutput(ns("data_section_subset"))
       )
     ),
@@ -53,6 +54,7 @@ mod_review_section_ui <- function(id, submissions, sections) {
     fluidRow(
       column(
         4,
+        offset = 5,
         numericInput(
           inputId = ns("section_score"),
           label = "Score",
