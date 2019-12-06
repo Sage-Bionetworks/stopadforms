@@ -20,8 +20,7 @@ mod_panel_section_ui <- function(id, submissions, sections){
         selectInput(
           ns("submission"),
           "Select submission",
-          choices = submissions,
-          selected = "123-ABC"
+          choices = ""
         )
       )
     ),
@@ -43,6 +42,12 @@ mod_panel_section_server <- function(input, output, session, synapse, syn,
   reviews <- syn$tableQuery(glue::glue("SELECT * FROM {reviews_table}"))
   reviews <- readr::read_csv(reviews$filepath) %>%
     dplyr::mutate(scorer = get_display_name(syn, .data$scorer))
+  
+  updateSelectInput(
+    session = getDefaultReactiveDomain(),
+    "submission",
+    choices = c("", unique(reviews$submission))
+  )
 
   submission <- reactive({ input$submission })
 
