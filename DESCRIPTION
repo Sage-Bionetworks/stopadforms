@@ -26,7 +26,7 @@ Imports:
     rlang,
     shiny
 Remotes:
-    Sage-Bionetworks/dccvalidator
+    Sage-Bionetworks/dccvalidator@reticulate
 RoxygenNote: 6.1.1
 Suggests: 
     testthat
