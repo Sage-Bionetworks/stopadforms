@@ -5,8 +5,6 @@
 #' @param input internal
 #' @param output internal
 #' @param session internal
-#' @param submissions Character vector of available submissions
-#' @param sections Character vector of sections within submissions
 #' @param synapse Synapse client (e.g. output of
 #'   `reticulate::import("synapseclient")`)
 #' @param syn Synapse client object (e.g. output of `synapse$Synapse()`)
