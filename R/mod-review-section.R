@@ -16,7 +16,7 @@
 #'
 #' @keywords internal
 #' @importFrom shiny NS tagList 
-mod_review_section_ui <- function(id, submissions, sections) {
+mod_review_section_ui <- function(id) {
   ns <- NS(id)
 
   tabPanel(
