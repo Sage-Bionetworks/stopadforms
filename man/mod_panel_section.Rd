@@ -5,17 +5,12 @@
 \alias{mod_panel_section_server}
 \title{mod_panel_section_ui and mod_panel_section_server}
 \usage{
-mod_panel_section_ui(id, submissions, sections)
+mod_panel_section_ui(id)
 
-mod_panel_section_server(input, output, session, synapse, syn,
-  reviews_table)
+mod_panel_section_server(input, output, session, synapse, syn, reviews_table)
 }
 \arguments{
 \item{id}{shiny id}
-
-\item{submissions}{Character vector of available submissions}
-
-\item{sections}{Character vector of sections within submissions}
 
 \item{input}{internal}
 

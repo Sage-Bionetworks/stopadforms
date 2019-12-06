@@ -9,7 +9,7 @@
 #' @keywords internal
 #' @importFrom shiny NS tagList
 #' @importFrom rlang .data
-mod_panel_section_ui <- function(id, submissions, sections){
+mod_panel_section_ui <- function(id){
   ns <- NS(id)
   tabPanel(
     "View summarized scores",

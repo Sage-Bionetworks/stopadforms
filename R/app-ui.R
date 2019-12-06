@@ -18,9 +18,7 @@ app_ui <- function() {
         "review_section"
       ),
       mod_panel_section_ui(
-        "panel_section",
-        submissions = submissions,
-        sections = sections
+        "panel_section"
       )
     )
   )
