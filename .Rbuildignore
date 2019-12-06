@@ -9,3 +9,4 @@ $run_dev.*
 ^\.github$
 ^renv$
 ^renv\.lock$
+^app\.R$
