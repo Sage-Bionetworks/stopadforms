@@ -102,9 +102,10 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
   section <- reactive({ input$section })
 
   ## Show section
+  sub_data_tidier <- synapseforms::make_tidier_table(sub_data)
   to_show <- reactive({
     dplyr::filter(
-      submission_data,
+      sub_data_tidier,
       submission == submission() & section == section()
     )
   })
