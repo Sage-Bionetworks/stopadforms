@@ -41,16 +41,6 @@
       "Repository": "CRAN",
       "Hash": "a60009c832f495604f54399f21d89cc8"
     },
-    "PythonEmbedInR": {
-      "Package": "PythonEmbedInR",
-      "Version": "0.3.37",
-      "Source": "CRAN",
-      "RemoteType": "standard",
-      "RemoteRef": "PythonEmbedInR",
-      "RemoteRepos": "http://ran.synapse.org",
-      "RemoteSha": "0.3.37",
-      "Hash": "1c9851afda5c6300be59a1d99fc694dc"
-    },
     "R6": {
       "Package": "R6",
       "Version": "2.4.1",
@@ -208,8 +198,8 @@
       "RemoteRepo": "dccvalidator",
       "RemoteUsername": "Sage-Bionetworks",
       "RemoteRef": "reticulate",
-      "RemoteSha": "aeaee72c18504a5a0e607f1eaa1106c31d36a46c",
-      "Hash": "e46788a9aa5f4255a039294ca2eda1c6"
+      "RemoteSha": "66234278c2667792a8278c62c38505e9bb530be6",
+      "Hash": "25c0737a134f374edbd2f95bc494d5a2"
     },
     "desc": {
       "Package": "desc",
@@ -509,17 +499,6 @@
       "Repository": "CRAN",
       "Hash": "6c438de366d5693238d1c400deb66cb6"
     },
-    "pack": {
-      "Package": "pack",
-      "Version": "0.1-1",
-      "Source": "CRAN",
-      "RemoteType": "standard",
-      "RemoteRef": "pack",
-      "RemoteRepos": "https://cran.rstudio.com",
-      "RemoteSha": "0.1-1",
-      "RemotePkgType": "binary",
-      "Hash": "297fdfd63080b703a77be9fa81a4d4ca"
-    },
     "packrat": {
       "Package": "packrat",
       "Version": "0.5.0",
@@ -707,13 +686,6 @@
       "Repository": "CRAN",
       "Hash": "6a374bfb33486a98af825be15b6b87bb"
     },
-    "rjson": {
-      "Package": "rjson",
-      "Version": "0.2.20",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "d3349736ec0f60d05591c316b926382e"
-    },
     "rlang": {
       "Package": "rlang",
       "Version": "0.4.2",
@@ -847,26 +819,15 @@
     },
     "synapseforms": {
       "Package": "synapseforms",
-      "Version": "0.0.0.9000",
+      "Version": "0.0.0.9001",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "synapseforms",
       "RemoteUsername": "Sage-Bionetworks",
       "RemoteRef": "master",
-      "RemoteSha": "71bcd7891801ccb2f9aa6dfd92f15cfa8e58a248",
-      "Hash": "36801d49239e384562d72256fbf20729"
-    },
-    "synapser": {
-      "Package": "synapser",
-      "Version": "0.6.61",
-      "Source": "CRAN",
-      "RemoteType": "standard",
-      "RemoteRef": "synapser",
-      "RemoteRepos": "http://ran.synapse.org",
-      "RemoteSha": "0.6.61",
-      "RemotePkgType": "binary",
-      "Hash": "637a14039d0e4e4698fe509c0a0b0e78"
+      "RemoteSha": "3bc318371d39fb190625ededf9a07b6615252fff",
+      "Hash": "f3b1607a6ca35114e6df3737d7b9c889"
     },
     "sys": {
       "Package": "sys",
