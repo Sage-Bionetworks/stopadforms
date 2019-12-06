@@ -5,8 +5,6 @@
 #' @param input internal
 #' @param output internal
 #' @param session internal
-#' @param submissions Character vector of available submissions
-#' @param sections Character vector of sections within submissions
 #' @param synapse Synapse client (e.g. output of
 #'   `reticulate::import("synapseclient")`)
 #' @param syn Synapse client object (e.g. output of `synapse$Synapse()`)
@@ -16,7 +14,7 @@
 #'
 #' @keywords internal
 #' @importFrom shiny NS tagList 
-mod_review_section_ui <- function(id, submissions, sections) {
+mod_review_section_ui <- function(id) {
   ns <- NS(id)
 
   tabPanel(
@@ -28,8 +26,7 @@ mod_review_section_ui <- function(id, submissions, sections) {
         selectInput(
           ns("submission"),
           "Select submission",
-          choices = submissions,
-          selected = "123-ABC"
+          choices = ""
         )
       ),
       column(
@@ -37,8 +34,7 @@ mod_review_section_ui <- function(id, submissions, sections) {
         selectInput(
           ns("section"),
           "Select section",
-          choices = sections,
-          selected = "1a"
+          choices = ""
         )
       )
     ),
@@ -79,13 +75,35 @@ mod_review_section_ui <- function(id, submissions, sections) {
 #' @keywords internal
 mod_review_section_server <- function(input, output, session, synapse, syn,
                                       reviews_table) {
+  sub_data <- synapseforms::download_all_and_get_table(syn, group = 9)
+ 
+  updateSelectInput(
+    session = getDefaultReactiveDomain(),
+    "submission",
+    choices = c("", synapseforms::get_submission_names(sub_data))
+  )
+
+  observeEvent(input$submission, {
+    if (input$submission != "") {
+      updateSelectInput(
+        session = getDefaultReactiveDomain(),
+        "section",
+        choices = c("", synapseforms::get_main_sections(
+          sub_data,
+          input$submission
+        ))
+      )
+    }
+  })
+
   submission <- reactive({ input$submission })
   section <- reactive({ input$section })
 
   ## Show section
+  sub_data_tidier <- synapseforms::make_tidier_table(sub_data)
   to_show <- reactive({
     dplyr::filter(
-      submission_data,
+      sub_data_tidier,
       submission == submission() & section == section()
     )
   })

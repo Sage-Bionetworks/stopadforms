@@ -15,14 +15,10 @@ app_ui <- function() {
     navbarPage(
       "STOP-AD submission reviewer",
       mod_review_section_ui(
-        "review_section",
-        submissions = submissions,
-        sections = sections
+        "review_section"
       ),
       mod_panel_section_ui(
-        "panel_section",
-        submissions = submissions,
-        sections = sections
+        "panel_section"
       )
     )
   )

@@ -1,13 +1,17 @@
 Package: stopadforms
 Title: STOP-AD Forms
-Version: 0.0.0.9000
+Version: 0.0.0.9001
 Authors@R:
     c(person(given = "Kara",
              family = "Woo",
              role = c("aut", "cre"),
              email = "kara.woo@sagebase.org"),
       person(given = "Sage Bionetworks",
-             role = "cph"))
+             role = "cph"),
+      person(given = "Nicole",
+             family = "Kauer",
+             role = "aut",
+             email = "nicole.kauer@sagebase.org"))
 Description: Review and score submissions to the STOP-AD Compound Submission Portal.
 License: MIT + file LICENSE
 Encoding: UTF-8
@@ -24,9 +28,11 @@ Imports:
     readr,
     reticulate,
     rlang,
-    shiny
+    shiny,
+    synapseforms
 Remotes:
-    Sage-Bionetworks/dccvalidator@reticulate
+    Sage-Bionetworks/dccvalidator@reticulate,
+    Sage-Bionetworks/synapseforms
 RoxygenNote: 6.1.1
 Suggests: 
     testthat
