@@ -28,8 +28,7 @@ mod_review_section_ui <- function(id, submissions, sections) {
         selectInput(
           ns("submission"),
           "Select submission",
-          choices = submissions,
-          selected = "123-ABC"
+          choices = ""
         )
       ),
       column(
@@ -37,8 +36,7 @@ mod_review_section_ui <- function(id, submissions, sections) {
         selectInput(
           ns("section"),
           "Select section",
-          choices = sections,
-          selected = "1a"
+          choices = ""
         )
       )
     ),
@@ -79,6 +77,27 @@ mod_review_section_ui <- function(id, submissions, sections) {
 #' @keywords internal
 mod_review_section_server <- function(input, output, session, synapse, syn,
                                       reviews_table) {
+  sub_data <- synapseforms::download_all_and_get_table(syn, group = 9)
+ 
+  updateSelectInput(
+    session = getDefaultReactiveDomain(),
+    "submission",
+    choices = c("", synapseforms::get_submission_names(sub_data))
+  )
+
+  observeEvent(input$submission, {
+    if (input$submission != "") {
+      updateSelectInput(
+        session = getDefaultReactiveDomain(),
+        "section",
+        choices = c("", synapseforms::get_main_sections(
+          sub_data,
+          input$submission
+        ))
+      )
+    }
+  })
+
   submission <- reactive({ input$submission })
   section <- reactive({ input$section })
 
