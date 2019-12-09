@@ -22,6 +22,15 @@ mod_panel_section_ui <- function(id){
           "Select submission",
           choices = ""
         )
+      ),
+      column(
+        4,
+        dccvalidator::with_busy_indicator_ui(
+          actionButton(
+            ns("refresh_comments"),
+            "Refresh Comments"
+          )
+        )
       )
     ),
     fluidRow(
@@ -38,21 +47,18 @@ mod_panel_section_ui <- function(id){
 #' @keywords internal
 mod_panel_section_server <- function(input, output, session, synapse, syn,
                                      reviews_table) {
+  submission <- reactive({ input$submission })
+
   ## Load reviews
-  reviews <- syn$tableQuery(glue::glue("SELECT * FROM {reviews_table}"))
-  reviews <- readr::read_csv(reviews$filepath) %>%
-    dplyr::mutate(scorer = get_display_name(syn, .data$scorer))
-  
+  reviews <-reactive(pull_reviews_table(syn, reviews_table))
   updateSelectInput(
     session = getDefaultReactiveDomain(),
     "submission",
-    choices = c("", unique(reviews$submission))
+    choices = c("", unique(reviews()$submission))
   )
 
-  submission <- reactive({ input$submission })
-
   to_show <- reactive({
-    dplyr::filter(reviews, submission == submission()) %>%
+    dplyr::filter(reviews(), submission == submission()) %>%
       dplyr::select(.data$section, .data$score, .data$scorer, .data$comments)
   })
 
@@ -72,6 +78,42 @@ mod_panel_section_server <- function(input, output, session, synapse, syn,
       )
     )
   })
+
+  observeEvent(input$refresh_comments, {
+    dccvalidator::with_busy_indicator_server("refresh_comments", {
+      reviews <<- reactive(pull_reviews_table(syn, reviews_table))
+      updateSelectInput(
+        session = getDefaultReactiveDomain(),
+        "submission",
+        choices = c("", unique(reviews()$submission)),
+        selected = submission()
+      )
+
+      to_show <- reactive({
+        dplyr::filter(reviews(), submission == submission()) %>%
+          dplyr::select(.data$section, .data$score, .data$scorer, .data$comments)
+      })
+
+      output$averaged_scores <- reactable::renderReactable({
+        reactable::reactable(
+          to_show(),
+          groupBy = "section",
+          searchable = TRUE,
+          columns = list(
+            section = reactable::colDef(name = "Section"),
+            score = reactable::colDef(name = "Score", aggregate = "mean"),
+            scorer = reactable::colDef(name = "Scorer(s)", aggregate = "unique"),
+            comments = reactable::colDef(
+              name = "Comments",
+              aggregate = reactable::JS("function(values, rows) { return '...' }")
+            )
+          )
+        )
+      })
+    })
+  })
+}
+
 #' @title Pull latest review table
 #' 
 #' @description Pull latest review table from Synapse.
