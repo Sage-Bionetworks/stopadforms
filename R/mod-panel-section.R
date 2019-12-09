@@ -72,4 +72,15 @@ mod_panel_section_server <- function(input, output, session, synapse, syn,
       )
     )
   })
+#' @title Pull latest review table
+#' 
+#' @description Pull latest review table from Synapse.
+#' 
+#' @inheritParams mod_panel_section
+#' @keywords internal
+pull_reviews_table <- function(syn, reviews_table) {
+  reviews <- syn$tableQuery(glue::glue("SELECT * FROM {reviews_table}"))
+  reviews <- readr::read_csv(reviews$filepath) %>%
+    dplyr::mutate(scorer = get_display_name(syn, .data$scorer))
+  reviews
 }
