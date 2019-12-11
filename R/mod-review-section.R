@@ -76,11 +76,16 @@ mod_review_section_ui <- function(id) {
 mod_review_section_server <- function(input, output, session, synapse, syn,
                                       reviews_table) {
   sub_data <- synapseforms::download_all_and_get_table(syn, group = 9)
- 
+  sub_data <- synapseforms::make_tidier_table(sub_data)
+  sub_data <- clean_experiment_variables(sub_data)
+
   updateSelectInput(
     session = getDefaultReactiveDomain(),
     "submission",
-    choices = c("", synapseforms::get_submission_names(sub_data))
+    choices = c(
+      "",
+      synapseforms::get_submission_names(sub_data, is_tidier = TRUE)
+    )
   )
 
   observeEvent(input$submission, {
@@ -90,7 +95,8 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
         "section",
         choices = c("", synapseforms::get_main_sections(
           sub_data,
-          input$submission
+          input$submission,
+          is_tidier = TRUE
         ))
       )
     }
@@ -100,11 +106,10 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
   section <- reactive({ input$section })
 
   ## Show section
-  sub_data_tidier <- synapseforms::make_tidier_table(sub_data)
   to_show <- reactive({
     dplyr::filter(
-      sub_data_tidier,
-      submission == submission() & section == section() & !is.na(sub_data_tidier$response)
+      sub_data,
+      submission == submission() & section == section() &!is.na(sub_data$response)
     )
   })
 
