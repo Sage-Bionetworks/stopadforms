@@ -50,21 +50,21 @@ mod_panel_section_server <- function(input, output, session, synapse, syn,
   submission <- reactive({ input$submission })
 
   ## Load reviews
-  reviews <-reactive(pull_reviews_table(syn, reviews_table))
+  reviews <- pull_reviews_table(syn, reviews_table)
   updateSelectInput(
     session = getDefaultReactiveDomain(),
     "submission",
-    choices = c("", unique(reviews()$submission))
+    choices = c("", unique(reviews$submission))
   )
   show_review_table(input, output, reviews, submission)
 
   observeEvent(input$refresh_comments, {
     dccvalidator::with_busy_indicator_server("refresh_comments", {
-      reviews <<- reactive(pull_reviews_table(syn, reviews_table))
+      reviews <<- pull_reviews_table(syn, reviews_table)
       updateSelectInput(
         session = getDefaultReactiveDomain(),
         "submission",
-        choices = c("", unique(reviews()$submission)),
+        choices = c("", unique(reviews$submission)),
         selected = submission()
       )
       show_review_table(input, output, reviews, submission)
@@ -91,11 +91,12 @@ pull_reviews_table <- function(syn, reviews_table) {
 #'
 #' @inheritParams mod_panel_section_server
 #' @param reviews Dataframe review table.
-#' @param submission Submission name.
+#' @param submission Reactive shiny object containing submission name
+#'   accessible via `submission()`.
 #' @keywords internal
 show_review_table <- function(input, output, reviews, submission) {
   to_show <- reactive({
-    dplyr::filter(reviews(), submission == submission()) %>%
+    dplyr::filter(reviews, submission == submission()) %>%
       dplyr::select(.data$section, .data$score, .data$scorer, .data$comments)
   })
   

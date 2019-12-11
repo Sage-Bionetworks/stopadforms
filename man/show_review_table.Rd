@@ -13,7 +13,8 @@ show_review_table(input, output, reviews, submission)
 
 \item{reviews}{Dataframe review table.}
 
-\item{submission}{Submission name.}
+\item{submission}{Reactive shiny object containing submission name
+accessible via `submission()`.}
 }
 \description{
 Show review table.
