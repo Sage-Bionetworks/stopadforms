@@ -104,7 +104,7 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
   to_show <- reactive({
     dplyr::filter(
       sub_data_tidier,
-      submission == submission() & section == section()
+      submission == submission() & section == section() & !is.na(sub_data_tidier$response)
     )
   })
 
