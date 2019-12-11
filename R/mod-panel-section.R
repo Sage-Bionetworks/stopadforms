@@ -50,7 +50,7 @@ mod_panel_section_server <- function(input, output, session, synapse, syn,
   submission <- reactive({ input$submission })
 
   ## Load reviews
-  reviews <-reactive(pull_reviews_table(syn, reviews_table))
+  reviews <- reactive(pull_reviews_table(syn, reviews_table))
   updateSelectInput(
     session = getDefaultReactiveDomain(),
     "submission",
