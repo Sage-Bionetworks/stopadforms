@@ -22,6 +22,15 @@ mod_panel_section_ui <- function(id){
           "Select submission",
           choices = ""
         )
+      ),
+      column(
+        4,
+        dccvalidator::with_busy_indicator_ui(
+          actionButton(
+            ns("refresh_comments"),
+            "Refresh Comments"
+          )
+        )
       )
     ),
     fluidRow(
@@ -38,24 +47,59 @@ mod_panel_section_ui <- function(id){
 #' @keywords internal
 mod_panel_section_server <- function(input, output, session, synapse, syn,
                                      reviews_table) {
+  submission <- reactive({ input$submission })
+
   ## Load reviews
-  reviews <- syn$tableQuery(glue::glue("SELECT * FROM {reviews_table}"))
-  reviews <- readr::read_csv(reviews$filepath) %>%
-    dplyr::mutate(scorer = get_display_name(syn, .data$scorer))
-  
+  reviews <- pull_reviews_table(syn, reviews_table)
   updateSelectInput(
     session = getDefaultReactiveDomain(),
     "submission",
     choices = c("", unique(reviews$submission))
   )
+  show_review_table(input, output, reviews, submission)
 
-  submission <- reactive({ input$submission })
+  observeEvent(input$refresh_comments, {
+    dccvalidator::with_busy_indicator_server("refresh_comments", {
+      reviews <<- pull_reviews_table(syn, reviews_table)
+      updateSelectInput(
+        session = getDefaultReactiveDomain(),
+        "submission",
+        choices = c("", unique(reviews$submission)),
+        selected = submission()
+      )
+      show_review_table(input, output, reviews, submission)
+    })
+  })
+}
 
+#' @title Pull latest review table
+#' 
+#' @description Pull latest review table from Synapse.
+#' 
+#' @inheritParams mod_panel_section_server
+#' @keywords internal
+pull_reviews_table <- function(syn, reviews_table) {
+  reviews <- syn$tableQuery(glue::glue("SELECT * FROM {reviews_table}"))
+  reviews <- readr::read_csv(reviews$filepath) %>%
+    dplyr::mutate(scorer = get_display_name(syn, .data$scorer))
+  reviews
+}
+
+#' @title Show review table
+#'
+#' @description Show review table.
+#'
+#' @inheritParams mod_panel_section_server
+#' @param reviews Dataframe review table.
+#' @param submission Reactive shiny object containing submission name
+#'   accessible via `submission()`.
+#' @keywords internal
+show_review_table <- function(input, output, reviews, submission) {
   to_show <- reactive({
     dplyr::filter(reviews, submission == submission()) %>%
       dplyr::select(.data$section, .data$score, .data$scorer, .data$comments)
   })
-
+  
   output$averaged_scores <- reactable::renderReactable({
     reactable::reactable(
       to_show(),
