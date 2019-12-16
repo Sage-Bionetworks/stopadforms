@@ -84,7 +84,7 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
     "submission",
     choices = c(
       "",
-      synapseforms::get_submission_names(sub_data, is_tidier = TRUE)
+      synapseforms::get_submission_names(sub_data)
     )
   )
 
@@ -95,8 +95,7 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
         "section",
         choices = c("", synapseforms::get_main_sections(
           sub_data,
-          input$submission,
-          is_tidier = TRUE
+          input$submission
         ))
       )
     }
