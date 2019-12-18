@@ -32,7 +32,8 @@ app_server <- function(input, output, session) {
       "panel_section",
       synapse = synapse,
       syn = syn,
-      reviews_table = "syn21314955"
+      reviews_table = "syn21314955",
+      submissions_table = "syn21447678"
     )
   })
 }
