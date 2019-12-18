@@ -3,6 +3,8 @@
 #'
 #' @inheritParams mod_review_section_ui
 #' @inheritParams mod_review_section_server
+#' @param submissions_table Synapse table that stores the 
+#'   overall submission scores and comments
 #'
 #' @rdname mod_panel_section
 #'
@@ -39,6 +41,31 @@ mod_panel_section_ui <- function(id){
         offset = 1,
         reactable::reactableOutput(ns("averaged_scores"))
       )
+    ),
+    fluidRow(
+      column(
+        4,
+        offset = 5,
+        numericInput(
+          inputId = ns("overall_score"),
+          label = "Overall Score",
+          value = 1
+        ),
+        textAreaInput(
+          inputId = ns("internal_comments"),
+          label = "Internal Comments (500 character limit)"
+        ),
+        textAreaInput(
+          inputId = ns("external_comments"),
+          label = "External Comments (500 character limit)"
+        ),
+        dccvalidator::with_busy_indicator_ui(
+          actionButton(
+            inputId = ns("submit"),
+            label = "Submit"
+          )
+        )
+      )
     )
   )
 }
@@ -46,7 +73,7 @@ mod_panel_section_ui <- function(id){
 #' @rdname mod_panel_section
 #' @keywords internal
 mod_panel_section_server <- function(input, output, session, synapse, syn,
-                                     reviews_table) {
+                                     reviews_table, submissions_table) {
   submission <- reactive({ input$submission })
 
   ## Load reviews
@@ -68,6 +95,40 @@ mod_panel_section_server <- function(input, output, session, synapse, syn,
         selected = submission()
       )
       show_review_table(input, output, reviews, submission)
+    })
+  })
+
+  ## Save new row to table
+  observeEvent(input$submit, {
+    dccvalidator::with_busy_indicator_server("submit", {
+      if (nchar(input$internal_comments) > 500 || nchar(input$external_comments) > 500) {
+        stop("Please limit comments to 500 characters")
+      }
+      result <- readr::read_csv(
+        syn$tableQuery(
+          glue::glue(
+            "SELECT * FROM {submissions_table} WHERE (scorer = {syn$getUserProfile()$ownerId} AND submission = '{input$submission}')"
+          )
+        )$filepath
+      )
+      if (nrow(result) == 0 ) {
+        new_row <- data.frame(
+          submission = input$submission,
+          scorer = syn$getUserProfile()$ownerId,
+          overall_score = input$overall_score,
+          internal_comment = input$internal_comments,
+          external_comment = input$external_comments,
+          stringsAsFactors = FALSE
+        )
+      } else if (nrow(result) == 1) {
+        new_row <- result
+        new_row$overall_score <- input$overall_score
+        new_row$internal_comment <- input$internal_comments
+        new_row$external_comment <- input$external_comments
+      } else {
+        stop("Unable to update score: duplicate scores were found for this section from a single reviewer")
+      }
+      syn$store(synapse$Table(submissions_table, new_row))
     })
   })
 }
