@@ -18,7 +18,7 @@ Encoding: UTF-8
 LazyData: true
 Depends: R (>= 3.4.0)
 Imports:
-    dccvalidator,
+    dccvalidator (>=0.0.0.9009),
     dplyr,
     glue,
     golem,
@@ -31,7 +31,7 @@ Imports:
     shiny,
     synapseforms
 Remotes:
-    Sage-Bionetworks/dccvalidator@reticulate,
+    Sage-Bionetworks/dccvalidator,
     Sage-Bionetworks/synapseforms
 RoxygenNote: 7.0.2
 Suggests: 

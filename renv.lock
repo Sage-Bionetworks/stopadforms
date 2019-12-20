@@ -185,14 +185,13 @@
       "Package": "dccvalidator",
       "Version": "0.0.0.9009",
       "Source": "GitHub",
-      "Remotes": "daattali/shinyjs, hadley/emo",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
-      "RemoteRepo": "dccvalidator",
       "RemoteUsername": "Sage-Bionetworks",
-      "RemoteRef": "reticulate",
-      "RemoteSha": "468bd10215910bd121a86923a97b4bb1d6f9b608",
-      "Hash": "9c7943cac991403a14ed433a93692af3"
+      "RemoteRepo": "dccvalidator",
+      "RemoteRef": "master",
+      "RemoteSha": "26ba9fc788065de45537c699c44b782041f39ee5",
+      "Hash": "c7c67bba034dbdbc54737812b35b93fa"
     },
     "desc": {
       "Package": "desc",
