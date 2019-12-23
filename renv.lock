@@ -186,12 +186,12 @@
       "Version": "0.0.0.9009",
       "Source": "GitHub",
       "RemoteType": "github",
-      "RemoteHost": "api.github.com",
       "RemoteUsername": "Sage-Bionetworks",
       "RemoteRepo": "dccvalidator",
       "RemoteRef": "master",
-      "RemoteSha": "26ba9fc788065de45537c699c44b782041f39ee5",
-      "Hash": "c7c67bba034dbdbc54737812b35b93fa"
+      "RemoteSha": "f8668d8972828fa26c4631fc0caed1116f77077f",
+      "RemoteHost": "api.github.com",
+      "Hash": "6fabbeb33b589977e6fb0786985c6f3d"
     },
     "desc": {
       "Package": "desc",
@@ -769,9 +769,9 @@
       "RemoteUsername": "Sage-Bionetworks",
       "RemoteRepo": "synapseforms",
       "RemoteRef": "master",
-      "RemoteSha": "e42dcac77ecfbb1f1326550d416b794fd5416b56",
+      "RemoteSha": "66346282918c651e24eb28aa005672858881fef1",
       "RemoteHost": "api.github.com",
-      "Hash": "6f4785146a0d258041ec8d1fbde474a1"
+      "Hash": "373713d73ece7689062ca13a92838590"
     },
     "sys": {
       "Package": "sys",
