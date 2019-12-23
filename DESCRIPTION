@@ -18,7 +18,7 @@ Encoding: UTF-8
 LazyData: true
 Depends: R (>= 3.4.0)
 Imports:
-    dccvalidator (>=0.0.0.9009),
+    dccvalidator (>= 0.0.0.9009),
     dplyr,
     glue,
     golem,
