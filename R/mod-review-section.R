@@ -84,7 +84,7 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
     "submission",
     choices = c(
       "",
-      synapseforms::get_submission_names(sub_data)
+      synapseforms::get_submission_ids(sub_data)
     )
   )
 
@@ -108,7 +108,7 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
   to_show <- reactive({
     dplyr::filter(
       sub_data,
-      submission == submission() & section == section() &!is.na(sub_data$response)
+      form_data_id == submission() & section == section() &!is.na(sub_data$response)
     )
   })
 
