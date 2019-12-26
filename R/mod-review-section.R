@@ -93,10 +93,7 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
       updateSelectInput(
         session = getDefaultReactiveDomain(),
         "section",
-        choices = c("", synapseforms::get_main_sections(
-          sub_data,
-          input$submission
-        ))
+        choices = c("", get_sections(sub_data, input$submission))
       )
     }
   })
@@ -145,4 +142,24 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
       syn$store(synapse$Table(reviews_table, new_row))
     })
   })
+}
+
+#' @title Get submission section names
+#' 
+#' @description Get submission section names.
+#'
+#' @keywords internal
+#' @param data All submissions data.
+#' @param submission Name of the submission.
+get_sections <- function(data, submission) {
+  sections <- synapseforms::get_main_sections(
+    data,
+    submission
+  )
+  # Remove metadata section
+  metadata_index <- which(sections == "metadata")
+  if (length(metadata_index > 0)) {
+    sections <- sections[-which(sections == "metadata")] 
+  }
+  sections
 }
