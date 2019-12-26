@@ -109,10 +109,12 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
 
   ## Show section
   to_show <- reactive({
-    dplyr::filter(
+    data_subset <- dplyr::filter(
       sub_data,
-      form_data_id == submission() & section == section() &!is.na(sub_data$response)
+      submission == submission() & section == section() &!is.na(sub_data$response)
     )
+    # Remove redundant form_data_id and submission columns for viewing
+    data_subset[, -c(1,2)]
   })
 
   output$data_section_subset <- reactable::renderReactable({
