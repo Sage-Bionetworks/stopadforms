@@ -78,13 +78,14 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
   sub_data <- synapseforms::download_all_and_get_table(syn, group = 9)
   sub_data <- synapseforms::make_tidier_table(sub_data)
   sub_data <- clean_experiment_variables(sub_data)
+  sub_data <- add_friendly_names(sub_data)
 
   updateSelectInput(
     session = getDefaultReactiveDomain(),
     "submission",
     choices = c(
       "",
-      synapseforms::get_submission_ids(sub_data)
+      unique(sub_data$submission)
     )
   )
 
@@ -95,7 +96,9 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
         "section",
         choices = c("", synapseforms::get_main_sections(
           sub_data,
-          input$submission
+          sub_data$form_data_id[
+            which(sub_data$submission == input$submission)
+          ]
         ))
       )
     }
