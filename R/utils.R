@@ -39,7 +39,7 @@ clean_experiment_variables <- function(data) {
   )
   data$section <- purrr::map2(data$section, num_list, function(x, y) {
     if(!is.na(y) && y > 0) {
-      glue::glue("{x}_{y}")
+      glue::glue("{x} {(y)}")
     } else {
       x
     }
@@ -51,5 +51,18 @@ clean_experiment_variables <- function(data) {
       x
     }
   })
+  data
+}
+
+#' Change logical responses to yes/no
+#' 
+#' Change TRUE/FALSE responses to be yes/no.
+#'
+#' @inheritParams clean_experiment_variables
+change_logical_responses <- function(data) {
+  true_indices <- which(data$response == "TRUE")
+  false_indices <- which(data$response == "FALSE")
+  data$response[true_indices] <- "Yes"
+  data$response[false_indices] <- "No"
   data
 }
