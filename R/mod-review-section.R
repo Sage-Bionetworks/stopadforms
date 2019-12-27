@@ -78,6 +78,7 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
   sub_data <- synapseforms::download_all_and_get_table(syn, group = 9)
   sub_data <- synapseforms::make_tidier_table(sub_data)
   sub_data <- clean_experiment_variables(sub_data)
+  # sub_data <- format_submissions_table(sub_data)
 
   updateSelectInput(
     session = getDefaultReactiveDomain(),
