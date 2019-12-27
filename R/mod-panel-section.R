@@ -104,15 +104,17 @@ mod_panel_section_server <- function(input, output, session, synapse, syn,
       if (nchar(input$internal_comments) > 500 || nchar(input$external_comments) > 500) {
         stop("Please limit comments to 500 characters")
       }
+      form_data_id <- reviews$formDataId[which(reviews$submission == input$submission)[1]]
       result <- readr::read_csv(
         syn$tableQuery(
           glue::glue(
-            "SELECT * FROM {submissions_table} WHERE (scorer = {syn$getUserProfile()$ownerId} AND submission = '{input$submission}')"
+            "SELECT * FROM {submissions_table} WHERE (scorer = {syn$getUserProfile()$ownerId} AND formDataId = {form_data_id})"
           )
         )$filepath
       )
       if (nrow(result) == 0 ) {
         new_row <- data.frame(
+          formDataId = form_data_id,
           submission = input$submission,
           scorer = syn$getUserProfile()$ownerId,
           overall_score = input$overall_score,
