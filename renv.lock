@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "3.6.1",
+    "Version": "3.6.2",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -769,9 +769,9 @@
       "RemoteUsername": "Sage-Bionetworks",
       "RemoteRepo": "synapseforms",
       "RemoteRef": "master",
-      "RemoteSha": "b9c5fbfb93a3d26f00895629d04d0e89b9ebb81b",
+      "RemoteSha": "0166ab9fedd8233614c74fab2c3cebdaf654ad71",
       "RemoteHost": "api.github.com",
-      "Hash": "76ce57326673d35816c8e15491adb27d"
+      "Hash": "9676b17483fb642c2413b741d5514df5"
     },
     "sys": {
       "Package": "sys",
