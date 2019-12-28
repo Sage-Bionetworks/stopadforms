@@ -7,7 +7,16 @@
 \usage{
 mod_review_section_ui(id)
 
-mod_review_section_server(input, output, session, synapse, syn, reviews_table)
+mod_review_section_server(
+  input,
+  output,
+  session,
+  synapse,
+  syn,
+  reviews_table,
+  section_lookup_table,
+  variable_lookup_table
+)
 }
 \arguments{
 \item{id}{shiny id}
@@ -24,6 +33,9 @@ mod_review_section_server(input, output, session, synapse, syn, reviews_table)
 \item{syn}{Synapse client object (e.g. output of `synapse$Synapse()`)}
 
 \item{reviews_table}{Synapse table that stores the scores and comments}
+
+\item{section_lookup_table}{Dataframe with columns "variable" and
+"label" used for user-friendly variable names}
 }
 \description{
 Review and score the selected section of a submission

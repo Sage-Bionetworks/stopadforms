@@ -3,7 +3,7 @@
 #'
 #' @inheritParams mod_review_section_ui
 #' @inheritParams mod_review_section_server
-#' @param submissions_table Synapse table that stores the 
+#' @param submissions_table Synapse table that stores the
 #'   overall submission scores and comments
 #'
 #' @rdname mod_panel_section
@@ -11,7 +11,7 @@
 #' @keywords internal
 #' @importFrom shiny NS tagList
 #' @importFrom rlang .data
-mod_panel_section_ui <- function(id){
+mod_panel_section_ui <- function(id) {
   ns <- NS(id)
   tabPanel(
     "View summarized scores",
@@ -74,7 +74,9 @@ mod_panel_section_ui <- function(id){
 #' @keywords internal
 mod_panel_section_server <- function(input, output, session, synapse, syn,
                                      reviews_table, submissions_table) {
-  submission <- reactive({ input$submission })
+  submission <- reactive({
+    input$submission
+  })
 
   ## Load reviews
   reviews <- pull_reviews_table(syn, reviews_table)
@@ -101,18 +103,22 @@ mod_panel_section_server <- function(input, output, session, synapse, syn,
   ## Save new row to table
   observeEvent(input$submit, {
     dccvalidator::with_busy_indicator_server("submit", {
-      if (nchar(input$internal_comments) > 500 || nchar(input$external_comments) > 500) {
+      if (nchar(input$internal_comments) > 500 || nchar(input$external_comments) > 500) { # nolint
         stop("Please limit comments to 500 characters")
       }
+      form_data_id <- reviews$formDataId[
+        which(reviews$submission == input$submission)[1]
+      ]
       result <- readr::read_csv(
         syn$tableQuery(
           glue::glue(
-            "SELECT * FROM {submissions_table} WHERE (scorer = {syn$getUserProfile()$ownerId} AND submission = '{input$submission}')"
+            "SELECT * FROM {submissions_table} WHERE (scorer = {syn$getUserProfile()$ownerId} AND formDataId = {form_data_id})" # nolint
           )
         )$filepath
       )
-      if (nrow(result) == 0 ) {
+      if (nrow(result) == 0) {
         new_row <- data.frame(
+          formDataId = form_data_id,
           submission = input$submission,
           scorer = syn$getUserProfile()$ownerId,
           overall_score = input$overall_score,
@@ -126,7 +132,7 @@ mod_panel_section_server <- function(input, output, session, synapse, syn,
         new_row$internal_comment <- input$internal_comments
         new_row$external_comment <- input$external_comments
       } else {
-        stop("Unable to update score: duplicate scores were found for this section from a single reviewer")
+        stop("Unable to update score: duplicate scores were found for this section from a single reviewer") # nolint
       }
       syn$store(synapse$Table(submissions_table, new_row))
     })
@@ -134,9 +140,9 @@ mod_panel_section_server <- function(input, output, session, synapse, syn,
 }
 
 #' @title Pull latest review table
-#' 
+#'
 #' @description Pull latest review table from Synapse.
-#' 
+#'
 #' @inheritParams mod_panel_section_server
 #' @keywords internal
 pull_reviews_table <- function(syn, reviews_table) {
@@ -160,7 +166,7 @@ show_review_table <- function(input, output, reviews, submission) {
     dplyr::filter(reviews, submission == submission()) %>%
       dplyr::select(.data$section, .data$score, .data$scorer, .data$comments)
   })
-  
+
   output$averaged_scores <- reactable::renderReactable({
     reactable::reactable(
       to_show(),
