@@ -1,12 +1,6 @@
 #' @import shiny
 app_ui <- function() {
 
-  # Submissions
-  submissions <- list("123-ABC", "456-DEF", "789-GHI")
-
-  # Sections
-  sections <- list("1a", "1b", "2", "3")
-
   tagList(
     # Leave this function for adding external resources
     golem_add_external_resources(),
