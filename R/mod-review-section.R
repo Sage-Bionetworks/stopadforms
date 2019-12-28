@@ -88,7 +88,6 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
     section_lookup_table = section_lookup_table,
     variable_lookup_table = variable_lookup_table
   )
-  sub_data <- change_logical_responses(sub_data)
 
   updateSelectInput(
     session = getDefaultReactiveDomain(),

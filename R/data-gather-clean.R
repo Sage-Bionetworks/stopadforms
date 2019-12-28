@@ -86,6 +86,7 @@ make_clean_table <- function(data, section_lookup_table,
     "label",
     "response"
   )]
+  data <- change_logical_responses(data)
   data
 }
 
@@ -138,5 +139,18 @@ clean_experiment_variables <- function(data) {
   data <- data[
     c("form_data_id", "step", "section", "variable", "response")
   ]
+  data
+}
+
+#' Change logical responses to yes/no
+#'
+#' Change TRUE/FALSE responses to be yes/no.
+#'
+#' @inheritParams clean_experiment_variables
+change_logical_responses <- function(data) {
+  true_indices <- which(data$response == "TRUE")
+  false_indices <- which(data$response == "FALSE")
+  data$response[true_indices] <- "Yes"
+  data$response[false_indices] <- "No"
   data
 }
