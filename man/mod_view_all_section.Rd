@@ -7,7 +7,16 @@
 \usage{
 mod_view_all_section_ui(id)
 
-mod_view_all_section_server(input, output, session, synapse, syn, group)
+mod_view_all_section_server(
+  input,
+  output,
+  session,
+  synapse,
+  syn,
+  group,
+  section_lookup_table,
+  variable_lookup_table
+)
 }
 \arguments{
 \item{id}{shiny id}
@@ -22,6 +31,9 @@ mod_view_all_section_server(input, output, session, synapse, syn, group)
 `reticulate::import("synapseclient")`)}
 
 \item{syn}{Synapse client object (e.g. output of `synapse$Synapse()`)}
+
+\item{section_lookup_table}{Dataframe with columns "variable" and
+"label" used for user-friendly variable names}
 }
 \description{
 View and search among all submissions

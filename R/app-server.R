@@ -55,7 +55,9 @@ app_server <- function(input, output, session) {
       "view_all_section",
       synapse = synapse,
       syn = syn,
-      group = 9
+      group = 9,
+      section_lookup_table = section_lookup_table,
+      variable_lookup_table = variable_lookup_table
     )
   })
 }
