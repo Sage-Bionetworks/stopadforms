@@ -13,6 +13,9 @@ app_ui <- function() {
       ),
       mod_panel_section_ui(
         "panel_section"
+      ),
+      mod_view_all_section_ui(
+        "view_all_section"
       )
     )
   )

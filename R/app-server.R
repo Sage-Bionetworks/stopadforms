@@ -49,5 +49,15 @@ app_server <- function(input, output, session) {
       reviews_table = "syn21314955",
       submissions_table = "syn21447678"
     )
+
+    callModule(
+      mod_view_all_section_server,
+      "view_all_section",
+      synapse = synapse,
+      syn = syn,
+      group = 9,
+      section_lookup_table = section_lookup_table,
+      variable_lookup_table = variable_lookup_table
+    )
   })
 }
