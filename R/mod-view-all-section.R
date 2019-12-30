@@ -44,7 +44,7 @@ mod_view_all_section_ui <- function(id) {
     ),
     fluidRow(
       column(
-        6,
+        10,
         offset = 1,
         reactable::reactableOutput(ns("submissions"))
       )
@@ -67,6 +67,8 @@ mod_view_all_section_server <- function(input, output, session, synapse, syn,
           section_lookup_table,
           variable_lookup_table
         )
+        # Remove metadata sections
+        submissions <- submissions[-which(submissions$step == "metadata"), ]
         output$submissions <- reactable::renderReactable({
           reactable::reactable(
             submissions,
