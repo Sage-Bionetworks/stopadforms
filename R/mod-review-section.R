@@ -88,14 +88,13 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
     section_lookup_table = section_lookup_table,
     variable_lookup_table = variable_lookup_table
   )
-  sub_data <- add_friendly_names(sub_data)
 
   updateSelectInput(
     session = getDefaultReactiveDomain(),
     "submission",
     choices = c(
       "",
-      unique(sub_data$submission)
+      get_submission_list(sub_data)
     )
   )
 
@@ -115,8 +114,11 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
     }
   })
 
-  submission <- reactive({
+  submission_id <- reactive({
     input$submission
+  })
+  submission_name <- reactive({
+    sub_data$submission[sub_data$form_data_id == input$submission][1]
   })
   section <- reactive({
     input$section
@@ -126,32 +128,35 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
   to_show <- reactive({
     sub_section <- dplyr::filter(
       sub_data,
-      submission == submission() & step == section() & !is.na(sub_data$response)
+      form_data_id == submission_id() & step == section() & !is.na(sub_data$response) # nolint
     )
     sub_section[c("label", "response")]
   })
 
   output$data_section_subset <- reactable::renderReactable({
-    reactable::reactable(to_show())
+    reactable::reactable(
+      to_show(),
+      columns = list(
+        label = reactable::colDef(name = "Label"),
+        response = reactable::colDef(name = "Response")
+      )
+    )
   })
 
   ## Save new row to table
   observeEvent(input$submit, {
     dccvalidator::with_busy_indicator_server("submit", {
-      form_data_id <- sub_data$form_data_id[
-        which(sub_data$submission == input$submission)
-      ]
       result <- readr::read_csv(
         syn$tableQuery(
           glue::glue(
-            "SELECT * FROM {reviews_table} WHERE (scorer = {syn$getUserProfile()$ownerId} AND formDataId = {form_data_id} AND section = '{input$section}')" # nolint
+            "SELECT * FROM {reviews_table} WHERE (scorer = {syn$getUserProfile()$ownerId} AND formDataId = {submission_id()} AND section = '{input$section}')" # nolint
           )
         )$filepath
       )
       if (nrow(result) == 0) {
         new_row <- data.frame(
-          formDataId = form_data_id,
-          submission = input$submission,
+          formDataId = submission_id(),
+          submission = submission_name(),
           section = input$section,
           scorer = syn$getUserProfile()$ownerId,
           score = input$section_score,
@@ -170,6 +175,25 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
   })
 }
 
+#' Get list of submissions with ids
+#'
+#' Get list of submissions with their form_data_id.
+#'
+#' @inheritParams get_sections
+#' @return named list where names are the submission names
+#'   and values are their form_data_ids.
+get_submission_list <- function(data) {
+  sub_ids <- as.list(unique(data$form_data_id))
+  sub_names <- purrr::map(
+    sub_ids,
+    function(x) {
+      data$submission[data$form_data_id == x][1]
+    }
+  )
+  names(sub_ids) <- sub_names
+  sub_ids
+}
+
 #' Get submission sections
 #'
 #' Get submission steps, which can be thought of
@@ -177,9 +201,9 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
 #'
 #' @param data The submission data as given by
 #'   [get_submissions()].
-#' @param submission_name Submission name.
-get_sections <- function(data, submission_name) {
-  submission <- data[which(data$submission == submission_name), ]
+#' @param submission_id Submission form_data_id.
+get_sections <- function(data, submission_id) {
+  submission <- data[which(data$form_data_id == submission_id), ]
   steps <- unique(submission$step)
   metadata_index <- which(steps == "metadata")
   if (length(metadata_index) > 0) {

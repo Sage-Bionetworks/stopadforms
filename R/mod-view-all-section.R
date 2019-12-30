@@ -69,12 +69,16 @@ mod_view_all_section_server <- function(input, output, session, synapse, syn,
         )
         output$submissions <- reactable::renderReactable({
           reactable::reactable(
-            submissions[c("submission", "step", "label", "response")],
-            groupBy = c("submission", "step"),
+            submissions,
+            groupBy = c("submission", "form_data_id", "step"),
             searchable = TRUE,
             highlight = TRUE,
             columns = list(
-              submission = reactable::colDef(name = "Submission"),
+              submission = reactable::colDef(
+                name = "Submission",
+                aggregate = "unique"
+              ),
+              form_data_id = reactable::colDef(name = "Submission ID"),
               step = reactable::colDef(
                 name = "Section",
                 aggregate = reactable::JS(
@@ -98,5 +102,4 @@ mod_view_all_section_server <- function(input, output, session, synapse, syn,
         })
     })
   })
-
 }
