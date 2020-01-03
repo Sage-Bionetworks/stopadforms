@@ -25,7 +25,7 @@ app_server <- function(input, output, session) {
       stringsAsFactors = FALSE
     )
     variable_lookup <- syn$get("syn21464969")
-    variable_lookup_table <- read.csv(
+    variable_lookup_table <- utils::read.csv(
       variable_lookup$path,
       stringsAsFactors = FALSE
     )
