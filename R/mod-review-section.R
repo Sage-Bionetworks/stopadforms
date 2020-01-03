@@ -11,7 +11,7 @@
 #' @param reviews_table Synapse table that stores the scores and comments
 #' @param section_lookup_table Dataframe with columns "section" and
 #'   "step" used for user-friendly section names
-#' @param section_lookup_table Dataframe with columns "variable" and
+#' @param variable_lookup_table Dataframe with columns "variable" and
 #'   "label" used for user-friendly variable names
 #'
 #' @rdname mod_review_section
