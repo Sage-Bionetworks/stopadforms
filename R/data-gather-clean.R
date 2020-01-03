@@ -45,10 +45,10 @@ get_submissions <- function(syn, group, statuses,
 make_clean_table <- function(data, section_lookup_table,
                              variable_lookup_table) {
   data <- synapseforms::make_tidier_table(data)
-  data <- dplyr::full_join(data, section_lookup_table, by = "section")
-  data <- clean_experiment_variables(data)
-  data <- dplyr::full_join(data, variable_lookup_table, by = "variable")
   data <- data[!is.na(data$response), ]
+  data <- dplyr::left_join(data, section_lookup_table, by = "section")
+  data <- clean_experiment_variables(data)
+  data <- dplyr::left_join(data, variable_lookup_table, by = "variable")
   # Some labels/steps will be blank if form changes or not mapped
   na_labels <- which(is.na(data$label))
   data$label[na_labels] <- data$variable[na_labels]
