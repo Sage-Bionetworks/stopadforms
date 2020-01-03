@@ -6,43 +6,22 @@
 #' @param statuses A character vector of statuses to
 #'   include from the set: "Accepted", "Rejected",
 #'   "In Review".
+#' @param group The number for a specific Synapse forms group.
 get_submissions <- function(syn, group, statuses,
                             section_lookup_table, variable_lookup_table) {
   if (is.null(statuses)) {
     return(NULL)
   }
-  statuses <- purrr::map(
-    statuses,
-    function(x) {
-      switch(
-        x,
-        Accepted = "ACCEPTED",
-        Rejected = "REJECTED",
-        `In Review` = "SUBMITTED_WAITING_FOR_REVIEW"
-      )
-    }
-  )
-  submissions <- synapseforms::download_all_and_get_table(
-    syn,
-    state_filter = statuses[[1]], group = group
-  )
-  if (length(statuses) > 1) {
-    for (status in 2:length(statuses)) {
-      temp_subs <- synapseforms::download_all_and_get_table(
-        syn,
-        state_filter = statuses[[status]], group = group
-      )
-      if (is.null(submissions)) {
-        submissions <- temp_subs
-      } else if (!is.null(temp_subs)) {
-        submissions <- dplyr::full_join(
-          submissions,
-          temp_subs,
-          by = "variables"
-        )
-      }
-    }
-  }
+  submissions <- purrr::map(statuses, function(x) {
+    synapseforms::download_all_and_get_table(
+      syn = syn,
+      state_filter = x,
+      group = group
+    )
+  }) %>%
+    purrr::compact() %>% # Removes NAs
+    purrr::reduce(dplyr::full_join, by = "variables")
+
   if (!is.null(submissions)) {
     submissions <- make_clean_table(
       submissions,

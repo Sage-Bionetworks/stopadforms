@@ -84,7 +84,7 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
   sub_data <- get_submissions(
     syn,
     group = 9,
-    statuses = "In Review",
+    statuses = "SUBMITTED_WAITING_FOR_REVIEW",
     section_lookup_table = section_lookup_table,
     variable_lookup_table = variable_lookup_table
   )
