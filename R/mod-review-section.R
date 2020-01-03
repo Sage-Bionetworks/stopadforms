@@ -18,6 +18,7 @@
 #'
 #' @keywords internal
 #' @importFrom shiny NS tagList
+#' @importFrom rlang .data
 mod_review_section_ui <- function(id) {
   ns <- NS(id)
 
@@ -125,7 +126,7 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
   to_show <- reactive({
     sub_section <- dplyr::filter(
       sub_data,
-      submission == submission() & step == section() & !is.na(sub_data$response)
+      .data$submission == submission() & .data$step == section()
     )
     sub_section[c("label", "response")]
   })
