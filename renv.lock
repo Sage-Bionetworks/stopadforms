@@ -106,10 +106,10 @@
     },
     "callr": {
       "Package": "callr",
-      "Version": "3.4.0",
+      "Version": "3.3.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "f73f76ba9c2c23cbe3a7657f7411ddc4"
+      "Hash": "75d46070f66638c29e4518d5a944abfa"
     },
     "cellranger": {
       "Package": "cellranger",
