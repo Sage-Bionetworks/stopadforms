@@ -15,6 +15,8 @@ get_submissions(
 \arguments{
 \item{syn}{Synapse client object (e.g. output of `synapse$Synapse()`)}
 
+\item{group}{The number for a specific Synapse forms group.}
+
 \item{statuses}{A character vector of statuses to
 include from the set: "Accepted", "Rejected",
 "In Review".}

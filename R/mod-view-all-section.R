@@ -21,11 +21,11 @@ mod_view_all_section_ui <- function(id) {
           ns("status"),
           "Select statuses to include",
           choices = c(
-            "In Review",
-            "Accepted",
-            "Rejected"
+            "In Review" = "SUBMITTED_WAITING_FOR_REVIEW",
+            "Accepted" = "ACCEPTED",
+            "Rejected" = "REJECTED"
           ),
-          selected = "In Review",
+          selected = "SUBMITTED_WAITING_FOR_REVIEW",
           inline = TRUE
         )
       )
