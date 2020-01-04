@@ -94,19 +94,34 @@ clean_experiment_variables <- function(data) {
   num_list <- purrr::map(
     data$sub_variable,
     function(x) {
-      suppressWarnings(as.numeric(substr(x, nchar(x), nchar(x))))
+      last_num <- as.numeric(stringr::str_extract_all(x, "[:digit:]+"))
+      # If the variable contains "d50", then is most likely ld50 or ed50
+      if (!is.na(last_num) && stringr::str_detect(x, "d50")) {
+        # last_num must be >= 50
+        if (last_num > 50) {
+          # Must be multiple experiments; ex: if one experiment,
+          # last_num will be 501 and need to drop back to 1
+          last_num <- last_num - 500
+        } else {
+          # Must not have multiple experiments
+          last_num <- NA
+        } 
+      }
+      last_num
     }
   )
+  # Append the experiment number to the step
   data$step <- purrr::map2(data$step, num_list, function(x, y) {
-    if (!is.na(y) && y > 0) {
+    if (!is.na(y)) {
       glue::glue("{x} [{y}]")
     } else {
       x
     }
   })
+  # Remove the experiment number from the variable
   data$variable <- purrr::map2(data$variable, num_list, function(x, y) {
-    if (!is.na(y) && y > 0) {
-      substr(x, 1, nchar(x) - 1)
+    if (!is.na(y)) {
+      stringr::str_replace(x, glue::glue("{y}$"), "")
     } else {
       x
     }
@@ -114,6 +129,7 @@ clean_experiment_variables <- function(data) {
   # Fix list column problem
   data$step <- as.character(data$step)
   data$variable <- as.character(data$variable)
+  # No longer need the main_variable and sub_variable columns
   data <- data[
     c("form_data_id", "step", "section", "variable", "response")
   ]
