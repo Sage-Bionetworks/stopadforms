@@ -78,7 +78,7 @@ make_clean_table <- function(data, section_lookup_table,
 #' but is not related to the multiple experiment issue.
 #'
 #' @param data The submission data in the form given by
-#'   [synapseforms::make_tidier_table].
+#'   [synapseforms::make_tidier_table], plus columns step and section.
 clean_experiment_variables <- function(data) {
   # Basic section can have multiple routes, but if split first,
   # these ones won't get messed up due to not being tertiary to section.
@@ -94,18 +94,21 @@ clean_experiment_variables <- function(data) {
   num_list <- purrr::map(
     data$sub_variable,
     function(x) {
-      last_num <- as.numeric(stringr::str_extract_all(x, "[:digit:]+"))
-      # If the variable contains "d50", then is most likely ld50 or ed50
-      if (!is.na(last_num) && stringr::str_detect(x, "d50")) {
-        # last_num must be >= 50
-        if (last_num > 50) {
-          # Must be multiple experiments; ex: if one experiment,
-          # last_num will be 501 and need to drop back to 1
-          last_num <- last_num - 500
-        } else {
-          # Must not have multiple experiments
-          last_num <- NA
-        } 
+      last_num <- unlist(stringr::str_extract_all(x, "[:digit:]+"))
+      if (length(last_num) > 0 && !is.na(last_num)) {
+        # If the variable contains "d50", then is most likely ld50 or ed50
+        if (stringr::str_detect(x, "d50")) {
+          if (as.numeric(last_num) > 50) {
+            # Must be multiple experiments
+            last_num <- stringr::str_replace(last_num, "^50", "")
+          } else {
+            # Single experiment; signal no name change
+            last_num <- NA
+          }
+        }
+      } else {
+        # Must not have digits
+        last_num <- NA
       }
       last_num
     }
