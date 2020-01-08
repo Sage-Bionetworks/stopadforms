@@ -766,12 +766,13 @@
       "Version": "0.0.0.9001",
       "Source": "GitHub",
       "RemoteType": "github",
-      "RemoteUsername": "Sage-Bionetworks",
-      "RemoteRepo": "synapseforms",
-      "RemoteRef": "master",
-      "RemoteSha": "0166ab9fedd8233614c74fab2c3cebdaf654ad71",
       "RemoteHost": "api.github.com",
-      "Hash": "9676b17483fb642c2413b741d5514df5"
+      "RemoteRepo": "synapseforms",
+      "RemoteUsername": "Sage-Bionetworks",
+      "RemoteRef": "master",
+      "RemoteSha": "5fe283e5778b4762a3dd63e1a2636ae97c8161e5",
+      "Hash": "3ebced248b7c2a7f31ffaa08032b394e"
+
     },
     "sys": {
       "Package": "sys",
