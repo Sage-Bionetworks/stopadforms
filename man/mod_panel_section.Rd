@@ -33,7 +33,7 @@ mod_panel_section_server(
 
 \item{reviews_table}{Synapse table that stores the scores and comments}
 
-\item{submissions_table}{Synapse table that stores the 
+\item{submissions_table}{Synapse table that stores the
 overall submission scores and comments}
 }
 \description{

@@ -9,7 +9,7 @@ app_server <- function(input, output, session) {
     showModal(
       modalDialog(
         title = "Not logged in",
-        HTML("You must log in to <a href=\"https://www.synapse.org/\">Synapse</a> to use this application. Please log in, and then refresh this page.")
+        HTML("You must log in to <a href=\"https://www.synapse.org/\">Synapse</a> to use this application. Please log in, and then refresh this page.") # nolint
       )
     )
   })
@@ -18,13 +18,27 @@ app_server <- function(input, output, session) {
     ## Log in to Synapse
     syn$login(sessionToken = input$cookie)
 
+    ## Lookup tables for variables
+    section_lookup <- syn$get("syn21464968")
+    section_lookup_table <- utils::read.csv(
+      section_lookup$path,
+      stringsAsFactors = FALSE
+    )
+    variable_lookup <- syn$get("syn21464969")
+    variable_lookup_table <- utils::read.csv(
+      variable_lookup$path,
+      stringsAsFactors = FALSE
+    )
+
     ## Show submission data
     callModule(
       mod_review_section_server,
       "review_section",
       synapse = synapse,
       syn = syn,
-      reviews_table = "syn21314955"
+      reviews_table = "syn21314955",
+      section_lookup_table = section_lookup_table,
+      variable_lookup_table = variable_lookup_table
     )
 
     callModule(
