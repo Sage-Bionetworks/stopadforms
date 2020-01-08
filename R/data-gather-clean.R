@@ -94,7 +94,7 @@ clean_experiment_variables <- function(data) {
   num_list <- purrr::map(
     data$sub_variable,
     function(x) {
-      last_num <- unlist(stringr::str_extract_all(x, "[:digit:]+"))
+      last_num <- unlist(stringr::str_extract(x, "[:digit:]+$"))
       if (length(last_num) > 0 && !is.na(last_num)) {
         # If the variable contains "d50", then is most likely ld50 or ed50
         if (stringr::str_detect(x, "(ld|ed)50")) {
