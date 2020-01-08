@@ -97,7 +97,7 @@ clean_experiment_variables <- function(data) {
       last_num <- unlist(stringr::str_extract(x, "[:digit:]+$"))
       if (length(last_num) > 0 && !is.na(last_num)) {
         # If the variable contains "d50", then is most likely ld50 or ed50
-        if (stringr::str_detect(x, "(ld|ed)50")) {
+        if (stringr::str_detect(x, "^(ld|ed)50")) {
           if (as.numeric(last_num) > 50) {
             # Must be multiple experiments
             last_num <- stringr::str_replace(last_num, "^50", "")
