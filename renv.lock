@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "3.6.1",
+    "Version": "3.6.2",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -106,10 +106,10 @@
     },
     "callr": {
       "Package": "callr",
-      "Version": "3.4.0",
+      "Version": "3.3.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "f73f76ba9c2c23cbe3a7657f7411ddc4"
+      "Hash": "75d46070f66638c29e4518d5a944abfa"
     },
     "cellranger": {
       "Package": "cellranger",
@@ -766,12 +766,12 @@
       "Version": "0.0.0.9001",
       "Source": "GitHub",
       "RemoteType": "github",
-      "RemoteUsername": "Sage-Bionetworks",
-      "RemoteRepo": "synapseforms",
-      "RemoteRef": "master",
-      "RemoteSha": "b9c5fbfb93a3d26f00895629d04d0e89b9ebb81b",
       "RemoteHost": "api.github.com",
-      "Hash": "76ce57326673d35816c8e15491adb27d"
+      "RemoteRepo": "synapseforms",
+      "RemoteUsername": "Sage-Bionetworks",
+      "RemoteRef": "master",
+      "RemoteSha": "5fe283e5778b4762a3dd63e1a2636ae97c8161e5",
+      "Hash": "3ebced248b7c2a7f31ffaa08032b394e"
     },
     "sys": {
       "Package": "sys",
