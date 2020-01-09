@@ -11,13 +11,14 @@
 #' @param reviews_table Synapse table that stores the scores and comments
 #' @param section_lookup_table Dataframe with columns "section" and
 #'   "step" used for user-friendly section names
-#' @param section_lookup_table Dataframe with columns "variable" and
+#' @param variable_lookup_table Dataframe with columns "variable" and
 #'   "label" used for user-friendly variable names
 #'
 #' @rdname mod_review_section
 #'
 #' @keywords internal
 #' @importFrom shiny NS tagList
+#' @importFrom rlang .data
 mod_review_section_ui <- function(id) {
   ns <- NS(id)
 
@@ -125,7 +126,7 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
   to_show <- reactive({
     sub_section <- dplyr::filter(
       sub_data,
-      submission == submission() & step == section() & !is.na(sub_data$response)
+      .data$submission == submission() & .data$step == section()
     )
     sub_section[c("label", "response")]
   })

@@ -21,7 +21,10 @@ get_submissions(
 include from the set: "Accepted", "Rejected",
 "In Review".}
 
-\item{section_lookup_table}{Dataframe with columns "variable" and
+\item{section_lookup_table}{Dataframe with columns "section" and
+"step" used for user-friendly section names}
+
+\item{variable_lookup_table}{Dataframe with columns "variable" and
 "label" used for user-friendly variable names}
 }
 \description{
