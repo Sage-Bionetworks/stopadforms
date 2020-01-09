@@ -20,12 +20,12 @@ app_server <- function(input, output, session) {
 
     ## Lookup tables for variables
     section_lookup <- syn$get("syn21464968")
-    section_lookup_table <- read.csv(
+    section_lookup_table <- utils::read.csv(
       section_lookup$path,
       stringsAsFactors = FALSE
     )
     variable_lookup <- syn$get("syn21464969")
-    variable_lookup_table <- read.csv(
+    variable_lookup_table <- utils::read.csv(
       variable_lookup$path,
       stringsAsFactors = FALSE
     )

@@ -15,11 +15,16 @@ get_submissions(
 \arguments{
 \item{syn}{Synapse client object (e.g. output of `synapse$Synapse()`)}
 
+\item{group}{The number for a specific Synapse forms group.}
+
 \item{statuses}{A character vector of statuses to
 include from the set: "Accepted", "Rejected",
 "In Review".}
 
-\item{section_lookup_table}{Dataframe with columns "variable" and
+\item{section_lookup_table}{Dataframe with columns "section" and
+"step" used for user-friendly section names}
+
+\item{variable_lookup_table}{Dataframe with columns "variable" and
 "label" used for user-friendly variable names}
 }
 \description{

@@ -29,7 +29,10 @@ Imports:
     reticulate,
     rlang,
     shiny,
-    synapseforms
+    stringr,
+    synapseforms,
+    tibble,
+    tidyr
 Remotes:
     Sage-Bionetworks/dccvalidator,
     Sage-Bionetworks/synapseforms
