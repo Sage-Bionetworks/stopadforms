@@ -70,13 +70,10 @@ make_clean_table <- function(data, section_lookup_table,
 }
 
 #' Clean experiment variables
-#' to having one known `variable`, ID50, that ends in a number,
 #'
-#' form "age_range1", "age_range2". This will remove the number at
 #' Multiple experiments lead to `variable`s with names of the
+#' form "age_range1", "age_range2". This will remove the number at
 #' the end of `variable` and append to the `step` name.
-#' Note that this only happens if the number is > 0. This is due
-#' but is not related to the multiple experiment issue.
 #'
 #' @param data The submission data in the form given by
 #'   [synapseforms::make_tidier_table], plus columns step and section.

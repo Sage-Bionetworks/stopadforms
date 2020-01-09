@@ -14,7 +14,4 @@ clean_experiment_variables(data)
 Multiple experiments lead to `variable`s with names of the
 form "age_range1", "age_range2". This will remove the number at
 the end of `variable` and append to the `step` name.
-Note that this only happens if the number is > 0. This is due
-to having one known `variable`, ID50, that ends in a number,
-but is not related to the multiple experiment issue.
 }
