@@ -181,6 +181,9 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
 get_sections <- function(data, submission_name) {
   submission <- data[which(data$submission == submission_name), ]
   steps <- unique(submission$step)
-  steps <- steps[-which(steps == "metadata")]
+  metadata_index <- which(steps == "metadata")
+  if (length(metadata_index) > 0) {
+    steps <- steps[-metadata_index]
+  }
   steps
 }
