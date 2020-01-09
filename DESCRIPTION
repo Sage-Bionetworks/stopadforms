@@ -29,6 +29,7 @@ Imports:
     reticulate,
     rlang,
     shiny,
+    stringr,
     synapseforms,
     tibble,
     tidyr

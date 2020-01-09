@@ -65,6 +65,7 @@ make_clean_table <- function(data, section_lookup_table,
     "label",
     "response"
   )]
+  data <- change_logical_responses(data)
   data
 }
 
@@ -73,9 +74,6 @@ make_clean_table <- function(data, section_lookup_table,
 #' Multiple experiments lead to `variable`s with names of the
 #' form "age_range1", "age_range2". This will remove the number at
 #' the end of `variable` and append to the `step` name.
-#' Note that this only happens if the number is > 0. This is due
-#' to having one known `variable`, ID50, that ends in a number,
-#' but is not related to the multiple experiment issue.
 #'
 #' @param data The submission data in the form given by
 #'   [synapseforms::make_tidier_table], plus columns step and section.
@@ -136,5 +134,18 @@ clean_experiment_variables <- function(data) {
   data <- data[
     c("form_data_id", "step", "section", "variable", "response")
   ]
+  data
+}
+
+#' Change logical responses to yes/no
+#'
+#' Change TRUE/FALSE responses to be yes/no.
+#'
+#' @inheritParams clean_experiment_variables
+change_logical_responses <- function(data) {
+  true_indices <- which(data$response == "TRUE")
+  false_indices <- which(data$response == "FALSE")
+  data$response[true_indices] <- "Yes"
+  data$response[false_indices] <- "No"
   data
 }

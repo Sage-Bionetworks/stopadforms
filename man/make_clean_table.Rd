@@ -8,7 +8,7 @@ make_clean_table(data, section_lookup_table, variable_lookup_table)
 }
 \arguments{
 \item{data}{The submission data in the form given by
-[synapseforms::make_tidier_table].}
+[synapseforms::make_tidier_table], plus columns step and section.}
 
 \item{section_lookup_table}{Dataframe with columns "section" and
 "step" used for user-friendly section names}
