@@ -8,7 +8,7 @@ clean_experiment_variables(data)
 }
 \arguments{
 \item{data}{The submission data in the form given by
-[synapseforms::make_tidier_table].}
+[synapseforms::make_tidier_table], plus columns step and section.}
 }
 \description{
 Multiple experiments lead to `variable`s with names of the
