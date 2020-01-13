@@ -9,11 +9,16 @@
 #'   `reticulate::import("synapseclient")`)
 #' @param syn Synapse client object (e.g. output of `synapse$Synapse()`)
 #' @param reviews_table Synapse table that stores the scores and comments
+#' @param section_lookup_table Dataframe with columns "section" and
+#'   "step" used for user-friendly section names
+#' @param variable_lookup_table Dataframe with columns "variable" and
+#'   "label" used for user-friendly variable names
 #'
 #' @rdname mod_review_section
 #'
 #' @keywords internal
-#' @importFrom shiny NS tagList 
+#' @importFrom shiny NS tagList
+#' @importFrom rlang .data
 mod_review_section_ui <- function(id) {
   ns <- NS(id)
 
@@ -74,11 +79,16 @@ mod_review_section_ui <- function(id) {
 #' @rdname mod_review_section
 #' @keywords internal
 mod_review_section_server <- function(input, output, session, synapse, syn,
-                                      reviews_table) {
-  sub_data <- synapseforms::download_all_and_get_table(syn, group = 9)
-  sub_data <- synapseforms::make_tidier_table(sub_data)
-  sub_data <- clean_experiment_variables(sub_data)
-  sub_data <- add_friendly_names(sub_data)
+                                      reviews_table, section_lookup_table,
+                                      variable_lookup_table) {
+  # Get submission data in nice table for viewing
+  sub_data <- get_submissions(
+    syn,
+    group = 9,
+    statuses = "SUBMITTED_WAITING_FOR_REVIEW",
+    section_lookup_table = section_lookup_table,
+    variable_lookup_table = variable_lookup_table
+  )
 
   updateSelectInput(
     session = getDefaultReactiveDomain(),
@@ -94,27 +104,31 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
       updateSelectInput(
         session = getDefaultReactiveDomain(),
         "section",
-        choices = c("", synapseforms::get_main_sections(
-          sub_data,
-          sub_data$form_data_id[
-            which(sub_data$submission == input$submission)
-          ]
-        ))
+        choices = c(
+          "",
+          get_sections(
+            sub_data,
+            input$submission
+          )
+        )
       )
     }
   })
 
-  submission <- reactive({ input$submission })
-  section <- reactive({ input$section })
+  submission <- reactive({
+    input$submission
+  })
+  section <- reactive({
+    input$section
+  })
 
   ## Show section
   to_show <- reactive({
-    data_subset <- dplyr::filter(
+    sub_section <- dplyr::filter(
       sub_data,
-      submission == submission() & section == section() &!is.na(sub_data$response)
+      .data$submission == submission() & .data$step == section()
     )
-    # Remove redundant form_data_id and submission columns for viewing
-    data_subset[, -c(1,2)]
+    sub_section[c("label", "response")]
   })
 
   output$data_section_subset <- reactable::renderReactable({
@@ -124,15 +138,19 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
   ## Save new row to table
   observeEvent(input$submit, {
     dccvalidator::with_busy_indicator_server("submit", {
+      form_data_id <- sub_data$form_data_id[
+        which(sub_data$submission == input$submission)
+      ]
       result <- readr::read_csv(
         syn$tableQuery(
           glue::glue(
-            "SELECT * FROM {reviews_table} WHERE (scorer = {syn$getUserProfile()$ownerId} AND submission = '{input$submission}' AND section = '{input$section}')"
+            "SELECT * FROM {reviews_table} WHERE (scorer = {syn$getUserProfile()$ownerId} AND formDataId = {form_data_id} AND section = '{input$section}')" # nolint
           )
         )$filepath
       )
-      if (nrow(result) == 0 ) {
+      if (nrow(result) == 0) {
         new_row <- data.frame(
+          formDataId = form_data_id,
           submission = input$submission,
           section = input$section,
           scorer = syn$getUserProfile()$ownerId,
@@ -145,9 +163,27 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
         new_row$score <- input$section_score
         new_row$comments <- input$section_comments
       } else {
-        stop("Unable to update score: duplicate scores were found for this section from a single reviewer")
+        stop("Unable to update score: duplicate scores were found for this section from a single reviewer") # nolint
       }
       syn$store(synapse$Table(reviews_table, new_row))
     })
   })
+}
+
+#' Get submission sections
+#'
+#' Get submission steps, which can be thought of
+#' as the main sections.
+#'
+#' @param data The submission data as given by
+#'   [get_submissions()].
+#' @param submission_name Submission name.
+get_sections <- function(data, submission_name) {
+  submission <- data[which(data$submission == submission_name), ]
+  steps <- unique(submission$step)
+  metadata_index <- which(steps == "metadata")
+  if (length(metadata_index) > 0) {
+    steps <- steps[-metadata_index]
+  }
+  steps
 }
