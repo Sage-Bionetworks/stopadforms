@@ -8,7 +8,11 @@ change_logical_responses(data)
 }
 \arguments{
 \item{data}{The submission data in the form given by
+<<<<<<< HEAD
 [synapseforms::make_tidier_table].}
+=======
+[synapseforms::make_tidier_table], plus columns step and section.}
+>>>>>>> master
 }
 \description{
 Change TRUE/FALSE responses to be yes/no.

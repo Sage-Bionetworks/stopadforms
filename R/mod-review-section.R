@@ -11,13 +11,14 @@
 #' @param reviews_table Synapse table that stores the scores and comments
 #' @param section_lookup_table Dataframe with columns "section" and
 #'   "step" used for user-friendly section names
-#' @param section_lookup_table Dataframe with columns "variable" and
+#' @param variable_lookup_table Dataframe with columns "variable" and
 #'   "label" used for user-friendly variable names
 #'
 #' @rdname mod_review_section
 #'
 #' @keywords internal
 #' @importFrom shiny NS tagList
+#' @importFrom rlang .data
 mod_review_section_ui <- function(id) {
   ns <- NS(id)
 
@@ -84,7 +85,7 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
   sub_data <- get_submissions(
     syn,
     group = 9,
-    statuses = "In Review",
+    statuses = "SUBMITTED_WAITING_FOR_REVIEW",
     section_lookup_table = section_lookup_table,
     variable_lookup_table = variable_lookup_table
   )
@@ -128,7 +129,7 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
   to_show <- reactive({
     sub_section <- dplyr::filter(
       sub_data,
-      form_data_id == submission_id() & step == section() & !is.na(sub_data$response) # nolint
+      .data$form_data_id == submission_id() & .data$step == section()
     )
     sub_section[c("label", "response")]
   })
@@ -146,6 +147,9 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
   ## Save new row to table
   observeEvent(input$submit, {
     dccvalidator::with_busy_indicator_server("submit", {
+      form_data_id <- sub_data$form_data_id[
+        which(sub_data$submission == input$submission)
+      ]
       result <- readr::read_csv(
         syn$tableQuery(
           glue::glue(
