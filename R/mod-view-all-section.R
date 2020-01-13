@@ -21,11 +21,11 @@ mod_view_all_section_ui <- function(id) {
           ns("status"),
           "Select statuses to include",
           choices = c(
-            "In Review",
-            "Accepted",
-            "Rejected"
+            "In Review" = "SUBMITTED_WAITING_FOR_REVIEW",
+            "Accepted" = "ACCEPTED",
+            "Rejected" = "REJECTED"
           ),
-          selected = "In Review",
+          selected = "SUBMITTED_WAITING_FOR_REVIEW",
           inline = TRUE
         )
       )
@@ -67,6 +67,9 @@ mod_view_all_section_server <- function(input, output, session, synapse, syn,
           section_lookup_table,
           variable_lookup_table
         )
+        if (is.null(submissions)) {
+          stop("No submissions found with requested status(es)")
+        }
         # Remove metadata sections
         submissions <- submissions[-which(submissions$step == "metadata"), ]
         output$submissions <- reactable::renderReactable({
