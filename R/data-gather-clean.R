@@ -18,17 +18,18 @@ get_submissions <- function(syn, group, statuses,
       state_filter = x,
       group = group
     )
-  }) %>%
+  })
+  if (all(is.null(unlist(submissions)))) {
+    return(NULL)
+  }
+  submissions <- submissions  %>%
     purrr::compact() %>% # Removes NAs
     purrr::reduce(dplyr::full_join, by = "variables")
-
-  if (!is.null(submissions)) {
-    submissions <- make_clean_table(
-      submissions,
-      section_lookup_table,
-      variable_lookup_table
-    )
-  }
+  submissions <- make_clean_table(
+    submissions,
+    section_lookup_table,
+    variable_lookup_table
+  )
   submissions
 }
 
