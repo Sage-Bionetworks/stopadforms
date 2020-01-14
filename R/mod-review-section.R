@@ -132,7 +132,7 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
   })
 
   output$data_section_subset <- reactable::renderReactable({
-    reactable::reactable(to_show())
+    reactable::reactable(to_show(), pagination = FALSE)
   })
 
   ## Save new row to table
