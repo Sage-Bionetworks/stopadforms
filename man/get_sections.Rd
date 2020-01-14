@@ -4,21 +4,13 @@
 \alias{get_sections}
 \title{Get submission sections}
 \usage{
-<<<<<<< HEAD
 get_sections(data, submission_id)
-=======
-get_sections(data, submission_name)
->>>>>>> master
 }
 \arguments{
 \item{data}{The submission data as given by
 [get_submissions()].}
 
-<<<<<<< HEAD
 \item{submission_id}{Submission form_data_id.}
-=======
-\item{submission_name}{Submission name.}
->>>>>>> master
 }
 \description{
 Get submission steps, which can be thought of

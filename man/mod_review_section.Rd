@@ -34,14 +34,10 @@ mod_review_section_server(
 
 \item{reviews_table}{Synapse table that stores the scores and comments}
 
-<<<<<<< HEAD
-\item{section_lookup_table}{Dataframe with columns "variable" and
-=======
 \item{section_lookup_table}{Dataframe with columns "section" and
 "step" used for user-friendly section names}
 
 \item{variable_lookup_table}{Dataframe with columns "variable" and
->>>>>>> master
 "label" used for user-friendly variable names}
 }
 \description{

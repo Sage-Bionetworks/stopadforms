@@ -8,7 +8,7 @@ add_friendly_names(data)
 }
 \arguments{
 \item{data}{The submission data in the form given by
-[synapseforms::make_tidier_table].}
+[synapseforms::make_tidier_table], plus columns step and section.}
 }
 \value{
 List of submission names

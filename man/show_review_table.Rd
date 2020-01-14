@@ -4,7 +4,7 @@
 \alias{show_review_table}
 \title{Show review table}
 \usage{
-show_review_table(input, output, reviews, submission)
+show_review_table(input, output, reviews, submission_id)
 }
 \arguments{
 \item{input}{internal}
@@ -13,7 +13,7 @@ show_review_table(input, output, reviews, submission)
 
 \item{reviews}{Dataframe review table.}
 
-\item{submission}{Reactive shiny object containing submission name
+\item{submission_id}{Reactive shiny object containing submission id
 accessible via `submission()`.}
 }
 \description{

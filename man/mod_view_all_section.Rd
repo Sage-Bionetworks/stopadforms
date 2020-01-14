@@ -32,14 +32,10 @@ mod_view_all_section_server(
 
 \item{syn}{Synapse client object (e.g. output of `synapse$Synapse()`)}
 
-<<<<<<< HEAD
-\item{section_lookup_table}{Dataframe with columns "variable" and
-=======
 \item{section_lookup_table}{Dataframe with columns "section" and
 "step" used for user-friendly section names}
 
 \item{variable_lookup_table}{Dataframe with columns "variable" and
->>>>>>> master
 "label" used for user-friendly variable names}
 }
 \description{
