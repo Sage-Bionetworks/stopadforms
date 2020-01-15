@@ -137,6 +137,7 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
   output$data_section_subset <- reactable::renderReactable({
     reactable::reactable(
       to_show(),
+      pagination = FALSE,
       columns = list(
         label = reactable::colDef(name = "Label"),
         response = reactable::colDef(name = "Response")

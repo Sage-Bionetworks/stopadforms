@@ -182,6 +182,7 @@ show_review_table <- function(input, output, reviews, submission_id) {
       to_show(),
       groupBy = "section",
       searchable = TRUE,
+      pagination = FALSE,
       columns = list(
         section = reactable::colDef(name = "Section"),
         score = reactable::colDef(name = "Score", aggregate = "mean"),
