@@ -75,7 +75,7 @@ mod_view_all_section_server <- function(input, output, session, synapse, syn,
         output$submissions <- reactable::renderReactable({
           reactable::reactable(
             submissions,
-            groupBy = c("submission", "form_data_id", "step"),
+            groupBy = c("submission", "step"),
             searchable = TRUE,
             highlight = TRUE,
             columns = list(
@@ -83,7 +83,7 @@ mod_view_all_section_server <- function(input, output, session, synapse, syn,
                 name = "Submission",
                 aggregate = "unique"
               ),
-              form_data_id = reactable::colDef(name = "Submission ID"),
+              form_data_id = reactable::colDef(name = "ID"),
               step = reactable::colDef(
                 name = "Section",
                 aggregate = reactable::JS(
