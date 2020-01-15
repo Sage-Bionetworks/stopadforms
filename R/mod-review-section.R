@@ -147,9 +147,9 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
   ## Save new row to table
   observeEvent(input$submit, {
     dccvalidator::with_busy_indicator_server("submit", {
-      form_data_id <- sub_data$form_data_id[
-        which(sub_data$submission == input$submission)
-      ]
+      if (input$submission == "" || input$section == "") {
+        stop("Please select a submission and section")
+      }
       result <- readr::read_csv(
         syn$tableQuery(
           glue::glue(
