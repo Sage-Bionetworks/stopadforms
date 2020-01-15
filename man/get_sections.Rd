@@ -4,13 +4,13 @@
 \alias{get_sections}
 \title{Get submission sections}
 \usage{
-get_sections(data, submission_name)
+get_sections(data, submission_id)
 }
 \arguments{
 \item{data}{The submission data as given by
 [get_submissions()].}
 
-\item{submission_name}{Submission name.}
+\item{submission_id}{Submission form_data_id.}
 }
 \description{
 Get submission steps, which can be thought of

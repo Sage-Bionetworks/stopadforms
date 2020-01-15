@@ -44,7 +44,7 @@ mod_view_all_section_ui <- function(id) {
     ),
     fluidRow(
       column(
-        6,
+        10,
         offset = 1,
         reactable::reactableOutput(ns("submissions"))
       )
@@ -67,14 +67,23 @@ mod_view_all_section_server <- function(input, output, session, synapse, syn,
           section_lookup_table,
           variable_lookup_table
         )
+        if (is.null(submissions)) {
+          stop("No submissions found with requested status(es)")
+        }
+        # Remove metadata sections
+        submissions <- submissions[-which(submissions$step == "metadata"), ]
         output$submissions <- reactable::renderReactable({
           reactable::reactable(
-            submissions[c("submission", "step", "label", "response")],
+            submissions,
             groupBy = c("submission", "step"),
             searchable = TRUE,
             highlight = TRUE,
             columns = list(
-              submission = reactable::colDef(name = "Submission"),
+              submission = reactable::colDef(
+                name = "Submission",
+                aggregate = "unique"
+              ),
+              form_data_id = reactable::colDef(name = "ID"),
               step = reactable::colDef(
                 name = "Section",
                 aggregate = reactable::JS(
@@ -98,5 +107,4 @@ mod_view_all_section_server <- function(input, output, session, synapse, syn,
         })
     })
   })
-
 }

@@ -74,18 +74,25 @@ mod_panel_section_ui <- function(id) {
 #' @keywords internal
 mod_panel_section_server <- function(input, output, session, synapse, syn,
                                      reviews_table, submissions_table) {
-  submission <- reactive({
-    input$submission
-  })
-
   ## Load reviews
   reviews <- pull_reviews_table(syn, reviews_table)
+
+  submission_id <- reactive({
+    input$submission
+  })
+  submission_name <- reactive({
+    req(reviews)
+    if (input$submission != "") {
+      reviews$submission[reviews$form_data_id == input$submission][1]
+    }
+  })
+
   updateSelectInput(
     session = getDefaultReactiveDomain(),
     "submission",
-    choices = c("", unique(reviews$submission))
+    choices = c("", get_submission_list(reviews))
   )
-  show_review_table(input, output, reviews, submission)
+  show_review_table(input, output, reviews, submission_id)
 
   observeEvent(input$refresh_comments, {
     dccvalidator::with_busy_indicator_server("refresh_comments", {
@@ -93,10 +100,10 @@ mod_panel_section_server <- function(input, output, session, synapse, syn,
       updateSelectInput(
         session = getDefaultReactiveDomain(),
         "submission",
-        choices = c("", unique(reviews$submission)),
-        selected = submission()
+        choices = get_submission_list(reviews),
+        selected = submission_id()
       )
-      show_review_table(input, output, reviews, submission)
+      show_review_table(input, output, reviews, submission_id)
     })
   })
 
@@ -106,20 +113,20 @@ mod_panel_section_server <- function(input, output, session, synapse, syn,
       if (nchar(input$internal_comments) > 500 || nchar(input$external_comments) > 500) { # nolint
         stop("Please limit comments to 500 characters")
       }
-      form_data_id <- reviews$formDataId[
-        which(reviews$submission == input$submission)[1]
-      ]
+      if (input$submission == "") {
+        stop("Please select a submission")
+      }
       result <- readr::read_csv(
         syn$tableQuery(
           glue::glue(
-            "SELECT * FROM {submissions_table} WHERE (scorer = {syn$getUserProfile()$ownerId} AND formDataId = {form_data_id})" # nolint
+            "SELECT * FROM {submissions_table} WHERE (scorer = {syn$getUserProfile()$ownerId} AND formDataId = {submission_id()})" # nolint
           )
         )$filepath
       )
       if (nrow(result) == 0) {
         new_row <- data.frame(
-          formDataId = form_data_id,
-          submission = input$submission,
+          formDataId = submission_id(),
+          submission = submission_name(),
           scorer = syn$getUserProfile()$ownerId,
           overall_score = input$overall_score,
           internal_comment = input$internal_comments,
@@ -149,6 +156,8 @@ pull_reviews_table <- function(syn, reviews_table) {
   reviews <- syn$tableQuery(glue::glue("SELECT * FROM {reviews_table}"))
   reviews <- readr::read_csv(reviews$filepath) %>%
     dplyr::mutate(scorer = get_display_name(syn, .data$scorer))
+  # Update name to work with other package functions
+  names(reviews)[which(names(reviews) == "formDataId")] <- "form_data_id"
   reviews
 }
 
@@ -158,12 +167,13 @@ pull_reviews_table <- function(syn, reviews_table) {
 #'
 #' @inheritParams mod_panel_section_server
 #' @param reviews Dataframe review table.
-#' @param submission Reactive shiny object containing submission name
+#' @param submission_id Reactive shiny object containing submission id
 #'   accessible via `submission()`.
 #' @keywords internal
-show_review_table <- function(input, output, reviews, submission) {
+#' @importFrom rlang .data
+show_review_table <- function(input, output, reviews, submission_id) {
   to_show <- reactive({
-    dplyr::filter(reviews, submission == submission()) %>%
+    dplyr::filter(reviews, .data$form_data_id == submission_id()) %>%
       dplyr::select(.data$section, .data$score, .data$scorer, .data$comments)
   })
 

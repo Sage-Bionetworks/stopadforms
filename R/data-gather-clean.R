@@ -18,17 +18,18 @@ get_submissions <- function(syn, group, statuses,
       state_filter = x,
       group = group
     )
-  }) %>%
+  })
+  if (all(is.null(unlist(submissions)))) {
+    return(NULL)
+  }
+  submissions <- submissions  %>%
     purrr::compact() %>% # Removes NAs
     purrr::reduce(dplyr::full_join, by = "variables")
-
-  if (!is.null(submissions)) {
-    submissions <- make_clean_table(
-      submissions,
-      section_lookup_table,
-      variable_lookup_table
-    )
-  }
+  submissions <- make_clean_table(
+    submissions,
+    section_lookup_table,
+    variable_lookup_table
+  )
   submissions
 }
 
@@ -45,6 +46,7 @@ get_submissions <- function(syn, group, statuses,
 make_clean_table <- function(data, section_lookup_table,
                              variable_lookup_table) {
   data <- synapseforms::make_tidier_table(data)
+  data <- dplyr::left_join(data, add_friendly_names(data), by = "form_data_id")
   data <- data[!is.na(data$response), ]
   data <- dplyr::left_join(data, section_lookup_table, by = "section")
   data <- clean_experiment_variables(data)
@@ -54,10 +56,7 @@ make_clean_table <- function(data, section_lookup_table,
   data$label[na_labels] <- data$variable[na_labels]
   na_steps <- which(is.na(data$step))
   data$step[na_steps] <- data$section[na_steps]
-  # For now, it would be easier to put a "fake" column for
-  # submission name until we get user-friendly names.
-  # Currently considering form_data_id the name.
-  data <- tibble::add_column(data, submission = data$form_data_id)
+  # Only need nice, curated table
   data <- data[c(
     "form_data_id",
     "submission",
@@ -131,12 +130,9 @@ clean_experiment_variables <- function(data) {
   data$step <- as.character(data$step)
   data$variable <- as.character(data$variable)
   # No longer need the main_variable and sub_variable columns
-  data <- data[
-    c("form_data_id", "step", "section", "variable", "response")
-  ]
+  data <- data[, -which(names(data) %in% c("main_variable", "sub_variable"))]
   data
 }
-
 #' Change logical responses to yes/no
 #'
 #' Change TRUE/FALSE responses to be yes/no.
@@ -148,4 +144,38 @@ change_logical_responses <- function(data) {
   data$response[true_indices] <- "Yes"
   data$response[false_indices] <- "No"
   data
+}
+
+#' Add user-friendly submission name
+#'
+#' Add a user-friendly submission name column in the
+#' form of the submitter's last name - the
+#' compound. Note that these are not guaranteed to be
+#' unique and submissions should be referred to by their
+#' form_data_id.
+#'
+#' @inheritParams clean_experiment_variables
+#' @return List of submission names
+add_friendly_names <- function(data) {
+  submission_ids <- synapseforms::get_submission_ids(data)
+  friendly_names <- purrr::map(
+    submission_ids,
+    function(x) {
+      last_name <- data$response[intersect(
+        which(data$form_data_id == x),
+        which(data$variable == "last_name")
+      )]
+      compound_name <- data$response[intersect(
+        which(data$form_data_id == x),
+        which(data$variable == "compound_name")
+      )]
+      name <- glue::glue("{last_name} - {compound_name}")
+      name
+    }
+  )
+  names_df <- tibble::tibble(
+    submission = as.character(friendly_names),
+    form_data_id = submission_ids
+  )
+  names_df
 }
