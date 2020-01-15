@@ -74,19 +74,23 @@ mod_panel_section_ui <- function(id) {
 #' @keywords internal
 mod_panel_section_server <- function(input, output, session, synapse, syn,
                                      reviews_table, submissions_table) {
+  ## Load reviews
+  reviews <- pull_reviews_table(syn, reviews_table)
+
   submission_id <- reactive({
     input$submission
   })
   submission_name <- reactive({
-    reviews$submission[reviews$form_data_id == input$submission][1]
+    req(reviews)
+    if (input$submission != "") {
+      reviews$submission[reviews$form_data_id == input$submission][1]
+    }
   })
 
-  ## Load reviews
-  reviews <- pull_reviews_table(syn, reviews_table)
   updateSelectInput(
     session = getDefaultReactiveDomain(),
     "submission",
-    choices = get_submission_list(reviews)
+    choices = c("", get_submission_list(reviews))
   )
   show_review_table(input, output, reviews, submission_id)
 
@@ -97,7 +101,7 @@ mod_panel_section_server <- function(input, output, session, synapse, syn,
         session = getDefaultReactiveDomain(),
         "submission",
         choices = get_submission_list(reviews),
-        selected = submission()
+        selected = submission_id()
       )
       show_review_table(input, output, reviews, submission_id)
     })
@@ -108,6 +112,9 @@ mod_panel_section_server <- function(input, output, session, synapse, syn,
     dccvalidator::with_busy_indicator_server("submit", {
       if (nchar(input$internal_comments) > 500 || nchar(input$external_comments) > 500) { # nolint
         stop("Please limit comments to 500 characters")
+      }
+      if (input$submission == "") {
+        stop("Please select a submission")
       }
       result <- readr::read_csv(
         syn$tableQuery(
@@ -163,9 +170,10 @@ pull_reviews_table <- function(syn, reviews_table) {
 #' @param submission_id Reactive shiny object containing submission id
 #'   accessible via `submission()`.
 #' @keywords internal
+#' @importFrom rlang .data
 show_review_table <- function(input, output, reviews, submission_id) {
   to_show <- reactive({
-    dplyr::filter(reviews, form_data_id == submission_id()) %>%
+    dplyr::filter(reviews, .data$form_data_id == submission_id()) %>%
       dplyr::select(.data$section, .data$score, .data$scorer, .data$comments)
   })
 
