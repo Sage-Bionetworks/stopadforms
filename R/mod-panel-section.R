@@ -125,8 +125,8 @@ mod_panel_section_server <- function(input, output, session, synapse, syn,
       )
       if (nrow(result) == 0) {
         new_row <- data.frame(
-          formDataId = submission_id,
-          submission = submission_name,
+          formDataId = submission_id(),
+          submission = submission_name(),
           scorer = syn$getUserProfile()$ownerId,
           overall_score = input$overall_score,
           internal_comment = input$internal_comments,
