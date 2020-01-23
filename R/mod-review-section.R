@@ -56,10 +56,16 @@ mod_review_section_ui <- function(id) {
       column(
         4,
         offset = 5,
-        numericInput(
+        selectInput(
           inputId = ns("section_score"),
           label = "Score",
-          value = 1
+          choices = c(
+            "None" = 0,
+            "Poor" = 0.1,
+            "Fair" = 0.25,
+            "Good" = 0.85,
+            "Excellent" = 1
+          )
         ),
         textAreaInput(
           inputId = ns("section_comments"),
