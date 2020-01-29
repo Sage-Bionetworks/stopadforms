@@ -9,10 +9,10 @@
 #'   `reticulate::import("synapseclient")`)
 #' @param syn Synapse client object (e.g. output of `synapse$Synapse()`)
 #' @param reviews_table Synapse table that stores the scores and comments
-#' @param section_lookup_table Dataframe with columns "section" and
-#'   "step" used for user-friendly section names
-#' @param variable_lookup_table Dataframe with columns "variable" and
-#'   "label" used for user-friendly variable names
+#' @param lookup_table Dataframe with columns "section",
+#'   "step", "variable" , and "label" used for user-friendly section and
+#'   variable display. "step" maps desired "section" names. "label" maps
+#'   desired "variable" names.
 #'
 #' @rdname mod_review_section
 #'
@@ -85,15 +85,13 @@ mod_review_section_ui <- function(id) {
 #' @rdname mod_review_section
 #' @keywords internal
 mod_review_section_server <- function(input, output, session, synapse, syn,
-                                      reviews_table, section_lookup_table,
-                                      variable_lookup_table) {
+                                      reviews_table, lookup_table) {
   # Get submission data in nice table for viewing
   sub_data <- get_submissions(
     syn,
     group = 9,
     statuses = "SUBMITTED_WAITING_FOR_REVIEW",
-    section_lookup_table = section_lookup_table,
-    variable_lookup_table = variable_lookup_table
+    lookup_table = lookup_table
   )
 
   updateSelectInput(

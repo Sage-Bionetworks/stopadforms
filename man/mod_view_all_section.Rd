@@ -14,8 +14,7 @@ mod_view_all_section_server(
   synapse,
   syn,
   group,
-  section_lookup_table,
-  variable_lookup_table
+  lookup_table
 )
 }
 \arguments{
@@ -32,11 +31,10 @@ mod_view_all_section_server(
 
 \item{syn}{Synapse client object (e.g. output of `synapse$Synapse()`)}
 
-\item{section_lookup_table}{Dataframe with columns "section" and
-"step" used for user-friendly section names}
-
-\item{variable_lookup_table}{Dataframe with columns "variable" and
-"label" used for user-friendly variable names}
+\item{lookup_table}{Dataframe with columns "section",
+"step", "variable" , and "label" used for user-friendly section and
+variable display. "step" maps desired "section" names. "label" maps
+desired "variable" names.}
 }
 \description{
 View and search among all submissions
