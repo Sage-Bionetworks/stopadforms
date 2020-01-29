@@ -43,7 +43,7 @@ get_submissions <- function(syn, group, statuses, lookup_table) {
   ## Remove metadata section
   metadata_indices <- which(all_subs$section == "metadata")
   if (length(metadata_indices) > 0) {
-    all_subs <- all_subs[-metadata_indices, ] 
+    all_subs <- all_subs[-metadata_indices, ]
   }
   ## Get mapped steps and labels appended with experiment number on step
   all_subs <- map_sections_variables(all_subs, lookup_table)

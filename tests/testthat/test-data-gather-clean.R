@@ -41,7 +41,3 @@ test_that("change_logical_responses() fixes responses to yes/no", {
   res <- change_logical_responses(data)
   expect_equal(res$response, c("No", "Yes", "Yes", "No"))
 })
-
-test_that("", {
-  
-})
