@@ -41,3 +41,87 @@ test_that("change_logical_responses() fixes responses to yes/no", {
   res <- change_logical_responses(data)
   expect_equal(res$response, c("No", "Yes", "Yes", "No"))
 })
+
+## Sample JSON data to test with
+json <- '
+{
+  "pk_in_vitro": {
+    "permeability": "super permeable"
+  },
+  "binding": null,
+  "chronic_dosing": {
+    "experiments": [
+      {
+        "age_range": null,
+        "dose_range": null,
+        "name": "my experiment 1",
+        "species": "mouse",
+        "strain": "APP/PS1",
+        "sex": "both",
+        "route": [
+          "sublingual",
+          "injection",
+          "transdermal"
+        ]
+      },
+      {
+        "age_range": null,
+        "dose_range": null,
+        "name": "my experiment 2",
+        "species": "mouse",
+        "strain": "APP/PS1",
+        "sex": "both",
+        "route": [
+          "oral",
+          "injection",
+          "transdermal",
+          "formulated_in_food"
+        ]
+      }
+    ]
+  }
+}
+'
+## Convert to list
+dat_list <- jsonlite::fromJSON(json, simplifyDataFrame = FALSE)
+
+test_that("create_table_by_sections creates rows for each response", {
+  res <- create_table_by_sections(
+    dat_list[["pk_in_vitro"]],
+    names(dat_list[["pk_in_vitro"]])
+  )
+  expect_true(inherits(res, "data.frame"))
+  expect_true(nrow(res) == 1)
+})
+
+test_that("create_table_by_sections returns NULL if no data", {
+  res <- create_table_by_sections(
+    dat_list[["binding"]],
+    names(dat_list[["binding"]])
+  )
+  expect_null(res)
+})
+
+test_that("create_table_by_sections gives experiments a number", {
+  res <- create_table_by_sections(
+    dat_list[["chronic_dosing"]],
+    names(dat_list[["chronic_dosing"]])
+  )
+  expect_equal(range(res$exp_num), c(1, 2))
+})
+
+test_that("create_table_by_sections returns multiple selections from responses", {
+  res <- create_table_by_sections(
+    dat_list[["chronic_dosing"]],
+    names(dat_list[["chronic_dosing"]])
+  )
+  routes <- res[res$variable == "route", ]
+  expect_equal(
+    routes[routes$exp_num == 1, "response"][[1]][[1]],
+    c("sublingual", "injection", "transdermal")
+  )
+  expect_equal(
+    routes[routes$exp_num == 2, "response"][[1]][[1]],
+    c("oral", "injection", "transdermal", "formulated_in_food")
+  )
+})
