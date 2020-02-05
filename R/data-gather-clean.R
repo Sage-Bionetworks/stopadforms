@@ -65,7 +65,7 @@ get_submissions <- function(syn, group, statuses, lookup_table) {
 #'
 #' Create table by going through each section.
 #'
-#' @param data Submission list from JSON
+#' @param data A list containing data from one section of a submission
 #' @param section The section name
 #' @param unnest TRUE to unnest the responses; FALSE to have the responses
 #'   nested in a list
