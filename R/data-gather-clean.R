@@ -28,7 +28,7 @@ get_submissions <- function(syn, group, statuses, lookup_table) {
     names(sub_list),
     function(filename, data_id) {
       data <- jsonlite::fromJSON(filename, simplifyVector = FALSE)
-      sub <- purrr::imap_dfr(data, create_table_by_sections, TRUE)
+      sub <- purrr::imap_dfr(data, create_table_by_sections)
       sub <- tibble::add_column(sub, form_data_id = data_id)
       # Form submission name
       user_name <- sub$response[which(sub$variable == "last_name")]
@@ -62,15 +62,14 @@ get_submissions <- function(syn, group, statuses, lookup_table) {
   all_subs
 }
 
-#' Create table by sections
+#' Create table for a section
 #'
-#' Create table by going through each section.
+#' Create table for a section. Nested lists in the data will
+#' be unnested into separate rows.
 #'
 #' @param data A list containing data from one section of a submission
 #' @param section The section name
-#' @param unnest TRUE to unnest the responses; FALSE to have the responses
-#'   nested in a list
-create_table_by_sections <- function(data, section, unnest = FALSE) {
+create_table_by_sections <- function(data, section) {
   # If no data, return NULL
   if (length(data) == 0) {
     return(NULL)
@@ -84,8 +83,7 @@ create_table_by_sections <- function(data, section, unnest = FALSE) {
         create_table_from_values(
           data = data,
           section = section,
-          exp_num = index,
-          unnest = unnest
+          exp_num = index
         )
       }
     )
@@ -94,8 +92,7 @@ create_table_by_sections <- function(data, section, unnest = FALSE) {
     # from the section
     dat <- create_table_from_values(
       data = data,
-      section = section,
-      unnest = unnest
+      section = section
     )
   }
   dat
@@ -108,22 +105,13 @@ create_table_by_sections <- function(data, section, unnest = FALSE) {
 #'
 #' @inheritParams create_table_by_sections
 #' @param exp_num Numeric experiment number
-create_table_from_values <- function(data, section, exp_num = NA, unnest) {
-  if (isTRUE(unnest)) {
-    tibble::tibble(
-      section = section,
-      exp_num = exp_num,
-      variable = names(unlist(data)),
-      response = as.character(unlist(data))
-    )
-  } else {
-    tibble::tibble(
-      section = section,
-      exp_num = exp_num,
-      variable = names(data),
-      response = data
-    )
-  }
+create_table_from_values <- function(data, section, exp_num = NA) {
+  tibble::tibble(
+    section = section,
+    exp_num = exp_num,
+    variable = names(unlist(data)),
+    response = as.character(unlist(data))
+  )
 }
 
 #' Change logical responses
