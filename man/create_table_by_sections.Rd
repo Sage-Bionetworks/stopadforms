@@ -2,18 +2,16 @@
 % Please edit documentation in R/data-gather-clean.R
 \name{create_table_by_sections}
 \alias{create_table_by_sections}
-\title{Create table by sections}
+\title{Create table for a section}
 \usage{
-create_table_by_sections(data, section, unnest = FALSE)
+create_table_by_sections(data, section)
 }
 \arguments{
-\item{data}{Submission list from JSON}
+\item{data}{A list containing data from one section of a submission}
 
 \item{section}{The section name}
-
-\item{unnest}{TRUE to unnest the responses; FALSE to have the responses
-nested in a list}
 }
 \description{
-Create table by going through each section.
+Create table for a section. Nested lists in the data will
+be unnested into separate rows.
 }

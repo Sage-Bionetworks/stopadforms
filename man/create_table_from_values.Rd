@@ -4,17 +4,14 @@
 \alias{create_table_from_values}
 \title{Create a tibble from the values in section}
 \usage{
-create_table_from_values(data, section, exp_num = NA, unnest)
+create_table_from_values(data, section, exp_num = NA)
 }
 \arguments{
-\item{data}{Submission list from JSON}
+\item{data}{A list containing data from one section of a submission}
 
 \item{section}{The section name}
 
 \item{exp_num}{Numeric experiment number}
-
-\item{unnest}{TRUE to unnest the responses; FALSE to have the responses
-nested in a list}
 }
 \description{
 Create a tibble with section name, experiment number, variables, and
