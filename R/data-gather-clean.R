@@ -45,7 +45,8 @@ get_submissions <- function(syn, group, statuses, lookup_table) {
   if (length(metadata_indices) > 0) {
     all_subs <- all_subs[-metadata_indices, ]
   }
-  ## Get mapped steps and labels appended with experiment number on step
+  ## Add columns 'step' and 'label', which contain user-friendly display names
+  ## (including the experiment number) for the sections and variables
   all_subs <- map_sections_variables(all_subs, lookup_table)
   ## Fix logical responses
   all_subs <- change_logical_responses(all_subs)
