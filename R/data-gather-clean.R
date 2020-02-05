@@ -4,178 +4,179 @@
 #'
 #' @inheritParams mod_review_section_server
 #' @param statuses A character vector of statuses to
-#'   include from the set: "Accepted", "Rejected",
-#'   "In Review".
+#'   include from the set: `SUBMITTED_WAITING_FOR_REVIEW`,
+#'   `ACCEPTED`, `REJECTED`.
 #' @param group The number for a specific Synapse forms group.
-get_submissions <- function(syn, group, statuses,
-                            section_lookup_table, variable_lookup_table) {
+get_submissions <- function(syn, group, statuses, lookup_table) {
   if (is.null(statuses)) {
     return(NULL)
   }
-  submissions <- purrr::map(statuses, function(x) {
-    synapseforms::download_all_and_get_table(
+  sub_list <- purrr::flatten(purrr::map(statuses, function(x) {
+    synapseforms::download_all_submissions_temp(
       syn = syn,
       state_filter = x,
       group = group
     )
-  })
-  if (all(is.null(unlist(submissions)))) {
+  }))
+  if (all(is.null(unlist(sub_list)))) {
     return(NULL)
   }
-  submissions <- submissions  %>%
-    purrr::compact() %>% # Removes NAs
-    purrr::reduce(dplyr::full_join, by = "variables")
-  submissions <- make_clean_table(
-    submissions,
-    section_lookup_table,
-    variable_lookup_table
-  )
-  submissions
-}
 
-#' Make clean submissions table
-#'
-#' Make submissions table clean by fixing experiment
-#' numbering and adding in user-friendly step and label
-#' columns instead of json variable styled section and
-#' variable columns.
-#'
-#' @keywords internal
-#' @inheritParams get_submissions
-#' @inheritParams clean_experiment_variables
-make_clean_table <- function(data, section_lookup_table,
-                             variable_lookup_table) {
-  data <- synapseforms::make_tidier_table(data)
-  data <- dplyr::left_join(data, add_friendly_names(data), by = "form_data_id")
-  data <- data[!is.na(data$response), ]
-  data <- dplyr::left_join(data, section_lookup_table, by = "section")
-  data <- clean_experiment_variables(data)
-  data <- dplyr::left_join(data, variable_lookup_table, by = "variable")
-  # Some labels/steps will be blank if form changes or not mapped
-  na_labels <- which(is.na(data$label))
-  data$label[na_labels] <- data$variable[na_labels]
-  na_steps <- which(is.na(data$step))
-  data$step[na_steps] <- data$section[na_steps]
-  # Only need nice, curated table
-  data <- data[c(
-    "form_data_id",
+  ## Main table creation, along with submission name
+  all_subs <- purrr::map2_dfr(
+    sub_list,
+    names(sub_list),
+    function(filename, data_id) {
+      data <- jsonlite::fromJSON(filename, simplifyVector = FALSE)
+      sub <- purrr::imap_dfr(data, create_table_by_sections)
+      sub <- tibble::add_column(sub, form_data_id = data_id)
+      # Form submission name
+      user_name <- sub$response[which(sub$variable == "last_name")]
+      compound_name <- sub$response[which(sub$variable == "compound_name")]
+      sub <- tibble::add_column(
+        sub,
+        submission = glue::glue("{user_name} - {compound_name}")
+      )
+      sub
+    }
+  )
+  ## Remove metadata section
+  metadata_indices <- which(all_subs$section == "metadata")
+  if (length(metadata_indices) > 0) {
+    all_subs <- all_subs[-metadata_indices, ]
+  }
+  ## Add columns 'step' and 'label', which contain user-friendly display names
+  ## (including the experiment number) for the sections and variables
+  all_subs <- map_sections_variables(all_subs, lookup_table)
+  ## Fix logical responses
+  all_subs <- change_logical_responses(all_subs)
+  ## Don't need all the columns
+  all_subs <- all_subs[, c(
     "submission",
+    "form_data_id",
     "step",
     "label",
     "response"
   )]
-  data <- change_logical_responses(data)
-  data
+
+  all_subs
 }
 
-#' Clean experiment variables
+#' Create table for a section
 #'
-#' Multiple experiments lead to `variable`s with names of the
-#' form "age_range1", "age_range2". This will remove the number at
-#' the end of `variable` and append to the `step` name.
+#' Create table for a section. Nested lists in the data will
+#' be unnested into separate rows.
 #'
-#' @param data The submission data in the form given by
-#'   [synapseforms::make_tidier_table], plus columns step and section.
-clean_experiment_variables <- function(data) {
-  # Basic section can have multiple routes, but if split first,
-  # these ones won't get messed up due to not being tertiary to section.
-  data <- tidyr::separate(
-    data,
-    col = "variable",
-    sep = "[.]",
-    into = c("main_variable", "sub_variable"),
-    remove = FALSE,
-    extra = "merge",
-    fill = "right"
-  )
-  num_list <- purrr::map(
-    data$sub_variable,
-    function(x) {
-      last_num <- unlist(stringr::str_extract(x, "[:digit:]+$"))
-      if (length(last_num) > 0 && !is.na(last_num)) {
-        # If the variable contains "d50", then is most likely ld50 or ed50
-        if (stringr::str_detect(x, "^(ld|ed)50")) {
-          if (as.numeric(last_num) > 50) {
-            # Must be multiple experiments
-            last_num <- stringr::str_replace(last_num, "^50", "")
-          } else {
-            # Single experiment; signal no name change
-            last_num <- NA
-          }
-        }
-      } else {
-        # Must not have digits
-        last_num <- NA
+#' @param data A list containing data from one section of a submission
+#' @param section The section name
+create_table_by_sections <- function(data, section) {
+  # If no data, return NULL
+  if (length(data) == 0) {
+    return(NULL)
+  } else if (length(names(data)) == 1 && names(data) == "experiments") {
+    # If "experiments" is the only element, we need to go deepr to extract
+    # the info for each experiment separately. The section name needs to
+    # have a number to differentiate.
+    dat <- purrr::imap_dfr(
+      data[["experiments"]],
+      function(data, index) {
+        create_table_from_values(
+          data = data,
+          section = section,
+          exp_num = index
+        )
       }
-      last_num
-    }
-  )
-  # Append the experiment number to the step
-  data$step <- purrr::map2(data$step, num_list, function(x, y) {
-    if (!is.na(y)) {
-      glue::glue("{x} [{y}]")
-    } else {
-      x
-    }
-  })
-  # Remove the experiment number from the variable
-  data$variable <- purrr::map2(data$variable, num_list, function(x, y) {
-    if (!is.na(y)) {
-      stringr::str_replace(x, glue::glue("{y}$"), "")
-    } else {
-      x
-    }
-  })
-  # Fix list column problem
-  data$step <- as.character(data$step)
-  data$variable <- as.character(data$variable)
-  # No longer need the main_variable and sub_variable columns
-  data <- data[, -which(names(data) %in% c("main_variable", "sub_variable"))]
-  data
+    )
+  } else {
+    # If the section does not contain separate experiments, return the data
+    # from the section
+    dat <- create_table_from_values(
+      data = data,
+      section = section
+    )
+  }
+  dat
 }
-#' Change logical responses to yes/no
+
+#' Create a tibble from the values in section
 #'
-#' Change TRUE/FALSE responses to be yes/no.
+#' Create a tibble with section name, experiment number, variables, and
+#' response values.
 #'
-#' @inheritParams clean_experiment_variables
+#' @inheritParams create_table_by_sections
+#' @param exp_num Numeric experiment number
+create_table_from_values <- function(data, section, exp_num = NA) {
+  tibble::tibble(
+    section = section,
+    exp_num = exp_num,
+    variable = names(unlist(data)),
+    response = as.character(unlist(data))
+  )
+}
+
+#' Change logical responses
+#'
+#' Change logical responses TRUE/FALSE to Yes/No. Additionally, need to handle
+#' the variable "is_solution" which sometimes has 0/1 instead of TRUE/FALSE.
+#'
+#' @param data Dataframe with response column and variable column.
 change_logical_responses <- function(data) {
-  true_indices <- which(data$response == "TRUE")
-  false_indices <- which(data$response == "FALSE")
-  data$response[true_indices] <- "Yes"
-  data$response[false_indices] <- "No"
+  false_responses <- c(
+    which(data$response == "FALSE"),
+    which(data$response[which(data$variable == "is_solution")] == "0")
+  )
+  true_responses <- c(
+    which(data$response == "TRUE"),
+    which(data$response[which(data$variable == "is_solution")] == "1")
+  )
+  if (length(false_responses) > 0) {
+    data$response[false_responses] <- "No"
+  }
+  if (length(true_responses) > 0) {
+    data$response[true_responses] <- "Yes"
+  }
   data
 }
 
-#' Add user-friendly submission name
+#' Append user-friendly section and variable names
 #'
-#' Add a user-friendly submission name column in the
-#' form of the submitter's last name - the
-#' compound. Note that these are not guaranteed to be
-#' unique and submissions should be referred to by their
-#' form_data_id.
+#' Appends columns "step" and "label", which corresponds with "section" and
+#' "variable". Map via lookup_table and fix missing step/label. Appends
+#' the experiment number to the correct step.
 #'
-#' @inheritParams clean_experiment_variables
-#' @return List of submission names
-add_friendly_names <- function(data) {
-  submission_ids <- synapseforms::get_submission_ids(data)
-  friendly_names <- purrr::map(
-    submission_ids,
-    function(x) {
-      last_name <- data$response[intersect(
-        which(data$form_data_id == x),
-        which(data$variable == "last_name")
-      )]
-      compound_name <- data$response[intersect(
-        which(data$form_data_id == x),
-        which(data$variable == "compound_name")
-      )]
-      name <- glue::glue("{last_name} - {compound_name}")
+#' @param data Dataframe with columns "section", "variable", and "exp_num".
+#' @inheritParams get_submissions
+map_sections_variables <- function(data, lookup_table) {
+  ## Add on the user-friendly names for variables/sections
+  data <- dplyr::left_join(
+    data,
+    lookup_table,
+    by = c("variable", "section")
+  )
+  ## Fix variables/sections that don't have mapping
+  ## Use variables, as is
+  na_labels <- is.na(data$label)
+  data$label[na_labels] <- data$variable[na_labels]
+  ## Figure out section name and use corresponding name from lookup_table
+  na_steps <- which(is.na(data$step))
+  for (index in na_steps) {
+    section_name <- data$section[index]
+    step_name <- unique(
+      lookup_table$step[which(lookup_table$section == section_name)]
+    )
+    data$step[index] <- step_name
+  }
+  ## Append experiment numbers on step names
+  appended_steps <- purrr::map2(
+    data$step,
+    data$exp_num,
+    function(name, num) {
+      if (!is.na(num)) {
+        name <- glue::glue("{name} [{num}]")
+      }
       name
     }
   )
-  names_df <- tibble::tibble(
-    submission = as.character(friendly_names),
-    form_data_id = submission_ids
-  )
-  names_df
+  data$step <- unlist(appended_steps)
+  data
 }

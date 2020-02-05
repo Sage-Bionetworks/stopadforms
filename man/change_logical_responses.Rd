@@ -2,14 +2,14 @@
 % Please edit documentation in R/data-gather-clean.R
 \name{change_logical_responses}
 \alias{change_logical_responses}
-\title{Change logical responses to yes/no}
+\title{Change logical responses}
 \usage{
 change_logical_responses(data)
 }
 \arguments{
-\item{data}{The submission data in the form given by
-[synapseforms::make_tidier_table], plus columns step and section.}
+\item{data}{Dataframe with response column and variable column.}
 }
 \description{
-Change TRUE/FALSE responses to be yes/no.
+Change logical responses TRUE/FALSE to Yes/No. Additionally, need to handle
+the variable "is_solution" which sometimes has 0/1 instead of TRUE/FALSE.
 }

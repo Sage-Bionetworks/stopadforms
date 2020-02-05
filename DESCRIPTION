@@ -22,6 +22,7 @@ Imports:
     dplyr,
     glue,
     golem,
+    jsonlite,
     magrittr,
     purrr,
     reactable,

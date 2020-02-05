@@ -19,14 +19,10 @@ app_server <- function(input, output, session) {
     syn$login(sessionToken = input$cookie)
 
     ## Lookup tables for variables
-    section_lookup <- syn$get("syn21464968")
-    section_lookup_table <- utils::read.csv(
-      section_lookup$path,
-      stringsAsFactors = FALSE
-    )
-    variable_lookup <- syn$get("syn21464969")
-    variable_lookup_table <- utils::read.csv(
-      variable_lookup$path,
+    ## Used in giving user-friendly labels on variables/sections
+    lookup <- syn$get("syn21557275")
+    lookup_table <- utils::read.csv(
+      lookup$path,
       stringsAsFactors = FALSE
     )
 
@@ -37,8 +33,7 @@ app_server <- function(input, output, session) {
       synapse = synapse,
       syn = syn,
       reviews_table = "syn21314955",
-      section_lookup_table = section_lookup_table,
-      variable_lookup_table = variable_lookup_table
+      lookup_table = lookup_table
     )
 
     callModule(
@@ -56,8 +51,7 @@ app_server <- function(input, output, session) {
       synapse = synapse,
       syn = syn,
       group = 9,
-      section_lookup_table = section_lookup_table,
-      variable_lookup_table = variable_lookup_table
+      lookup_table = lookup_table
     )
   })
 }

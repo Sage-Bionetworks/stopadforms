@@ -55,8 +55,7 @@ mod_view_all_section_ui <- function(id) {
 #' @rdname mod_view_all_section
 #' @keywords internal
 mod_view_all_section_server <- function(input, output, session, synapse, syn,
-                                        group, section_lookup_table,
-                                        variable_lookup_table) {
+                                        group, lookup_table) {
 
   observeEvent(input$select_status, {
     dccvalidator::with_busy_indicator_server("select_status", {
@@ -64,14 +63,11 @@ mod_view_all_section_server <- function(input, output, session, synapse, syn,
           syn,
           group,
           input$status,
-          section_lookup_table,
-          variable_lookup_table
+          lookup_table
         )
         if (is.null(submissions)) {
           stop("No submissions found with requested status(es)")
         }
-        # Remove metadata sections
-        submissions <- submissions[-which(submissions$step == "metadata"), ]
         output$submissions <- reactable::renderReactable({
           reactable::reactable(
             submissions,

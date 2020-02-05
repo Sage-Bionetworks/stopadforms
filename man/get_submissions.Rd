@@ -4,13 +4,7 @@
 \alias{get_submissions}
 \title{Get the submissions based on status}
 \usage{
-get_submissions(
-  syn,
-  group,
-  statuses,
-  section_lookup_table,
-  variable_lookup_table
-)
+get_submissions(syn, group, statuses, lookup_table)
 }
 \arguments{
 \item{syn}{Synapse client object (e.g. output of `synapse$Synapse()`)}
@@ -18,14 +12,13 @@ get_submissions(
 \item{group}{The number for a specific Synapse forms group.}
 
 \item{statuses}{A character vector of statuses to
-include from the set: "Accepted", "Rejected",
-"In Review".}
+include from the set: `SUBMITTED_WAITING_FOR_REVIEW`,
+`ACCEPTED`, `REJECTED`.}
 
-\item{section_lookup_table}{Dataframe with columns "section" and
-"step" used for user-friendly section names}
-
-\item{variable_lookup_table}{Dataframe with columns "variable" and
-"label" used for user-friendly variable names}
+\item{lookup_table}{Dataframe with columns "section",
+"step", "variable" , and "label" used for user-friendly section and
+variable display. "step" maps desired "section" names. "label" maps
+desired "variable" names.}
 }
 \description{
 Get the submissions based on status.
