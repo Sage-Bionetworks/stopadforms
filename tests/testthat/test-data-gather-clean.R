@@ -115,13 +115,16 @@ test_that("create_table_by_sections returns multiple selections from responses",
     dat_list[["chronic_dosing"]],
     names(dat_list[["chronic_dosing"]])
   )
-  routes <- res[res$variable == "route", ]
+
+  routes <- res %>%
+    dplyr::filter(stringr::str_detect(variable, "route"))
+
   expect_equal(
-    routes[routes$exp_num == 1, "response"][[1]][[1]],
+    routes[routes$exp_num == 1, "response", drop = TRUE],
     c("sublingual", "injection", "transdermal")
   )
   expect_equal(
-    routes[routes$exp_num == 2, "response"][[1]][[1]],
+    routes[routes$exp_num == 2, "response", drop = TRUE],
     c("oral", "injection", "transdermal", "formulated_in_food")
   )
 })
