@@ -18,40 +18,67 @@ app_server <- function(input, output, session) {
     ## Log in to Synapse
     syn$login(sessionToken = input$cookie)
 
-    ## Lookup tables for variables
-    ## Used in giving user-friendly labels on variables/sections
-    lookup <- syn$get("syn21557275")
-    lookup_table <- utils::read.csv(
-      lookup$path,
-      stringsAsFactors = FALSE
+    ## Check if user is in STOP-AD_Reviewers team
+    team <- "3403721"
+    user <- syn$getUserProfile()
+    memb <- dccvalidator::check_team_membership(
+      teams = team,
+      user = user,
+      syn = syn
     )
+    ## Show message if not in team -- (not using
+    ## dccvalidator::report_unsatisfied_requirements() because it might be
+    ## usefult to view data even if the user isn't certified)
+    if (inherits(memb, "check_fail")) {
+      showModal(
+        modalDialog(
+          title = memb$message,
+          tagList(
+            p(memb$behavior),
+            p("You can request to be added at: "),
+            HTML(glue::glue("<a href=\"https://www.synapse.org/#!Team:{team}\">https://www.synapse.org/#!Team:{team}</a>"))
+          )
+        )
+      )
+    }
 
-    ## Show submission data
-    callModule(
-      mod_review_section_server,
-      "review_section",
-      synapse = synapse,
-      syn = syn,
-      reviews_table = "syn21314955",
-      lookup_table = lookup_table
-    )
+    if (inherits(memb, "check_pass")) {
 
-    callModule(
-      mod_panel_section_server,
-      "panel_section",
-      synapse = synapse,
-      syn = syn,
-      reviews_table = "syn21314955",
-      submissions_table = "syn21447678"
-    )
+      ## Lookup tables for variables
+      ## Used in giving user-friendly labels on variables/sections
+      lookup <- syn$get("syn21557275")
+      lookup_table <- utils::read.csv(
+        lookup$path,
+        stringsAsFactors = FALSE
+      )
 
-    callModule(
-      mod_view_all_section_server,
-      "view_all_section",
-      synapse = synapse,
-      syn = syn,
-      group = 9,
-      lookup_table = lookup_table
-    )
+      ## Show submission data
+      callModule(
+        mod_review_section_server,
+        "review_section",
+        synapse = synapse,
+        syn = syn,
+        reviews_table = "syn21314955",
+        lookup_table = lookup_table
+      )
+
+      callModule(
+        mod_panel_section_server,
+        "panel_section",
+        synapse = synapse,
+        syn = syn,
+        reviews_table = "syn21314955",
+        submissions_table = "syn21447678"
+      )
+
+      callModule(
+        mod_view_all_section_server,
+        "view_all_section",
+        synapse = synapse,
+        syn = syn,
+        group = 9,
+        lookup_table = lookup_table
+      )
+    }
   })
 }
