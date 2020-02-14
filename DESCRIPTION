@@ -30,6 +30,7 @@ Imports:
     reticulate,
     rlang,
     shiny,
+    shinyjs,
     stringr,
     synapseforms,
     tibble,
