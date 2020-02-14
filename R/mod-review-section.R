@@ -180,6 +180,8 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
         stop("Unable to update score: duplicate scores were found for this section from a single reviewer") # nolint
       }
       syn$store(synapse$Table(reviews_table, new_row))
+      shinyjs::reset("section_score")
+      shinyjs::reset("section_comments")
     })
   })
 }
