@@ -72,7 +72,7 @@ mod_panel_section_ui <- function(id) {
 
 #' @rdname mod_panel_section
 #' @keywords internal
-mod_panel_section_server <- function(input, output, session, synapse, syn,
+mod_panel_section_server <- function(input, output, session, synapse, syn, user,
                                      reviews_table, submissions_table) {
   ## Load reviews
   reviews <- pull_reviews_table(syn, reviews_table)
@@ -106,10 +106,17 @@ mod_panel_section_server <- function(input, output, session, synapse, syn,
       show_review_table(input, output, reviews, submission_id)
     })
   })
+  certified <- dccvalidator::check_certified_user(user$ownerId, syn = syn)
 
   ## Save new row to table
   observeEvent(input$submit, {
     dccvalidator::with_busy_indicator_server("submit", {
+      validate(
+        need(
+          inherits(certified, "check_pass"),
+          HTML("You must be a Synapse Certified User to save reviews. <a href=\"https://docs.synapse.org/articles/accounts_certified_users_and_profile_validation.html\">Learn more</a>")
+        )
+      )
       if (nchar(input$internal_comments) > 500 || nchar(input$external_comments) > 500) { # nolint
         stop("Please limit comments to 500 characters")
       }
