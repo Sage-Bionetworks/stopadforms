@@ -85,7 +85,7 @@ mod_review_section_ui <- function(id) {
 #' @rdname mod_review_section
 #' @keywords internal
 mod_review_section_server <- function(input, output, session, synapse, syn,
-                                      reviews_table, lookup_table) {
+                                      user, reviews_table, lookup_table) {
   # Get submission data in nice table for viewing
   sub_data <- get_submissions(
     syn,
@@ -148,10 +148,17 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
       )
     )
   })
+  certified <- dccvalidator::check_certified_user(user$ownerId, syn = syn)
 
   ## Save new row to table
   observeEvent(input$submit, {
     dccvalidator::with_busy_indicator_server("submit", {
+      validate(
+        need(
+          inherits(certified, "check_pass"),
+          HTML("You must be a Synapse Certified User to save reviews. <a href=\"https://docs.synapse.org/articles/accounts_certified_users_and_profile_validation.html\">Learn more</a>")
+        )
+      )
       if (input$submission == "" || input$section == "") {
         stop("Please select a submission and section")
       }
