@@ -77,6 +77,7 @@ mod_view_all_section_server <- function(input, output, session, synapse, syn,
               "prophylactic, symptomatic",
             TRUE ~ response
           )
+        )
         output$submissions <- reactable::renderReactable({
           reactable::reactable(
             submissions,
