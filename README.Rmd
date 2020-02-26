@@ -21,6 +21,14 @@ knitr::opts_chunk$set(
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 <!-- badges: end -->
 
+stopadforms is an R package and Shiny application to allow reviewers to view and
+score submissions to the [STOP-AD Compound Submission Portal](https://stopadportal.synapse.org/#/).
+
+The application is hosted at https://shinypro.synapse.org/users/kwoo/stopadforms/.
+To use it, you must be a member of the
+[STOP-AD_Reviewers Synapse team](https://www.synapse.org/#!Team:3403721) 
+and be logged in to Synapse. To save reviews, you must be a Certified User on
+Synapse.
 
 ## Installation
 
@@ -28,12 +36,15 @@ knitr::opts_chunk$set(
 devtools::install_github("Sage-Bionetworks/stopadforms")
 ```
 
-## Running the application
+## Running the application locally
 
 ```{r show-app, eval = FALSE}
 library("stopadforms")
 run_app()
 ```
+
+See `vignette("deploying-stopadforms", package = "stopadforms")` for information
+on how we deploy the app on the Sage Bionetworks Shiny Pro server.
 
 ---
 
