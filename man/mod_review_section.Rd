@@ -13,6 +13,7 @@ mod_review_section_server(
   session,
   synapse,
   syn,
+  user,
   reviews_table,
   lookup_table
 )

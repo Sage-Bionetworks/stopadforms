@@ -13,6 +13,7 @@ mod_panel_section_server(
   session,
   synapse,
   syn,
+  user,
   reviews_table,
   submissions_table
 )
