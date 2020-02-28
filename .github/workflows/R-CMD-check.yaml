@@ -58,8 +58,8 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           export DEBIAN_FRONTEND=noninteractive
-          apt-get -y update
-          apt-get install -y make python-minimal pandoc pandoc-citeproc git-core openjdk-7-jre-headless libv8-dev libxml2-dev libcurl4-openssl-dev libssl-dev libssh2-1-dev zlib1g-dev
+          sudo apt-get -y update
+          sudo apt-get install -y make python-minimal pandoc pandoc-citeproc git-core openjdk-7-jre-headless libv8-dev libxml2-dev libcurl4-openssl-dev libssl-dev libssh2-1-dev zlib1g-dev
 
       - name: Install dependencies
         run: |
