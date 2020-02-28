@@ -16,6 +16,7 @@ Description: Review and score submissions to the STOP-AD Compound Submission Por
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
+URL: https://github.com/Sage-Bionetworks/stopadforms
 Depends: R (>= 3.4.0)
 Imports:
     dccvalidator (>= 0.0.0.9009),
