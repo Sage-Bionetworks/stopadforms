@@ -10,3 +10,6 @@ $run_dev.*
 ^renv$
 ^renv\.lock$
 ^app\.R$
+^\.github/workflows/R-CMD-check\.yaml$
+^codecov\.yml$
+^\.github/workflows/pr-commands\.yaml$
