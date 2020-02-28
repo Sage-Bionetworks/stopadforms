@@ -56,12 +56,10 @@ jobs:
 
       - name: Install system dependencies
         if: runner.os == 'Linux'
-        env:
-          RHUB_PLATFORM: linux-x86_64-ubuntu-gcc
         run: |
-          Rscript -e "remotes::install_github('r-hub/sysreqs')"
-          sysreqs=$(Rscript -e "cat(sysreqs::sysreq_commands('DESCRIPTION'))")
-          sudo -s eval "$sysreqs"
+          export DEBIAN_FRONTEND=noninteractive
+          apt-get -y update
+          apt-get install -y make python-minimal pandoc pandoc-citeproc git-core openjdk-7-jre-headless libv8-dev libxml2-dev libcurl4-openssl-dev libssl-dev libssh2-1-dev zlib1g-dev
 
       - name: Install dependencies
         run: |
