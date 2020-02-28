@@ -120,10 +120,10 @@
     },
     "cli": {
       "Package": "cli",
-      "Version": "2.0.0",
+      "Version": "2.0.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "f41a3aa27b911750a6526b450d0b8ea4"
+      "Hash": "ff0becff7bfdfe3f75d29aff8f3172dd"
     },
     "clipr": {
       "Package": "clipr",
@@ -249,10 +249,10 @@
     },
     "fansi": {
       "Package": "fansi",
-      "Version": "0.4.0",
+      "Version": "0.4.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "b31d9e5d051553d1177083aeba04b5b9"
+      "Hash": "7fce217eaaf8016e72065e85c73027b5"
     },
     "farver": {
       "Package": "farver",
@@ -284,10 +284,10 @@
     },
     "gh": {
       "Package": "gh",
-      "Version": "1.0.1",
+      "Version": "1.1.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "4da58d15239da30de8c7de088250d3be"
+      "Hash": "89ea5998938d1ad55f035c8a86f96b74"
     },
     "git2r": {
       "Package": "git2r",
@@ -375,10 +375,10 @@
     },
     "jsonlite": {
       "Package": "jsonlite",
-      "Version": "1.6",
+      "Version": "1.6.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "bc5739654d032acf531356e32e0d0f54"
+      "Hash": "84b0ee361e2f78d6b7d670db9471c0c5"
     },
     "knitr": {
       "Package": "knitr",
@@ -452,10 +452,10 @@
     },
     "mime": {
       "Package": "mime",
-      "Version": "0.7",
+      "Version": "0.9",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "f085cb5d1548336cafa5ee7ec56d7e34"
+      "Hash": "e87a35ec73b157552814869f45a63aa3"
     },
     "munsell": {
       "Package": "munsell",
@@ -653,10 +653,10 @@
     },
     "rlang": {
       "Package": "rlang",
-      "Version": "0.4.2",
+      "Version": "0.4.4",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "ff31d958a041593f58ba04fc637d90dd"
+      "Hash": "09a36f36a13436be327dad3d000c8dd3"
     },
     "rmarkdown": {
       "Package": "rmarkdown",
@@ -688,10 +688,10 @@
     },
     "rstudioapi": {
       "Package": "rstudioapi",
-      "Version": "0.10",
+      "Version": "0.11",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "da31c988698b91fdf6a3e2317679d6cb"
+      "Hash": "33a5b27a03da82ac4b1d43268f80088a"
     },
     "scales": {
       "Package": "scales",
@@ -822,10 +822,15 @@
     },
     "usethis": {
       "Package": "usethis",
-      "Version": "1.5.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "30ee6fa315a020d5db6f28adbb7fea83"
+      "Version": "1.5.1.9000",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "usethis",
+      "RemoteUsername": "r-lib",
+      "RemoteRef": "master",
+      "RemoteSha": "2a3d1347e3bee25fbaaca766b42bc93de2de0563",
+      "Hash": "ae44054297aa1fc50abc2436343258e9"
     },
     "utf8": {
       "Package": "utf8",
@@ -897,10 +902,10 @@
     },
     "yaml": {
       "Package": "yaml",
-      "Version": "2.2.0",
+      "Version": "2.2.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "c78bdf1d16bd4ec7ecc86c6986d53309"
+      "Hash": "2826c5d9efb0a88f657c7a679c7106db"
     },
     "yesno": {
       "Package": "yesno",
