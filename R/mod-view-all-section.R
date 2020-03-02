@@ -64,7 +64,14 @@ mod_view_all_section_server <- function(input, output, session, synapse, syn,
           group,
           input$status,
           lookup_table
-        )
+        ) %>%
+          ## Make step an ordered factor
+          dplyr::mutate(
+            step = factor(step, levels = reorder_steps(unique(step)), ordered = TRUE)
+          ) %>%
+          ## Arrange by submission and step
+          dplyr::arrange(submission, step)
+
         if (is.null(submissions)) {
           stop("No submissions found with requested status(es)")
         }

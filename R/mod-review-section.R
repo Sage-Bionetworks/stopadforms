@@ -234,5 +234,5 @@ get_sections <- function(data, submission_id) {
   if (length(metadata_index) > 0) {
     steps <- steps[-metadata_index]
   }
-  steps
+  reorder_steps(steps)
 }
