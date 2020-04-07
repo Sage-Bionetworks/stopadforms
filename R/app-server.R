@@ -44,14 +44,6 @@ app_server <- function(input, output, session) {
 
     if (inherits(memb, "check_pass")) {
 
-      ## Lookup tables for variables
-      ## Used in giving user-friendly labels on variables/sections
-      lookup <- syn$get("syn21557275")
-      lookup_table <- utils::read.csv(
-        lookup$path,
-        stringsAsFactors = FALSE
-      )
-
       ## Show submission data
       callModule(
         mod_review_section_server,
