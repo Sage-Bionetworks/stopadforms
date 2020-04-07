@@ -1,3 +1,3 @@
-if (!identical(Sys.getenv("GITHUB_ACTIONS"), "true") | getRversion() < "4.0.0") {
+if (!identical(Sys.getenv("GITHUB_ACTIONS"), "true")) {
   source("renv/activate.R")
 }
