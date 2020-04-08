@@ -67,10 +67,14 @@ mod_view_all_section_server <- function(input, output, session, synapse, syn,
         ) %>%
           ## Make step an ordered factor
           dplyr::mutate(
-            step = factor(step, levels = reorder_steps(unique(step)), ordered = TRUE)
+            step = factor(
+              .data$step,
+              levels = reorder_steps(unique(.data$step)),
+              ordered = TRUE
+            )
           ) %>%
           ## Arrange by submission and step
-          dplyr::arrange(submission, step)
+          dplyr::arrange(.data$submission, .data$step)
 
         if (is.null(submissions)) {
           stop("No submissions found with requested status(es)")
@@ -80,7 +84,8 @@ mod_view_all_section_server <- function(input, output, session, synapse, syn,
         submissions <- dplyr::mutate(
           submissions,
           response = dplyr::case_when(
-            label == "What is the therapeutic approach?" & response == "both" ~
+            .data$label == "What is the therapeutic approach?" &
+              .data$response == "both" ~
               "prophylactic, symptomatic",
             TRUE ~ response
           )

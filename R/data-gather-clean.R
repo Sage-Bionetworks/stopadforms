@@ -120,22 +120,18 @@ create_table_from_values <- function(data, section, exp_num = NA) {
 #' the variable "is_solution" which sometimes has 0/1 instead of TRUE/FALSE.
 #'
 #' @param data Dataframe with response column and variable column.
+#' @importFrom rlang .data
 change_logical_responses <- function(data) {
-  false_responses <- c(
-    which(data$response == "FALSE"),
-    which(data$response[which(data$variable == "is_solution")] == "0")
+  dplyr::mutate(
+    data,
+    response = dplyr::case_when(
+      .data$response == "FALSE" ~ "No",
+      .data$response == "TRUE" ~ "Yes",
+      .data$variable == "is_solution" & .data$response %in% c("0", "FALSE") ~ "No", # nolint
+      .data$variable == "is_solution" & .data$response %in% c("1", "TRUE") ~ "Yes", # nolint
+      TRUE ~ response
+    )
   )
-  true_responses <- c(
-    which(data$response == "TRUE"),
-    which(data$response[which(data$variable == "is_solution")] == "1")
-  )
-  if (length(false_responses) > 0) {
-    data$response[false_responses] <- "No"
-  }
-  if (length(true_responses) > 0) {
-    data$response[true_responses] <- "Yes"
-  }
-  data
 }
 
 #' Append user-friendly section and variable names

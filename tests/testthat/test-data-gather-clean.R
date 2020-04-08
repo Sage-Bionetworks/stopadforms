@@ -42,6 +42,15 @@ test_that("change_logical_responses() fixes responses to yes/no", {
   expect_equal(res$response, c("No", "Yes", "Yes", "No"))
 })
 
+test_that("change_logical_responses() changes correct rows", {
+  data <- tibble::tibble(
+    variable = c("name", "species", "is_solution", "is_solution"),
+    response = c("foo", "mouse", "0", "1")
+  )
+  res <- change_logical_responses(data)
+  expect_equal(res$response, c("foo", "mouse", "No", "Yes"))
+})
+
 ## Sample JSON data to test with
 json <- '
 {
