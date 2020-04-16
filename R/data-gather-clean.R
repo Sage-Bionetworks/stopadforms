@@ -69,7 +69,7 @@ create_table_from_json_file <- function(filename, data_id) {
   compound_name <- sub[sub$variable == "compound_name", "response", drop = TRUE]
   sub %>%
     dplyr::mutate(form_data_id = data_id) %>%
-    dplyr::mutate(sub = glue::glue("{user_name} - {compound_name}"))
+    dplyr::mutate(submission = glue::glue("{user_name} - {compound_name}"))
 }
 
 #' Create table for a section
