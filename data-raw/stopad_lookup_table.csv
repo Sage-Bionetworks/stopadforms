@@ -16,6 +16,8 @@ Naming,Drug Class,naming,drug_class
 Measurements,Is the compound a solution?,measurements,is_solution
 Measurements,Available compound amount (mg),measurements,compound_availability
 Measurements,Molecular weight (g/mol),measurements,molecular_weight
+Measurements,Concentration (mg/ml),measurements,compound_concentration
+Measurements,Compound Purity,measurements,compound_purity
 Basic Data,Molecular Target,basic,molecular_target
 Basic Data,Mechanism of Action,basic,moa_description
 Basic Data,Therapeutic Indication,basic,therapeutic_indication_description
@@ -25,6 +27,7 @@ Basic Data,Storage Conditions,basic,storage_temperature
 Basic Data,Is the compound water soluble?,basic,water_soluble
 Basic Data,What is the intended route of administration?,basic,route
 Basic Data,Is the drug orally active?,basic,orally_active
+Basic Data,Solubility Limitations,basic,solubility_limitations
 Basic Data,What is the therapeutic approach?,basic,therapeutic_approach
 Binding,Experiment Name,binding,cell_line_binding.name
 Binding,What cell line was used for the binding assay?,binding,cell_line_binding.cell_line
