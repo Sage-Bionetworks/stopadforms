@@ -25,13 +25,15 @@ get_submissions <- function(syn, group, statuses, lookup_table) {
     return(NULL)
   }
 
-  ## Main table creation, along with submission name
-  all_subs <- purrr::map2_dfr(
-    json_file_paths,
-    names(json_file_paths), # this is the form data ID
-    ~ create_table_from_json_file(.x, .y)
+  ## Main table creation, along with submission name. Suppress warnings about
+  ## vectorizing 'glue' attributes.
+  suppressWarnings(
+    all_subs <- purrr::map2_dfr(
+      json_file_paths,
+      names(json_file_paths), # this is the form data ID
+      ~ create_table_from_json_file(.x, .y)
+    )
   )
-
   ## Remove metadata section
   all_subs <- dplyr::filter(all_subs, .data$section != "metadata")
   ## Add columns 'step' and 'label', which contain user-friendly display names
