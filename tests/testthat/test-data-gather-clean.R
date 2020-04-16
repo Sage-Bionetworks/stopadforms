@@ -94,8 +94,8 @@ json <- '
 ## Convert to list
 dat_list <- jsonlite::fromJSON(json, simplifyDataFrame = FALSE)
 
-test_that("create_table_by_sections creates rows for each response", {
-  res <- create_table_by_sections(
+test_that("create_section_table creates rows for each response", {
+  res <- create_section_table(
     dat_list[["pk_in_vitro"]],
     names(dat_list[["pk_in_vitro"]])
   )
@@ -103,24 +103,24 @@ test_that("create_table_by_sections creates rows for each response", {
   expect_true(nrow(res) == 1)
 })
 
-test_that("create_table_by_sections returns NULL if no data", {
-  res <- create_table_by_sections(
+test_that("create_section_table returns NULL if no data", {
+  res <- create_section_table(
     dat_list[["binding"]],
     names(dat_list[["binding"]])
   )
   expect_null(res)
 })
 
-test_that("create_table_by_sections gives experiments a number", {
-  res <- create_table_by_sections(
+test_that("create_section_table gives experiments a number", {
+  res <- create_section_table(
     dat_list[["chronic_dosing"]],
     names(dat_list[["chronic_dosing"]])
   )
   expect_equal(range(res$exp_num), c(1, 2))
 })
 
-test_that("create_table_by_sections returns multiple selections from responses", {
-  res <- create_table_by_sections(
+test_that("create_section_table returns multiple selections from responses", {
+  res <- create_section_table(
     dat_list[["chronic_dosing"]],
     names(dat_list[["chronic_dosing"]])
   )
