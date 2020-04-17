@@ -177,7 +177,7 @@ change_logical_responses <- function(data) {
 #' the experiment number to the correct step.
 #'
 #' @param data Dataframe with columns "section", "variable", and "exp_num".
-#' @inheritParams get_submissions
+#' @inheritParams process_submissions
 map_sections_variables <- function(data, lookup_table) {
   ## First join in section names. This join is done in 2 steps because the
   ## variables sometimes are missing from the lookup table (due to having
