@@ -42,6 +42,9 @@ get_submissions <- function(syn, group, statuses) {
 #' @return A data frame containing the combined responses for all submissions
 #'   provided to the `submissions` argument
 process_submissions <- function(submissions, lookup_table) {
+  if (is.null(submissions)) {
+    stop("No submissions to process", call. = FALSE)
+  }
   ## Main table creation, along with submission name. Suppress warnings about
   ## vectorizing 'glue' attributes.
   suppressWarnings(
