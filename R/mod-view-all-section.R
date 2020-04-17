@@ -62,9 +62,9 @@ mod_view_all_section_server <- function(input, output, session, synapse, syn,
         submissions <- get_submissions(
           syn,
           group,
-          input$status,
-          lookup_table
+          input$status
         ) %>%
+          process_submissions(lookup_table) %>%
           ## Make step an ordered factor
           dplyr::mutate(
             step = factor(

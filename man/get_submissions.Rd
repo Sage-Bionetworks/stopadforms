@@ -4,22 +4,19 @@
 \alias{get_submissions}
 \title{Get the submissions based on status}
 \usage{
-get_submissions(syn, group, statuses, lookup_table)
+get_submissions(syn, group, statuses)
 }
 \arguments{
-\item{syn}{Synapse client object (e.g. output of `synapse$Synapse()`)}
-
 \item{group}{The number for a specific Synapse forms group.}
 
-\item{statuses}{A character vector of statuses to
-include from the set: `SUBMITTED_WAITING_FOR_REVIEW`,
-`ACCEPTED`, `REJECTED`.}
-
-\item{lookup_table}{Dataframe with columns "section",
-"step", "variable" , and "label" used for user-friendly section and
-variable display. "step" maps desired "section" names. "label" maps
-desired "variable" names.}
+\item{statuses}{A character vector of statuses to include from the set:
+`SUBMITTED_WAITING_FOR_REVIEW`, `ACCEPTED`, `REJECTED`.}
+}
+\value{
+A list of file paths to JSON files containing the submissions that
+  have the requested status.
 }
 \description{
-Get the submissions based on status.
+Get the submissions based on status. JSON files are downloaded to a temp
+directory whose path is returned, along with the submission's form data ID.
 }

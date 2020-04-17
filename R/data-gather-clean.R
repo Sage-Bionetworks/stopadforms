@@ -1,14 +1,16 @@
 #' Get the submissions based on status
 #'
-#' Get the submissions based on status.
+#' Get the submissions based on status. JSON files are downloaded to a temp
+#' directory whose path is returned, along with the submission's form data ID.
 #'
-#' @inheritParams mod_review_section_server
-#' @param statuses A character vector of statuses to
-#'   include from the set: `SUBMITTED_WAITING_FOR_REVIEW`,
-#'   `ACCEPTED`, `REJECTED`.
+
+#' @param statuses A character vector of statuses to include from the set:
+#'   `SUBMITTED_WAITING_FOR_REVIEW`, `ACCEPTED`, `REJECTED`.
 #' @param group The number for a specific Synapse forms group.
+#' @return A list of file paths to JSON files containing the submissions that
+#'   have the requested status.
 #' @importFrom rlang .data
-get_submissions <- function(syn, group, statuses, lookup_table) {
+get_submissions <- function(syn, group, statuses) {
   if (is.null(statuses)) {
     return(NULL)
   }
@@ -23,14 +25,29 @@ get_submissions <- function(syn, group, statuses, lookup_table) {
   )
   if (all(is.null(unlist(json_file_paths)))) {
     return(NULL)
+  } else {
+    return(json_file_paths)
   }
+}
 
+#' Process submissions
+#'
+#' Process JSON files into a single table containing all submissions. Cleans up
+#' the data to provide user-friendly variable and section names, and remove the
+#' `metadata` section.
+#'
+#' @param submissions A named list of paths to JSON files, i.e. the output of
+#'   [get_submissions()]. The name of each element should be its form data ID.
+#' @inheritParams mod_review_section_server
+#' @return A data frame containing the combined responses for all submissions
+#'   provided to the `submissions` argument
+process_submissions <- function(submissions, lookup_table) {
   ## Main table creation, along with submission name. Suppress warnings about
   ## vectorizing 'glue' attributes.
   suppressWarnings(
     all_subs <- purrr::map2_dfr(
-      json_file_paths,
-      names(json_file_paths), # this is the form data ID
+      submissions,
+      names(submissions), # this is the form data ID
       ~ create_table_from_json_file(.x, .y)
     )
   )
@@ -52,6 +69,7 @@ get_submissions <- function(syn, group, statuses, lookup_table) {
 
   all_subs
 }
+
 
 #' Create table from JSON file
 #'

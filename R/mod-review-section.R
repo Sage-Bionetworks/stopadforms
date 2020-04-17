@@ -90,9 +90,9 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
   sub_data <- get_submissions(
     syn,
     group = 9,
-    statuses = "SUBMITTED_WAITING_FOR_REVIEW",
-    lookup_table = lookup_table
+    statuses = "SUBMITTED_WAITING_FOR_REVIEW"
   )
+  sub_data <- process_submissions(sub_data, lookup_table)
 
   updateSelectInput(
     session = getDefaultReactiveDomain(),

@@ -8,11 +8,6 @@ map_sections_variables(data, lookup_table)
 }
 \arguments{
 \item{data}{Dataframe with columns "section", "variable", and "exp_num".}
-
-\item{lookup_table}{Dataframe with columns "section",
-"step", "variable" , and "label" used for user-friendly section and
-variable display. "step" maps desired "section" names. "label" maps
-desired "variable" names.}
 }
 \description{
 Appends columns "step" and "label", which corresponds with "section" and
