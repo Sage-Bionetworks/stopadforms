@@ -59,10 +59,6 @@ json <- '
 }
 '
 
-# get_submissions() ------------------------------------------------------------
-
-get_submissions()
-
 # create_section_table() -------------------------------------------------------
 
 # Convert sample JSON to list
