@@ -7,6 +7,7 @@
 #' @param statuses A character vector of statuses to include from the set:
 #'   `SUBMITTED_WAITING_FOR_REVIEW`, `ACCEPTED`, `REJECTED`.
 #' @param group The number for a specific Synapse forms group.
+#' @inheritParams mod_review_section_server
 #' @return A list of file paths to JSON files containing the submissions that
 #'   have the requested status.
 #' @importFrom rlang .data
