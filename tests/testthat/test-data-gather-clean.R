@@ -1,16 +1,5 @@
 context("data-gather-clean.R")
 
-lookup_table <- tibble::tribble(
-  ~section, ~step, ~variable, ~label,
-  "basic", "Basic Data", "age_range_min", "Min of age range",
-  "basic", "Basic Data", "age_range_max", "Max of age range",
-  "naming", "Naming", "last_name", "Last name",
-  "naming", "Naming", "first_name", "First name",
-  "naming", "Naming", "compound_name", "Compound name",
-  "pk_in_vivo", "Pk in Vivo", "name", "Experiment Name",
-  "pk_in_vivo", "Pk in Vivo", "is_solution", "Is compound a solution?"
-)
-
 data1 <- tibble::tibble(
   section = c("basic", "naming", "pk_in_vivo", "pk_in_vivo", "pk_in_vivo"),
   variable = c("age_range_min", "last_name", "name", "route1", "is_solution"),
@@ -25,6 +14,11 @@ json <- '
     "permeability": "super permeable"
   },
   "binding": null,
+  "naming": {
+    "compound_name": "test",
+    "first_name": "Kara",
+    "last_name": "Woo"
+  },
   "chronic_dosing": {
     "experiments": [
       {
@@ -58,6 +52,58 @@ json <- '
   }
 }
 '
+
+# create_table_from_json_file() ------------------------------------------------
+
+test_that("create_table_from_json_file creates (at least) one row per row in lookup table", { # nolint
+  dat <- create_table_from_json_file(
+    json,
+    data_id = "1",
+    lookup_table = lookup_table,
+    complete = TRUE
+  )
+  expect_true(nrow(dat) >= nrow(lookup_table))
+})
+
+test_that("All sections are represented if complete = TRUE", {
+  dat <- create_table_from_json_file(
+    json,
+    data_id = "1",
+    lookup_table = lookup_table,
+    complete = TRUE
+  )
+  expect_true(all(lookup_table$section %in% dat$section))
+})
+
+test_that("create_table_from_json_file creates one row per response if complete = FALSE", { # nolint
+  dat <- create_table_from_json_file(
+    json,
+    data_id = "1",
+    lookup_table = lookup_table,
+    complete = FALSE
+  )
+  expect_equal(nrow(dat), 19)
+})
+
+test_that("Submission is named by user name and compound name", {
+  dat <- create_table_from_json_file(
+    json,
+    data_id = "1",
+    lookup_table = lookup_table,
+    complete = FALSE
+  )
+  expect_true(all(dat$submission == "Woo - test"))
+})
+
+test_that("Submission's data ID is added to data", {
+  dat <- create_table_from_json_file(
+    json,
+    data_id = "1",
+    lookup_table = lookup_table,
+    complete = FALSE
+  )
+  expect_true(all(dat$form_data_id == "1"))
+})
 
 # create_section_table() -------------------------------------------------------
 
