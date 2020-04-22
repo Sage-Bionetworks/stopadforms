@@ -89,12 +89,8 @@ create_table_from_json_file <- function(filename, data_id) {
   sub <- purrr::imap_dfr(data, create_section_table)
 
   ## Add form data ID and sub name
-  user_name <- stats::na.omit(
-    sub[sub$variable == "last_name", "response", drop = TRUE]
-  )
-  compound_name <- stats::na.omit(
-    sub[sub$variable == "compound_name", "response", drop = TRUE]
-  )
+  user_name <- sub[sub$variable == "last_name", "response", drop = TRUE]
+  compound_name <- sub[sub$variable == "compound_name", "response", drop = TRUE]
   sub %>%
     dplyr::mutate(form_data_id = data_id) %>%
     dplyr::mutate(submission = glue::glue("{user_name} - {compound_name}"))
@@ -109,14 +105,9 @@ create_table_from_json_file <- function(filename, data_id) {
 #' @param data A list containing data from one section of a submission
 #' @param section The section name
 create_section_table <- function(data, section) {
-  # If no data for a section, return NA
+  # If no data, return NULL
   if (length(data) == 0) {
-    dat <- tibble::tibble(
-      section = section,
-      exp_num = NA,
-      variable = NA,
-      response = NA
-    )
+    return(NULL)
   } else if (length(names(data)) == 1 && names(data) == "experiments") {
     # If "experiments" is the only element, we need to go deeper to extract the
     # info for each experiment separately. The section name needs to have a
