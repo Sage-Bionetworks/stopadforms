@@ -90,15 +90,15 @@ create_table_from_json_file <- function(filename, data_id, complete = TRUE,
   ## Iterate over list of sections to create data frame
   sub <- purrr::imap_dfr(data, create_section_table)
 
+  ## Add user-friendly display names for the sections and variables
+  sub <- map_sections_variables(sub, lookup_table = lookup_table)
+
   ## Add form data ID and sub name
   user_name <- sub[sub$variable == "last_name", "response", drop = TRUE]
   compound_name <- sub[sub$variable == "compound_name", "response", drop = TRUE]
   sub <- sub %>%
     dplyr::mutate(form_data_id = data_id) %>%
     dplyr::mutate(submission = glue::glue("{user_name} - {compound_name}"))
-
-  ## Add user-friendly display names for the sections and variables
-  sub <- map_sections_variables(sub, lookup_table = lookup_table)
   sub
 }
 
@@ -194,11 +194,19 @@ map_sections_variables <- function(data, lookup_table) {
     unique(lookup_table[, c("section", "step")]),
     by = "section"
   ) %>%
-    ## Then add labels
-    dplyr::left_join(
+    ## Then join in the user-friendly variable names ("label")
+    dplyr::full_join(
       lookup_table[, c("variable", "section", "label")],
       by = c("variable", "section")
-    )
+    ) %>%
+    ## One more join to get step info for sections that were missing from original data
+    dplyr::left_join(
+      unique(lookup_table[, c("section", "step")]),
+      by = "section"
+    ) %>%
+    dplyr::select(-.data$step.x) %>%
+    dplyr::rename(step = .data$step.y)
+
   ## Fix variables/sections that don't have mapping
   ## Use variables, as is
   data <- data %>%
