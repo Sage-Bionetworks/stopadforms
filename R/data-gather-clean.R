@@ -52,14 +52,11 @@ process_submissions <- function(submissions, lookup_table) {
     all_subs <- purrr::map2_dfr(
       submissions,
       names(submissions), # this is the form data ID
-      ~ create_table_from_json_file(.x, .y)
+      ~ create_table_from_json_file(.x, .y, lookup_table = lookup_table)
     )
   )
   ## Remove metadata section
   all_subs <- dplyr::filter(all_subs, .data$section != "metadata")
-  ## Add columns 'step' and 'label', which contain user-friendly display names
-  ## (including the experiment number) for the sections and variables
-  all_subs <- map_sections_variables(all_subs, lookup_table)
   ## Fix logical responses
   all_subs <- change_logical_responses(all_subs)
   ## Don't need all the columns
@@ -81,12 +78,24 @@ process_submissions <- function(submissions, lookup_table) {
 #'
 #' @param filename Path to JSON file
 #' @param data_id Data file handle ID
-create_table_from_json_file <- function(filename, data_id) {
+#' @param complete If `TRUE`, will join in all section and variable names that
+#'   were not provided as part of the submission. If `FALSE`, will only return
+#'   the data that was present in the JSON file.
+#' @inheritParams mod_review_section_server
+create_table_from_json_file <- function(filename, data_id, lookup_table,
+                                        complete = TRUE) {
   ## Load JSON
   data <- jsonlite::fromJSON(filename, simplifyVector = FALSE)
 
   ## Iterate over list of sections to create data frame
   sub <- purrr::imap_dfr(data, create_section_table)
+
+  ## Add user-friendly display names for the sections and variables
+  sub <- map_sections_variables(
+    sub,
+    lookup_table = lookup_table,
+    complete = complete
+  )
 
   ## Add form data ID and sub name
   user_name <- sub[sub$variable == "last_name", "response", drop = TRUE]
@@ -178,7 +187,9 @@ change_logical_responses <- function(data) {
 #'
 #' @param data Dataframe with columns "section", "variable", and "exp_num".
 #' @inheritParams process_submissions
-map_sections_variables <- function(data, lookup_table) {
+#' @inheritParams create_table_from_json_file
+map_sections_variables <- function(data, lookup_table, complete = TRUE) {
+  join_to_use <- ifelse(complete, dplyr::full_join, dplyr::left_join)
   ## First join in section names. This join is done in 2 steps because the
   ## variables sometimes are missing from the lookup table (due to having
   ## numbers appended to them -- e.g. route1, route2). If we join all at once,
@@ -188,22 +199,27 @@ map_sections_variables <- function(data, lookup_table) {
     unique(lookup_table[, c("section", "step")]),
     by = "section"
   ) %>%
-    ## Then add labels
-    dplyr::left_join(
+    ## Then join in the user-friendly variable names ("label")
+    join_to_use(
       lookup_table[, c("variable", "section", "label")],
       by = c("variable", "section")
-    )
-  ## Fix variables/sections that don't have mapping
-  ## Use variables, as is
+    ) %>%
+    ## One more join to get step info for sections that were missing from original data
+    dplyr::left_join(
+      unique(lookup_table[, c("section", "step")]),
+      by = "section"
+    ) %>%
+    dplyr::select(-.data$step.x) %>%
+    dplyr::rename(step = .data$step.y)
+
+  ## Fix variables/sections that don't have mapping by using values from the
+  ## data
   data <- data %>%
     dplyr::mutate(
-      label = dplyr::case_when(
-        is.na(label) ~ variable,
-        TRUE ~ label
-      )
-    )
-  ## Append experiment numbers on step names
-  data <- data %>%
+      label = dplyr::case_when(is.na(label) ~ variable, TRUE ~ label),
+      step = dplyr::case_when(is.na(step) ~ section, TRUE ~ step)
+    ) %>%
+    ## Append experiment numbers on step names
     dplyr::mutate(
       step = dplyr::case_when(
         !is.na(exp_num) ~ as.character(glue::glue("{step} [{exp_num}]")),

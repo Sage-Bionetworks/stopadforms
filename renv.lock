@@ -592,15 +592,10 @@
     },
     "remotes": {
       "Package": "remotes",
-      "Version": "2.1.0.9000",
-      "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteUsername": "r-lib",
-      "RemoteRepo": "remotes",
-      "RemoteRef": "master",
-      "RemoteSha": "3fd1845e98a61451a3e344f7473f7c45575792ee",
-      "RemoteHost": "api.github.com",
-      "Hash": "6db70c032fdd8bd7fc1e0296db71bf5e"
+      "Version": "2.1.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "57c3009534f805f0f6476ffee68483cc"
     },
     "renv": {
       "Package": "renv",

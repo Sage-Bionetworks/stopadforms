@@ -1,23 +1,5 @@
 context("data-gather-clean.R")
 
-lookup_table <- tibble::tribble(
-  ~section, ~step, ~variable, ~label,
-  "basic", "Basic Data", "age_range_min", "Min of age range",
-  "basic", "Basic Data", "age_range_max", "Max of age range",
-  "naming", "Naming", "last_name", "Last name",
-  "naming", "Naming", "first_name", "First name",
-  "naming", "Naming", "compound_name", "Compound name",
-  "pk_in_vivo", "Pk in Vivo", "name", "Experiment Name",
-  "pk_in_vivo", "Pk in Vivo", "is_solution", "Is compound a solution?"
-)
-
-data1 <- tibble::tibble(
-  section = c("basic", "naming", "pk_in_vivo", "pk_in_vivo", "pk_in_vivo"),
-  variable = c("age_range_min", "last_name", "name", "route1", "is_solution"),
-  exp_num = c(NA, NA, 1, 2, 1),
-  response = c("3", "Smith", "Exp 1", "TRUE", "0")
-)
-
 ## Sample JSON data to test with
 json <- '
 {
@@ -25,6 +7,11 @@ json <- '
     "permeability": "super permeable"
   },
   "binding": null,
+  "naming": {
+    "compound_name": "test",
+    "first_name": "Kara",
+    "last_name": "Woo"
+  },
   "chronic_dosing": {
     "experiments": [
       {
@@ -58,6 +45,58 @@ json <- '
   }
 }
 '
+
+# create_table_from_json_file() ------------------------------------------------
+
+test_that("create_table_from_json_file creates (at least) one row per row in lookup table", { # nolint
+  dat <- create_table_from_json_file(
+    json,
+    data_id = "1",
+    lookup_table = lookup_table,
+    complete = TRUE
+  )
+  expect_true(nrow(dat) >= nrow(lookup_table))
+})
+
+test_that("All sections are represented if complete = TRUE", {
+  dat <- create_table_from_json_file(
+    json,
+    data_id = "1",
+    lookup_table = lookup_table,
+    complete = TRUE
+  )
+  expect_true(all(lookup_table$section %in% dat$section))
+})
+
+test_that("create_table_from_json_file creates one row per response if complete = FALSE", { # nolint
+  dat <- create_table_from_json_file(
+    json,
+    data_id = "1",
+    lookup_table = lookup_table,
+    complete = FALSE
+  )
+  expect_equal(nrow(dat), 19)
+})
+
+test_that("Submission is named by user name and compound name", {
+  dat <- create_table_from_json_file(
+    json,
+    data_id = "1",
+    lookup_table = lookup_table,
+    complete = FALSE
+  )
+  expect_true(all(dat$submission == "Woo - test"))
+})
+
+test_that("Submission's data ID is added to data", {
+  dat <- create_table_from_json_file(
+    json,
+    data_id = "1",
+    lookup_table = lookup_table,
+    complete = FALSE
+  )
+  expect_true(all(dat$form_data_id == "1"))
+})
 
 # create_section_table() -------------------------------------------------------
 
@@ -145,17 +184,41 @@ test_that("change_logical_responses() changes correct rows", {
 # map_sections_variables() -----------------------------------------------------
 
 test_that("map_sections_variables() maps correctly", {
-  expected <- tibble::tibble(
-    section = c("basic", "naming", "pk_in_vivo", "pk_in_vivo", "pk_in_vivo"),
-    variable = c("age_range_min", "last_name", "name", "route1", "is_solution"),
-    exp_num = c(NA, NA, 1, 2, 1),
-    response = c("3", "Smith", "Exp 1", "TRUE", "0"),
-    step = c("Basic Data", "Naming", "Pk in Vivo [1]", "Pk in Vivo [2]",
-             "Pk in Vivo [1]"),
-    label = c("Min of age range", "Last name", "Experiment Name",
-              "route1", "Is compound a solution?")
+  dat <- tibble::tibble(
+    section = c("naming", "chronic_dosing", "chronic_dosing"),
+    variable = c("first_name", "name", "species"),
+    exp_num = c(NA, 1, 1),
+    response = c("Kara", "my experiment 1", "mouse")
   )
-  res <- map_sections_variables(data1, lookup_table)
+  expected <- dplyr::mutate(
+    dat,
+    step = c("Naming", "Chronic Dosing [1]", "Chronic Dosing [1]"),
+    label = c("First Name", "Experiment Name", "Species")
+    )
+
+  res <- map_sections_variables(dat, lookup_table, complete = FALSE)
   expect_equal(res, expected)
 })
 
+test_that("map_sections_variables() leaves labels that don't map intact", {
+  dat <- tibble::tibble(
+    section = "naming",
+    variable = "foo",
+    exp_num = NA,
+    response = "bar"
+  )
+  res <- map_sections_variables(dat, lookup_table, complete = FALSE)
+  expect_equal(res$label, "foo")
+})
+
+test_that("map_sections_variables() leaves sections that don't map intact", {
+  dat <- tibble::tibble(
+    section = "foo",
+    variable = "bar",
+    exp_num = NA,
+    response = "baz"
+  )
+  res <- map_sections_variables(dat, lookup_table, complete = FALSE)
+  expect_equal(res$step, "foo")
+  expect_equal(res$label, "bar")
+})

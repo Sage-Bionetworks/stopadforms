@@ -4,12 +4,21 @@
 \alias{create_table_from_json_file}
 \title{Create table from JSON file}
 \usage{
-create_table_from_json_file(filename, data_id)
+create_table_from_json_file(filename, data_id, lookup_table, complete = TRUE)
 }
 \arguments{
 \item{filename}{Path to JSON file}
 
 \item{data_id}{Data file handle ID}
+
+\item{lookup_table}{Dataframe with columns "section",
+"step", "variable" , and "label" used for user-friendly section and
+variable display. "step" maps desired "section" names. "label" maps
+desired "variable" names.}
+
+\item{complete}{If `TRUE`, will join in all section and variable names that
+were not provided as part of the submission. If `FALSE`, will only return
+the data that was present in the JSON file.}
 }
 \description{
 Convert a JSON file containing submission data to a data frame.
