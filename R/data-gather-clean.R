@@ -100,10 +100,9 @@ create_table_from_json_file <- function(filename, data_id, lookup_table,
   ## Add form data ID and sub name
   user_name <- sub[sub$variable == "last_name", "response", drop = TRUE]
   compound_name <- sub[sub$variable == "compound_name", "response", drop = TRUE]
-  sub <- sub %>%
+  sub %>%
     dplyr::mutate(form_data_id = data_id) %>%
     dplyr::mutate(submission = glue::glue("{user_name} - {compound_name}"))
-  sub
 }
 
 #' Create table for a section
