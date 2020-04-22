@@ -211,3 +211,14 @@ test_that("map_sections_variables() leaves labels that don't map intact", {
   expect_equal(res$label, "foo")
 })
 
+test_that("map_sections_variables() leaves sections that don't map intact", {
+  dat <- tibble::tibble(
+    section = "foo",
+    variable = "bar",
+    exp_num = NA,
+    response = "baz"
+  )
+  res <- map_sections_variables(dat, lookup_table, complete = FALSE)
+  expect_equal(res$step, "foo")
+  expect_equal(res$label, "bar")
+})

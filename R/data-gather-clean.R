@@ -213,17 +213,14 @@ map_sections_variables <- function(data, lookup_table, complete = TRUE) {
     dplyr::select(-.data$step.x) %>%
     dplyr::rename(step = .data$step.y)
 
-  ## Fix variables/sections that don't have mapping
-  ## Use variables, as is
+  ## Fix variables/sections that don't have mapping by using values from the
+  ## data
   data <- data %>%
     dplyr::mutate(
-      label = dplyr::case_when(
-        is.na(label) ~ variable,
-        TRUE ~ label
-      )
-    )
-  ## Append experiment numbers on step names
-  data <- data %>%
+      label = dplyr::case_when(is.na(label) ~ variable, TRUE ~ label),
+      step = dplyr::case_when(is.na(step) ~ section, TRUE ~ step)
+    ) %>%
+    ## Append experiment numbers on step names
     dplyr::mutate(
       step = dplyr::case_when(
         !is.na(exp_num) ~ as.character(glue::glue("{step} [{exp_num}]")),
