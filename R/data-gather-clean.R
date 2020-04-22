@@ -82,8 +82,8 @@ process_submissions <- function(submissions, lookup_table) {
 #'   were not provided as part of the submission. If `FALSE`, will only return
 #'   the data that was present in the JSON file.
 #' @inheritParams mod_review_section_server
-create_table_from_json_file <- function(filename, data_id, complete = TRUE,
-                                        lookup_table) {
+create_table_from_json_file <- function(filename, data_id, lookup_table,
+                                        complete = TRUE) {
   ## Load JSON
   data <- jsonlite::fromJSON(filename, simplifyVector = FALSE)
 
@@ -91,7 +91,11 @@ create_table_from_json_file <- function(filename, data_id, complete = TRUE,
   sub <- purrr::imap_dfr(data, create_section_table)
 
   ## Add user-friendly display names for the sections and variables
-  sub <- map_sections_variables(sub, lookup_table = lookup_table)
+  sub <- map_sections_variables(
+    sub,
+    lookup_table = lookup_table,
+    complete = complete
+  )
 
   ## Add form data ID and sub name
   user_name <- sub[sub$variable == "last_name", "response", drop = TRUE]
@@ -184,7 +188,9 @@ change_logical_responses <- function(data) {
 #'
 #' @param data Dataframe with columns "section", "variable", and "exp_num".
 #' @inheritParams process_submissions
-map_sections_variables <- function(data, lookup_table) {
+#' @inheritParams create_table_from_json_file
+map_sections_variables <- function(data, lookup_table, complete = TRUE) {
+  join_to_use <- ifelse(complete, dplyr::full_join, dplyr::left_join)
   ## First join in section names. This join is done in 2 steps because the
   ## variables sometimes are missing from the lookup table (due to having
   ## numbers appended to them -- e.g. route1, route2). If we join all at once,
@@ -195,7 +201,7 @@ map_sections_variables <- function(data, lookup_table) {
     by = "section"
   ) %>%
     ## Then join in the user-friendly variable names ("label")
-    dplyr::full_join(
+    join_to_use(
       lookup_table[, c("variable", "section", "label")],
       by = c("variable", "section")
     ) %>%

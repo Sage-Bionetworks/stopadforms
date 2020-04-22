@@ -4,7 +4,7 @@
 \alias{map_sections_variables}
 \title{Append user-friendly section and variable names}
 \usage{
-map_sections_variables(data, lookup_table)
+map_sections_variables(data, lookup_table, complete = TRUE)
 }
 \arguments{
 \item{data}{Dataframe with columns "section", "variable", and "exp_num".}
@@ -13,6 +13,10 @@ map_sections_variables(data, lookup_table)
 "step", "variable" , and "label" used for user-friendly section and
 variable display. "step" maps desired "section" names. "label" maps
 desired "variable" names.}
+
+\item{complete}{If `TRUE`, will join in all section and variable names that
+were not provided as part of the submission. If `FALSE`, will only return
+the data that was present in the JSON file.}
 }
 \description{
 Appends columns "step" and "label", which corresponds with "section" and
