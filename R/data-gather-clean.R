@@ -52,14 +52,11 @@ process_submissions <- function(submissions, lookup_table) {
     all_subs <- purrr::map2_dfr(
       submissions,
       names(submissions), # this is the form data ID
-      ~ create_table_from_json_file(.x, .y)
+      ~ create_table_from_json_file(.x, .y, lookup_table = lookup_table)
     )
   )
   ## Remove metadata section
   all_subs <- dplyr::filter(all_subs, .data$section != "metadata")
-  ## Add columns 'step' and 'label', which contain user-friendly display names
-  ## (including the experiment number) for the sections and variables
-  all_subs <- map_sections_variables(all_subs, lookup_table)
   ## Fix logical responses
   all_subs <- change_logical_responses(all_subs)
   ## Don't need all the columns
@@ -81,7 +78,12 @@ process_submissions <- function(submissions, lookup_table) {
 #'
 #' @param filename Path to JSON file
 #' @param data_id Data file handle ID
-create_table_from_json_file <- function(filename, data_id) {
+#' @param complete If `TRUE`, will join in all section and variable names that
+#'   were not provided as part of the submission. If `FALSE`, will only return
+#'   the data that was present in the JSON file.
+#' @inheritParams mod_review_section_server
+create_table_from_json_file <- function(filename, data_id, complete = TRUE,
+                                        lookup_table) {
   ## Load JSON
   data <- jsonlite::fromJSON(filename, simplifyVector = FALSE)
 
@@ -91,9 +93,13 @@ create_table_from_json_file <- function(filename, data_id) {
   ## Add form data ID and sub name
   user_name <- sub[sub$variable == "last_name", "response", drop = TRUE]
   compound_name <- sub[sub$variable == "compound_name", "response", drop = TRUE]
-  sub %>%
+  sub <- sub %>%
     dplyr::mutate(form_data_id = data_id) %>%
     dplyr::mutate(submission = glue::glue("{user_name} - {compound_name}"))
+
+  ## Add user-friendly display names for the sections and variables
+  sub <- map_sections_variables(sub, lookup_table = lookup_table)
+  sub
 }
 
 #' Create table for a section
