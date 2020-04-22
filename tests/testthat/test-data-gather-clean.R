@@ -1,12 +1,5 @@
 context("data-gather-clean.R")
 
-data1 <- tibble::tibble(
-  section = c("basic", "naming", "pk_in_vivo", "pk_in_vivo", "pk_in_vivo"),
-  variable = c("age_range_min", "last_name", "name", "route1", "is_solution"),
-  exp_num = c(NA, NA, 1, 2, 1),
-  response = c("3", "Smith", "Exp 1", "TRUE", "0")
-)
-
 ## Sample JSON data to test with
 json <- '
 {
@@ -191,17 +184,30 @@ test_that("change_logical_responses() changes correct rows", {
 # map_sections_variables() -----------------------------------------------------
 
 test_that("map_sections_variables() maps correctly", {
-  expected <- tibble::tibble(
-    section = c("basic", "naming", "pk_in_vivo", "pk_in_vivo", "pk_in_vivo"),
-    variable = c("age_range_min", "last_name", "name", "route1", "is_solution"),
-    exp_num = c(NA, NA, 1, 2, 1),
-    response = c("3", "Smith", "Exp 1", "TRUE", "0"),
-    step = c("Basic Data", "Naming", "Pk in Vivo [1]", "Pk in Vivo [2]",
-             "Pk in Vivo [1]"),
-    label = c("Min of age range", "Last name", "Experiment Name",
-              "route1", "Is compound a solution?")
+  dat <- tibble::tibble(
+    section = c("naming", "chronic_dosing", "chronic_dosing"),
+    variable = c("first_name", "name", "species"),
+    exp_num = c(NA, 1, 1),
+    response = c("Kara", "my experiment 1", "mouse")
   )
-  res <- map_sections_variables(data1, lookup_table)
+  expected <- dplyr::mutate(
+    dat,
+    step = c("Naming", "Chronic Dosing [1]", "Chronic Dosing [1]"),
+    label = c("First Name", "Experiment Name", "Species")
+    )
+
+  res <- map_sections_variables(dat, lookup_table, complete = FALSE)
   expect_equal(res, expected)
+})
+
+test_that("map_sections_variables() leaves labels that don't map intact", {
+  dat <- tibble::tibble(
+    section = "naming",
+    variable = "foo",
+    exp_num = NA,
+    response = "bar"
+  )
+  res <- map_sections_variables(dat, lookup_table, complete = FALSE)
+  expect_equal(res$label, "foo")
 })
 
