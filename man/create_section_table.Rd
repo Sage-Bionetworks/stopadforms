@@ -4,12 +4,21 @@
 \alias{create_section_table}
 \title{Create table for a section}
 \usage{
-create_section_table(data, section)
+create_section_table(data, section, lookup_table, complete = TRUE)
 }
 \arguments{
 \item{data}{A list containing data from one section of a submission}
 
 \item{section}{The section name}
+
+\item{lookup_table}{Dataframe with columns "section",
+"step", "variable" , and "label" used for user-friendly section and
+variable display. "step" maps desired "section" names. "label" maps
+desired "variable" names.}
+
+\item{complete}{If `TRUE`, will join in all section and variable names that
+were not provided as part of the submission. If `FALSE`, will only return
+the data that was present in the JSON file.}
 }
 \description{
 Create table for a section of a submission. Some sections contain multiple

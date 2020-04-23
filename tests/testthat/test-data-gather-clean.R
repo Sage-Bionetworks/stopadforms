@@ -98,6 +98,43 @@ test_that("Submission's data ID is added to data", {
   expect_true(all(dat$form_data_id == "1"))
 })
 
+test_that("create_table_from_json_file gets missing sections added to each experiment", { # nolint
+  lookup_table <- tibble::tibble(
+    section = c("ld50", "ld50"),
+    step = c("LD50", "LD50"),
+    variable = c("reference", "duration"),
+    label = c("Provide a reference", "Duration")
+  )
+
+  json <- '
+{
+  "naming": {
+    "compound_name": "test",
+    "first_name": "Kara",
+    "last_name": "Woo"
+  },
+  "ld50": {
+    "experiments": [
+      {
+        "duration": 10
+      },
+      {
+        "duration": 15
+      }
+    ]
+  }
+}
+'
+  res <- create_table_from_json_file(
+    json,
+    data_id = "1",
+    lookup_table = lookup_table,
+    complete = TRUE
+  )
+  ## "reference" should appear twice
+  expect_equal(sum(res$variable == "reference"), 2)
+})
+
 # create_section_table() -------------------------------------------------------
 
 # Convert sample JSON to list
@@ -106,7 +143,8 @@ dat_list <- jsonlite::fromJSON(json, simplifyDataFrame = FALSE)
 test_that("create_section_table creates rows for each response", {
   res <- create_section_table(
     dat_list[["pk_in_vitro"]],
-    names(dat_list[["pk_in_vitro"]])
+    names(dat_list[["pk_in_vitro"]]),
+    lookup_table = lookup_table
   )
   expect_true(inherits(res, "data.frame"))
   expect_true(nrow(res) == 1)
@@ -115,7 +153,8 @@ test_that("create_section_table creates rows for each response", {
 test_that("create_section_table returns NULL if no data", {
   res <- create_section_table(
     dat_list[["binding"]],
-    names(dat_list[["binding"]])
+    names(dat_list[["binding"]]),
+    lookup_table = lookup_table
   )
   expect_null(res)
 })
@@ -123,7 +162,8 @@ test_that("create_section_table returns NULL if no data", {
 test_that("create_section_table gives experiments a number", {
   res <- create_section_table(
     dat_list[["chronic_dosing"]],
-    names(dat_list[["chronic_dosing"]])
+    names(dat_list[["chronic_dosing"]]),
+    lookup_table = lookup_table
   )
   expect_equal(range(res$exp_num), c(1, 2))
 })
@@ -131,7 +171,8 @@ test_that("create_section_table gives experiments a number", {
 test_that("create_section_table returns multiple selections from responses", {
   res <- create_section_table(
     dat_list[["chronic_dosing"]],
-    names(dat_list[["chronic_dosing"]])
+    names(dat_list[["chronic_dosing"]]),
+    lookup_table = lookup_table
   )
 
   routes <- res %>%
@@ -150,12 +191,23 @@ test_that("create_section_table returns multiple selections from responses", {
 # create_values_table() --------------------------------------------------------
 
 test_that("create_values_table turns sub-list into tibble", {
-  res <- create_values_table(dat_list[[1]], section = names(dat_list[1]))
+  lookup_table <- tibble::tibble(
+    section = "pk_in_vitro",
+    step = "PK In Vitro",
+    variable = "permeability",
+    label = "Permeability"
+  )
+  res <- create_values_table(
+    dat_list[[1]],
+    section = names(dat_list[1]),
+    lookup_table = lookup_table
+  )
   expected <- tibble::tibble(
     section = "pk_in_vitro",
-    exp_num = NA,
     variable = "permeability",
-    response = "super permeable"
+    response = "super permeable",
+    label = "Permeability",
+    exp_num = NA
   )
   expect_identical(res, expected)
 })
@@ -181,44 +233,55 @@ test_that("change_logical_responses() changes correct rows", {
 })
 
 
-# map_sections_variables() -----------------------------------------------------
+# map_sections() / map_variables() ---------------------------------------------
 
-test_that("map_sections_variables() maps correctly", {
+lookup_table <- tibble::tibble(
+  section = c("pk_in_vitro", "naming"),
+  step = c("PK In Vitro", "Naming"),
+  variable = c("permeability", "first_name"),
+  label = c("Permeability", "First Name")
+)
+
+test_that("map_variables() maps correct fields", {
   dat <- tibble::tibble(
-    section = c("naming", "chronic_dosing", "chronic_dosing"),
-    variable = c("first_name", "name", "species"),
-    exp_num = c(NA, 1, 1),
-    response = c("Kara", "my experiment 1", "mouse")
+    section = "pk_in_vitro",
+    variable = "permeability",
+    response = "super permeable"
   )
-  expected <- dplyr::mutate(
-    dat,
-    step = c("Naming", "Chronic Dosing [1]", "Chronic Dosing [1]"),
-    label = c("First Name", "Experiment Name", "Species")
-    )
-
-  res <- map_sections_variables(dat, lookup_table, complete = FALSE)
-  expect_equal(res, expected)
+  res <- map_variables(dat, lookup_table = lookup_table)
+  expect_true(res$label == "Permeability")
 })
 
-test_that("map_sections_variables() leaves labels that don't map intact", {
+test_that("map_variables() leaves labels that don't map intact", {
   dat <- tibble::tibble(
     section = "naming",
     variable = "foo",
     exp_num = NA,
     response = "bar"
   )
-  res <- map_sections_variables(dat, lookup_table, complete = FALSE)
+  res <- map_variables(dat, lookup_table, complete = FALSE)
   expect_equal(res$label, "foo")
 })
 
-test_that("map_sections_variables() leaves sections that don't map intact", {
+test_that("map_sections() leaves sections that don't map intact", {
   dat <- tibble::tibble(
     section = "foo",
     variable = "bar",
     exp_num = NA,
     response = "baz"
   )
-  res <- map_sections_variables(dat, lookup_table, complete = FALSE)
+  res <- map_sections(dat, lookup_table, complete = FALSE)
   expect_equal(res$step, "foo")
-  expect_equal(res$label, "bar")
+})
+
+# append_exp_nums() ------------------------------------------------------------
+
+test_that("append_exp_nums() adds number to step column", {
+  dat <- tibble::tibble(step = c("LD50", "LD50"), exp_num = c(1, 2))
+  res <- append_exp_nums(dat)
+  expected <- tibble::tibble(
+    step = c("LD50 [1]", "LD50 [2]"),
+    exp_num = c(1, 2)
+  )
+  expect_equal(res, expected)
 })
