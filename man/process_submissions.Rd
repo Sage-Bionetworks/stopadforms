@@ -4,7 +4,7 @@
 \alias{process_submissions}
 \title{Process submissions}
 \usage{
-process_submissions(submissions, lookup_table)
+process_submissions(submissions, lookup_table, complete = TRUE)
 }
 \arguments{
 \item{submissions}{A named list of paths to JSON files, i.e. the output of
@@ -14,6 +14,10 @@ process_submissions(submissions, lookup_table)
 "step", "variable" , and "label" used for user-friendly section and
 variable display. "step" maps desired "section" names. "label" maps
 desired "variable" names.}
+
+\item{complete}{If `TRUE`, will join in all section and variable names that
+were not provided as part of the submission. If `FALSE`, will only return
+the data that was present in the JSON file.}
 }
 \value{
 A data frame containing the combined responses for all submissions
