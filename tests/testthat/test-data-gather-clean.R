@@ -135,6 +135,18 @@ test_that("create_table_from_json_file gets missing sections added to each exper
   expect_equal(sum(res$variable == "reference"), 2)
 })
 
+test_that("create_table_from_json_file returns correct columns", {
+  correct <- c("section", "variable", "response", "label", "exp_num", "step",
+               "form_data_id", "submission")
+  res <- create_table_from_json_file(
+    json,
+    data_id = "1",
+    lookup_table = lookup_table,
+    complete = TRUE
+  )
+  expect_equal(setdiff(correct, names(res)), character(0))
+})
+
 # create_section_table() -------------------------------------------------------
 
 # Convert sample JSON to list
@@ -206,10 +218,26 @@ test_that("create_values_table turns sub-list into tibble", {
     section = "pk_in_vitro",
     variable = "permeability",
     response = "super permeable",
-    label = "Permeability",
     exp_num = NA
   )
   expect_identical(res, expected)
+})
+
+test_that("create_values_table doesn't add extra fields if complete = FALSE", {
+  lookup_table <- tibble::tibble(
+    section = c("ld50", "ld50"),
+    step = c("LD50", "LD50"),
+    variable = c("reference", "duration"),
+    label = c("Provide a reference", "Duration")
+  )
+  res <- create_values_table(
+    list(duration = 10),
+    section = "ld50",
+    lookup_table = lookup_table,
+    complete = FALSE
+  )
+  expect_equal(nrow(res), 1)
+  expect_equal(res$variable, "duration")
 })
 
 # change_logical_responses() ---------------------------------------------------
@@ -233,7 +261,21 @@ test_that("change_logical_responses() changes correct rows", {
 })
 
 
-# map_sections() / map_variables() ---------------------------------------------
+# add_section_variables() ------------------------------------------------------
+
+test_that("add_section_variables() adds extra sections", {
+  lookup_table <- tibble::tibble(
+    section = c("ld50", "ld50"),
+    step = c("LD50", "LD50"),
+    variable = c("reference", "duration"),
+    label = c("Provide a reference", "Duration")
+  )
+  dat <- tibble::tibble(section = "ld50", variable = "duration", response = 10)
+  res <- add_section_variables(dat, lookup_table)
+  expect_equal(res$variable, c("duration", "reference"))
+})
+
+# map_names() ------------------------------------------------------------------
 
 lookup_table <- tibble::tibble(
   section = c("pk_in_vitro", "naming"),
@@ -242,36 +284,37 @@ lookup_table <- tibble::tibble(
   label = c("Permeability", "First Name")
 )
 
-test_that("map_variables() maps correct fields", {
+test_that("map_names() maps correct fields", {
   dat <- tibble::tibble(
     section = "pk_in_vitro",
     variable = "permeability",
     response = "super permeable"
   )
-  res <- map_variables(dat, lookup_table = lookup_table)
-  expect_true(res$label == "Permeability")
+  res <- map_names(dat, lookup_table = lookup_table, complete = TRUE)
+  expect_equal(res$label, c("Permeability", "First Name"))
 })
 
-test_that("map_variables() leaves labels that don't map intact", {
+test_that("map_names() maps only given rows if complete = FALSE", {
   dat <- tibble::tibble(
-    section = "naming",
-    variable = "foo",
-    exp_num = NA,
-    response = "bar"
+    section = "pk_in_vitro",
+    variable = "permeability",
+    response = "super permeable"
   )
-  res <- map_variables(dat, lookup_table, complete = FALSE)
-  expect_equal(res$label, "foo")
+  res <- map_names(dat, lookup_table = lookup_table, complete = FALSE)
+  expect_equal(nrow(res), 1)
+  expect_equal(res$label, "Permeability")
 })
 
-test_that("map_sections() leaves sections that don't map intact", {
+test_that("map_names() leaves sections and variables that don't map intact", {
   dat <- tibble::tibble(
     section = "foo",
     variable = "bar",
     exp_num = NA,
     response = "baz"
   )
-  res <- map_sections(dat, lookup_table, complete = FALSE)
+  res <- map_names(dat, lookup_table, complete = FALSE)
   expect_equal(res$step, "foo")
+  expect_equal(res$label, "bar")
 })
 
 # append_exp_nums() ------------------------------------------------------------

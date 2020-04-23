@@ -63,6 +63,7 @@ process_submissions <- function(submissions, lookup_table, complete = TRUE) {
       )
     )
   )
+
   ## Remove metadata section
   all_subs <- dplyr::filter(all_subs, .data$section != "metadata")
   ## Fix logical responses
@@ -101,7 +102,7 @@ create_table_from_json_file <- function(filename, data_id, lookup_table,
   )
 
   ## Add unanswered sections, append experiment numbers to section names
-  sub <- map_sections(sub, lookup_table = lookup_table, complete = complete) %>%
+  sub <- map_names(sub, lookup_table = lookup_table, complete = complete) %>%
     append_exp_nums()
 
   ## Add form data ID and sub name
@@ -164,17 +165,16 @@ create_section_table <- function(data, section, lookup_table, complete = TRUE) {
 #' @param exp_num Numeric experiment number
 create_values_table <- function(data, section, lookup_table,
                                 complete = TRUE, exp_num = NA) {
-  tibble::tibble(
+  dat <- tibble::tibble(
     section = section,
     variable = names(unlist(data)),
     response = as.character(unlist(data))
-  ) %>%
-    map_variables(
-      lookup_table = lookup_table,
-      complete = complete
-    ) %>%
-    ## Add experiment number
-    dplyr::mutate(exp_num = exp_num)
+  )
+  if (isTRUE(complete)) {
+    dat <- add_section_variables(dat, lookup_table = lookup_table)
+  }
+  ## Add experiment number
+  dplyr::mutate(dat, exp_num = exp_num)
 }
 
 #' Change logical responses
@@ -197,6 +197,23 @@ change_logical_responses <- function(data) {
   )
 }
 
+#' Add unanswered questions within a section.
+#'
+#' Uses `lookup_table` data to add in questions within a section that were
+#' unanswered (and therefore missing from the original JSON data).
+#'
+#' @param data Dataframe with columns "section", "variable", and "exp_num".
+#' @inheritParams process_submissions
+add_section_variables <- function(data, lookup_table) {
+  ## Filter lookup table to current section
+  lookup <- dplyr::filter(
+    lookup_table,
+    .data$section %in% data$section
+  ) %>%
+    dplyr::select(.data$variable, .data$section)
+  dplyr::full_join(data, lookup, by = c("variable", "section"))
+}
+
 #' Append user-friendly section and variable names
 #'
 #' Appends columns "step" and "label", which corresponds with "section" and
@@ -204,32 +221,15 @@ change_logical_responses <- function(data) {
 #'
 #' @param data Dataframe with columns "section", "variable", and "exp_num".
 #' @inheritParams process_submissions
-#' @rdname map_sections_variables
-map_variables <- function(data, lookup_table, complete = TRUE) {
-  join_to_use <- ifelse(complete, dplyr::full_join, dplyr::left_join)
-  current_section <- unique(data$section)
-  lookup <- dplyr::filter(
-    lookup_table,
-    .data$section %in% {{current_section}}
-  ) %>%
-    dplyr::select(.data$variable, .data$section, .data$label)
-  dat <- join_to_use(data, lookup, by = c("variable", "section"))
-  ## Keep original variable name if there's no mapping
-  dat %>%
-    dplyr::mutate(
-      label = dplyr::case_when(is.na(label) ~ variable, TRUE ~ label)
-    )
-}
-
-#' @rdname map_sections_variables
-map_sections <- function(data, lookup_table, complete = TRUE) {
+map_names <- function(data, lookup_table, complete = TRUE) {
   join_to_use <- ifelse(complete, dplyr::full_join, dplyr::left_join)
   ## lookup <- unique(lookup_table[, c("section", "step")])
   dat <- join_to_use(data, lookup_table, by = c("section", "variable"))
   ## Keep original section name if there's no mapping
   dat %>%
     dplyr::mutate(
-      step = dplyr::case_when(is.na(step) ~ section, TRUE ~ step)
+      step = dplyr::case_when(is.na(step) ~ section, TRUE ~ step),
+      label = dplyr::case_when(is.na(label) ~ variable, TRUE ~ label)
     )
 }
 
