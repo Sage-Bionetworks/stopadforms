@@ -317,6 +317,22 @@ test_that("map_names() leaves sections and variables that don't map intact", {
   expect_equal(res$label, "bar")
 })
 
+test_that("Step is added even if variable isn't in lookup table", {
+  dat <- tibble::tibble(
+    section = "ld50",
+    variable = "other_species",
+    response = "gremlins"
+  )
+  lookup_table <- tibble::tibble(
+    section = c("ld50", "ld50"),
+    step = c("LD50", "LD50"),
+    variable = c("reference", "duration"),
+    label = c("Provide a reference", "Duration")
+  )
+  res <- map_names(dat, lookup_table, complete = FALSE)
+  expect_equal(res$step, "LD50")
+})
+
 # append_exp_nums() ------------------------------------------------------------
 
 test_that("append_exp_nums() adds number to step column", {
