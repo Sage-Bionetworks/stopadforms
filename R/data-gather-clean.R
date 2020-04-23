@@ -223,14 +223,27 @@ add_section_variables <- function(data, lookup_table) {
 #' @inheritParams process_submissions
 map_names <- function(data, lookup_table, complete = TRUE) {
   join_to_use <- ifelse(complete, dplyr::full_join, dplyr::left_join)
-  ## lookup <- unique(lookup_table[, c("section", "step")])
-  dat <- join_to_use(data, lookup_table, by = c("section", "variable"))
-  ## Keep original section name if there's no mapping
+  ## First join in section names. This join is done in 2 steps because the
+  ## variables sometimes are missing from the lookup table (due to having
+  ## numbers appended to them -- e.g. route1, route2). If we join all at once,
+  ## then both step & label are NA and we have to go back and get step labels.
+  dat <- dplyr::left_join(
+    data,
+    unique(lookup_table[, c("section", "step")]),
+    by = "section"
+  )
+  dat <- join_to_use(
+    dat,
+    lookup_table,
+    by = c("section", "variable")
+  )
+  ## Keep original section/variable names if there's no mapping
   dat %>%
     dplyr::mutate(
-      step = dplyr::case_when(is.na(step) ~ section, TRUE ~ step),
-      label = dplyr::case_when(is.na(label) ~ variable, TRUE ~ label)
-    )
+      step = dplyr::coalesce(.data$step.x, .data$step.y, .data$section),
+      label = dplyr::coalesce(.data$label, .data$variable)
+    ) %>%
+    dplyr::select(-.data$step.x, -.data$step.y)
 }
 
 #' Append experiment numbers to step name
