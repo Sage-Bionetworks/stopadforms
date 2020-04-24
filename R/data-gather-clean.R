@@ -3,7 +3,6 @@
 #' Get the submissions based on status. JSON files are downloaded to a temp
 #' directory whose path is returned, along with the submission's form data ID.
 #'
-
 #' @param statuses A character vector of statuses to include from the set:
 #'   `SUBMITTED_WAITING_FOR_REVIEW`, `ACCEPTED`, `REJECTED`.
 #' @param group The number for a specific Synapse forms group.
@@ -11,6 +10,7 @@
 #' @return A list of file paths to JSON files containing the submissions that
 #'   have the requested status.
 #' @importFrom rlang .data
+#' @export
 get_submissions <- function(syn, group, statuses) {
   if (is.null(statuses)) {
     return(NULL)
@@ -45,6 +45,7 @@ get_submissions <- function(syn, group, statuses) {
 #'   the data that was present in the JSON file.
 #' @return A data frame containing the combined responses for all submissions
 #'   provided to the `submissions` argument
+#' @export
 process_submissions <- function(submissions, lookup_table, complete = TRUE) {
   if (is.null(submissions)) {
     stop("No submissions to process", call. = FALSE)
@@ -88,6 +89,7 @@ process_submissions <- function(submissions, lookup_table, complete = TRUE) {
 #' @param filename Path to JSON file
 #' @param data_id Data file handle ID
 #' @inheritParams process_submissions
+#' @export
 create_table_from_json_file <- function(filename, data_id, lookup_table,
                                         complete = TRUE) {
   ## Load JSON
