@@ -352,7 +352,7 @@ test_that("therapeutic_approach_response() renames 'both'", {
   res <- therapeutic_approach_response(dat)
   expect_equal(
     res,
-    tibble(
+    tibble::tibble(
       variable = "therapeutic_approach",
       response = "prophylactic, symptomatic"
     )

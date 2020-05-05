@@ -71,7 +71,7 @@ process_submissions <- function(submissions, lookup_table, complete = TRUE) {
     ## Fix display of some responses
     change_logical_responses() %>%
     therapeutic_approach_response() %>%
-    select(
+    dplyr::select(
       .data$submission,
       .data$form_data_id,
       .data$step,
