@@ -134,14 +134,7 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
     sub_section <- dplyr::filter(
       sub_data,
       .data$form_data_id == submission_id() & .data$step == section()
-    ) %>%
-      dplyr::mutate(
-        response = dplyr::case_when(
-          label == "What is the therapeutic approach?" & response == "both" ~
-            "prophylactic, symptomatic",
-          TRUE ~ response
-        )
-      )
+    )
     sub_section[c("label", "response")]
   })
 

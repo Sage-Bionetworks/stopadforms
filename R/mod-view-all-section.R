@@ -79,17 +79,6 @@ mod_view_all_section_server <- function(input, output, session, synapse, syn,
         if (is.null(submissions)) {
           stop("No submissions found with requested status(es)")
         }
-        ## Replace "both" with "prophylactic, symptomatic" in answer to question
-        ## "What is the therapeutic approach?"
-        submissions <- dplyr::mutate(
-          submissions,
-          response = dplyr::case_when(
-            .data$label == "What is the therapeutic approach?" &
-              .data$response == "both" ~
-              "prophylactic, symptomatic",
-            TRUE ~ response
-          )
-        )
         output$submissions <- reactable::renderReactable({
           reactable::reactable(
             submissions,

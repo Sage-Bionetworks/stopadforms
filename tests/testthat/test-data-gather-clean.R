@@ -344,3 +344,17 @@ test_that("append_exp_nums() adds number to step column", {
   )
   expect_equal(res, expected)
 })
+
+# therapeutic_approach_response() ----------------------------------------------
+
+test_that("therapeutic_approach_response() renames 'both'", {
+  dat <- tibble::tibble(variable = "therapeutic_approach", response = "both")
+  res <- therapeutic_approach_response(dat)
+  expect_equal(
+    res,
+    tibble(
+      variable = "therapeutic_approach",
+      response = "prophylactic, symptomatic"
+    )
+  )
+})

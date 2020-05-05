@@ -46,6 +46,7 @@ get_submissions <- function(syn, group, statuses) {
 #' @return A data frame containing the combined responses for all submissions
 #'   provided to the `submissions` argument
 #' @export
+#' @importFrom rlang .data
 process_submissions <- function(submissions, lookup_table, complete = TRUE) {
   if (is.null(submissions)) {
     stop("No submissions to process", call. = FALSE)
@@ -66,18 +67,17 @@ process_submissions <- function(submissions, lookup_table, complete = TRUE) {
   )
 
   ## Remove metadata section
-  all_subs <- dplyr::filter(all_subs, .data$section != "metadata")
-  ## Fix logical responses
-  all_subs <- change_logical_responses(all_subs)
-  ## Don't need all the columns
-  all_subs <- all_subs[, c(
-    "submission",
-    "form_data_id",
-    "step",
-    "label",
-    "response"
-  )]
-
+  all_subs <- dplyr::filter(all_subs, .data$section != "metadata") %>%
+    ## Fix display of some responses
+    change_logical_responses() %>%
+    therapeutic_approach_response() %>%
+    select(
+      .data$submission,
+      .data$form_data_id,
+      .data$step,
+      .data$label,
+      .data$response
+    )
   all_subs
 }
 
@@ -260,6 +260,20 @@ append_exp_nums <- function(data) {
     step = dplyr::case_when(
       !is.na(exp_num) ~ as.character(glue::glue("{step} [{exp_num}]")),
       TRUE ~ step
+    )
+  )
+}
+
+#' Rename response "both" to "prophylactic, symptomatic" in therapeutic approach
+#'
+#' @inheritParams append_exp_nums
+therapeutic_approach_response <- function(data) {
+  dplyr::mutate(
+    data,
+    response = dplyr::case_when(
+      variable == "therapeutic_approach" & response == "both" ~
+        "prophylactic, symptomatic",
+      TRUE ~ response
     )
   )
 }
