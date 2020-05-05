@@ -67,6 +67,15 @@ mod_review_section_ui <- function(id) {
             "Excellent" = 1
           )
         ),
+        selectInput(
+          inputId = ns("section_species"),
+          label = "Species",
+          choices = c(
+            "Not applicable" = NA,
+            "Within species" =  "within",
+            "Across species" =  "across"
+          )
+        ),
         textAreaInput(
           inputId = ns("section_comments"),
           label = "Comments"
@@ -177,12 +186,14 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
           scorer = syn$getUserProfile()$ownerId,
           score = input$section_score,
           comments = input$section_comments,
+          species = input$section_species,
           stringsAsFactors = FALSE
         )
       } else if (nrow(result) == 1) {
         new_row <- result
         new_row$score <- input$section_score
         new_row$comments <- input$section_comments
+        new_row$species <- input$section_species
       } else {
         stop("Unable to update score: duplicate scores were found for this section from a single reviewer") # nolint
       }
