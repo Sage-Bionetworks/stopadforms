@@ -51,7 +51,7 @@ app_server <- function(input, output, session) {
         synapse = synapse,
         syn = syn,
         user = user,
-        reviews_table = "syn21314955",
+        reviews_table = "syn22014561",
         lookup_table = lookup_table
       )
 
@@ -61,7 +61,7 @@ app_server <- function(input, output, session) {
         synapse = synapse,
         syn = syn,
         user = user,
-        reviews_table = "syn21314955",
+        reviews_table = "syn22014561",
         submissions_table = "syn21447678"
       )
 
