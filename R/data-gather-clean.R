@@ -70,14 +70,7 @@ process_submissions <- function(submissions, lookup_table, complete = TRUE) {
   all_subs <- dplyr::filter(all_subs, .data$section != "metadata") %>%
     ## Fix display of some responses
     change_logical_responses() %>%
-    therapeutic_approach_response() %>%
-    dplyr::select(
-      .data$submission,
-      .data$form_data_id,
-      .data$step,
-      .data$label,
-      .data$response
-    )
+    therapeutic_approach_response()
   all_subs
 }
 
