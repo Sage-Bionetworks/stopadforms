@@ -29,19 +29,19 @@ Basic Data,What is the intended route of administration?,basic,route
 Basic Data,Is the drug orally active?,basic,orally_active
 Basic Data,Solubility Limitations,basic,solubility_limitations
 Basic Data,What is the therapeutic approach?,basic,therapeutic_approach
-Binding,Experiment Name,binding,cell_line_binding.name
-Binding,What cell line was used for the binding assay?,binding,cell_line_binding.cell_line
-Binding,Binding assay details,binding,cell_line_binding.assay_description
-Binding,"If this study has been published, please provide a reference.",binding,cell_line_binding.reference
-Binding,Binding Affinity (nM),binding,cell_line_binding.binding_affinity
-Binding,Binding Affinity Constant,binding,cell_line_binding.binding_affinity_constant
-Efficacy,Experiment Name,efficacy,cell_line_efficacy.name
-Efficacy,What cell line was used for the efficacy assay?,efficacy,cell_line_efficacy.cell_line
-Efficacy,Efficacy assay details,efficacy,cell_line_efficacy.assay_description
-Efficacy,Outcome measures,efficacy,cell_line_efficacy.outcome_measures
-Efficacy,"If this study has been published, please provide a reference.",efficacy,cell_line_efficacy.reference
-Efficacy,Efficacy,efficacy,cell_line_efficacy.efficacy_measure
-Efficacy,Efficacy Measure,efficacy,cell_line_efficacy.efficacy_measure_type
+Binding,Experiment Name,binding,name
+Binding,What cell line was used for the binding assay?,binding,cell_line
+Binding,Binding assay details,binding,assay_description
+Binding,"If this study has been published, please provide a reference.",binding,reference
+Binding,Binding Affinity (nM),binding,binding_affinity
+Binding,Binding Affinity Constant,binding,binding_affinity_constant
+Efficacy,Experiment Name,efficacy,name
+Efficacy,What cell line was used for the efficacy assay?,efficacy,cell_line
+Efficacy,Efficacy assay details,efficacy,assay_description
+Efficacy,Outcome measures,efficacy,outcome_measures
+Efficacy,"If this study has been published, please provide a reference.",efficacy,reference
+Efficacy,Efficacy,efficacy,efficacy_measure
+Efficacy,Efficacy Measure,efficacy,efficacy_measure_type
 In Vivo Data,Minimum Subject Age,in_vivo_data,age_range.age_range_min
 In Vivo Data,Maximum Subject Age,in_vivo_data,age_range.age_range_max
 In Vivo Data,Minimum Dose Range,in_vivo_data,dose_range.dose_range_min

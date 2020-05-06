@@ -128,12 +128,12 @@ create_section_table <- function(data, section, lookup_table, complete = TRUE) {
   # If no data, return NULL
   if (length(data) == 0) {
     return(NULL)
-  } else if (length(names(data)) == 1 && names(data) == "experiments") {
+  } else if (length(names(data)) == 1 && names(data) %in% c("experiments", "cell_line_efficacy", "cell_line_binding")) { # nolint
     # If "experiments" is the only element, we need to go deeper to extract the
     # info for each experiment separately. The section name needs to have a
     # number to differentiate.
     dat <- purrr::imap_dfr(
-      data[["experiments"]],
+      data[[1]],
       function(data, index) {
         create_values_table(
           data = data,

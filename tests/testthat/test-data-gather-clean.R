@@ -180,6 +180,16 @@ test_that("create_section_table gives experiments a number", {
   expect_equal(range(res$exp_num), c(1, 2))
 })
 
+
+test_that("create_section_table does not give experiment number if no experiments", {
+  res <- create_section_table(
+    dat_list[["pk_in_vitro"]],
+    names(dat_list[["pk_in_vitro"]]),
+    lookup_table = lookup_table
+  )
+  expect_true(is.na(res$exp_num))
+})
+
 test_that("create_section_table returns multiple selections from responses", {
   res <- create_section_table(
     dat_list[["chronic_dosing"]],
@@ -198,6 +208,60 @@ test_that("create_section_table returns multiple selections from responses", {
     routes[routes$exp_num == 2, "response", drop = TRUE],
     c("oral", "injection", "transdermal", "formulated_in_food")
   )
+})
+
+test_that("create_section_table finds experiments in binding and efficacy", {
+  json <- '
+{
+  "naming": {
+    "compound_name": "test",
+    "first_name": "Kara",
+    "last_name": "Woo"
+  },
+  "binding": {
+    "cell_line_binding": [
+      {
+        "name": "binding experiment 1",
+        "cell_line": "iPSCs",
+        "assay_description": "receptor binding",
+        "binding_affinity": "10",
+        "binding_affinity_constant": "Ki"
+      },
+      {
+        "name": "binding experiment 2",
+        "cell_line": "CHO cells",
+        "assay_description": "ligand binding",
+        "binding_affinity": "20",
+        "binding_affinity_constant": "Km"
+      }
+    ]
+  },
+  "efficacy": {
+    "cell_line_efficacy": [
+      {
+        "name": "efficacy experiment 1",
+        "cell_line": "iPSC",
+        "outcome_measures": "none",
+        "efficacy_measure": "10",
+        "efficacy_measure_type": "EC50"
+      }
+    ]
+  }
+}
+'
+  dat_list <- jsonlite::fromJSON(json, simplifyDataFrame = FALSE)
+  res1 <- create_section_table(
+    dat_list[["binding"]],
+    names(dat_list[["binding"]]),
+    lookup_table = lookup_table
+  )
+  res2 <- create_section_table(
+    dat_list[["efficacy"]],
+    names(dat_list[["efficacy"]]),
+    lookup_table = lookup_table
+  )
+  expect_equal(unique(res1$exp_num), c(1, 2))
+  expect_equal(unique(res2$exp_num), c(1))
 })
 
 # create_values_table() --------------------------------------------------------
