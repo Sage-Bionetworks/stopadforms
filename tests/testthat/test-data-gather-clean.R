@@ -75,7 +75,7 @@ test_that("create_table_from_json_file creates one row per response if complete 
     lookup_table = lookup_table,
     complete = FALSE
   )
-  expect_equal(nrow(dat), 19)
+  expect_equal(nrow(dat), 14)
 })
 
 test_that("Submission is named by user name and compound name", {
@@ -196,17 +196,16 @@ test_that("create_section_table returns multiple selections from responses", {
     names(dat_list[["chronic_dosing"]]),
     lookup_table = lookup_table
   )
-
   routes <- res %>%
-    dplyr::filter(stringr::str_detect(variable, "route"))
+    dplyr::filter(variable ==  "route")
 
   expect_equal(
     routes[routes$exp_num == 1, "response", drop = TRUE],
-    c("sublingual", "injection", "transdermal")
+    "sublingual, injection, transdermal"
   )
   expect_equal(
     routes[routes$exp_num == 2, "response", drop = TRUE],
-    c("oral", "injection", "transdermal", "formulated_in_food")
+    "oral, injection, transdermal, formulated_in_food"
   )
 })
 
@@ -302,6 +301,40 @@ test_that("create_values_table doesn't add extra fields if complete = FALSE", {
   )
   expect_equal(nrow(res), 1)
   expect_equal(res$variable, "duration")
+})
+
+test_that("create_values_table combines routes", {
+  dat <- list(
+    drug_formulation = "foo",
+    route = list("oral", "sublingual")
+  )
+  lookup_table <- tibble::tibble(
+    section = c("ld50", "ld50"),
+    step = c("LD50", "LD50"),
+    variable = c("drug_formulation", "route"),
+    label = c("Drug Formulation", "What was the route of administration?")
+  )
+  res <- create_values_table(dat, section = "ld50", lookup_table = lookup_table)
+  expect_true("route" %in% res$variable)
+  expect_false("route1" %in% res$variable)
+  expect_true("oral, sublingual" %in% res$response)
+})
+
+test_that("create_values_table doesn't combine other nested things like age range", {
+  dat <- list(
+    name = "My cool experiment",
+    age_range = list(age_range_min = 18, age_range_max = 90)
+  )
+  lookup_table <- tibble::tibble(
+    section = c("ld50", "ld50"),
+    step = c("LD50", "LD50"),
+    variable = c("drug_formulation", "name"),
+    label = c("Drug Formulation", "Experiment Name")
+  )
+  res <- create_values_table(dat, section = "ld50", lookup_table = lookup_table)
+  expect_true("age_range.age_range_max" %in% res$variable)
+  expect_true("age_range.age_range_min" %in% res$variable)
+  expect_false("age_range" %in% res$variable)
 })
 
 # change_logical_responses() ---------------------------------------------------
@@ -421,4 +454,20 @@ test_that("therapeutic_approach_response() renames 'both'", {
       response = "prophylactic, symptomatic"
     )
   )
+})
+
+# combine_route_responses() ----------------------------------------------------
+
+test_that("combine_route_responses combines routes if present", {
+  dat1 <- list(route = "a")
+  dat2 <- list(route = list("a"))
+  dat3 <- list(route = list("a", "b"))
+  expect_equal(combine_route_responses(dat1), list(route = "a"))
+  expect_equal(combine_route_responses(dat2), list(route = "a"))
+  expect_equal(combine_route_responses(dat3), list(route = "a, b"))
+})
+
+test_that("combine_route_responses returns orig. data if no route present ", {
+  dat <- list(not_a_route = list("a", "b"))
+  expect_equal(combine_route_responses(dat), list(not_a_route = list("a", "b")))
 })
