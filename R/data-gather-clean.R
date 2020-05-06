@@ -167,6 +167,9 @@ create_section_table <- function(data, section, lookup_table, complete = TRUE) {
 #' @param exp_num Numeric experiment number
 create_values_table <- function(data, section, lookup_table,
                                 complete = TRUE, exp_num = NA) {
+  ## Combine multiple routes into comma-separated single response so we can
+  ## later join in variable names
+  data <- combine_route_responses(data)
   dat <- tibble::tibble(
     section = section,
     variable = names(unlist(data)),
@@ -276,4 +279,14 @@ therapeutic_approach_response <- function(data) {
       TRUE ~ response
     )
   )
+}
+
+#' Combine multiple routes into one comma-separated response
+#'
+#' @param data List containing route data
+combine_route_responses <- function(data) {
+  if ("route" %in% names(data)) {
+    data$route <- paste(data$route, collapse = ", ")
+  }
+  data
 }
