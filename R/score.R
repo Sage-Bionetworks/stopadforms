@@ -90,3 +90,49 @@ efficacy_beta <- function(efficacy_measure) {
     IC50 = .33
   )
 }
+
+#' Calculate denominator
+#'
+#' Calculates the denominator by which the score should be divided
+#'
+#' @param data Data frame containing the submission data
+#' @return A number representing the denominator by which the score should be
+#'   divided
+#' @export
+calculate_denominator <- function(data) {
+  base_points <- tibble::tribble(
+            ~section, ~points,
+    "naming",               1,
+    "basic",                2,
+    "binding",              1,
+    "efficacy",             1,
+    "in_vivo_data",         1,
+    "pk",                   1,
+    "ld50",                 1,
+    "acute_dosing",         1,
+    "chronic_dosing",       1,
+    "teratogenicity",       1
+  )
+
+  points <- data %>%
+    dplyr::select(.data$section, .data$exp_num) %>%
+    ## For the purposes of scoring, exp_num == `NA` and exp_num == 1 are
+    ## equivalent. Filling this in avoids having mix of NA and 1 for experiment
+    ## numbers in the PK section(s) (in silico and in vitro would have NA, but
+    ## in vivo would have 1).
+    dplyr::mutate(
+      exp_num = case_when(is.na(.data$exp_num) ~ 1L, TRUE ~ .data$exp_num)
+    ) %>%
+    dplyr::filter(!.data$section %in% c("measurements", "clinical_data")) %>%
+    ## Combine PK sections -- together they get one point
+    dplyr::mutate(
+      section = case_when(
+        .data$section %in% c("pk_in_vitro", "pk_in_vivo", "pk_in_silico") ~ "pk",
+        TRUE ~ .data$section
+      )
+    ) %>%
+    unique() %>%
+    dplyr::full_join(base_points, by = "section")
+
+  sum(points$points)
+}
