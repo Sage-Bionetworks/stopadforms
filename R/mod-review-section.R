@@ -200,6 +200,7 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
       }
       syn$store(synapse$Table(reviews_table, new_row))
       shinyjs::reset("section_score")
+      shinyjs::reset("section_species")
       shinyjs::reset("section_comments")
     })
   })
