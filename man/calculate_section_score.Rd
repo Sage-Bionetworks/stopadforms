@@ -4,14 +4,7 @@
 \alias{calculate_section_score}
 \title{Calculate the score for a section}
 \usage{
-calculate_section_score(
-  data,
-  lookup,
-  section = 1,
-  clinical = 1,
-  species = 1,
-  score = 1
-)
+calculate_section_score(data, lookup, score = 1, species = 1, clinical = 1)
 }
 \arguments{
 \item{data}{Data frame containing the section data. Should have columns
@@ -20,16 +13,15 @@ calculate_section_score(
 \item{lookup}{Lookup table that contains the partial beta weights for
 applicable variables.}
 
-\item{section}{Section multiplication factor. Usually 1 except for sections
-`pk_in_silico`, `pk_in_vitro`, and `pk_in_vivo`.}
-
-\item{clinical}{Clinical (usually 0.67) or preclinical (usually 0.33)
-multiplication factor.}
+\item{score}{Average score given by reviewers.}
 
 \item{species}{Within-species (usually 0.67) or across-species (usually 0.33)
-multiplication factor.}
+multiplication factor. Not used for sections `basic`, `pk_in_silico` or
+`pk_in_vivo`.}
 
-\item{score}{Average score given by reviewers.}
+\item{clinical}{Clinical (usually 0.67) or preclinical (usually 0.33)
+multiplication factor. Not used for sections `naming`, `basic`,
+`pk_in_silico` or `pk_in_vivo`.}
 }
 \value{
 A numeric value indicating the score for the section

@@ -10,10 +10,11 @@
 #' @param lookup Lookup table that contains the partial beta weights for
 #'   applicable variables.
 #' @param clinical Clinical (usually 0.67) or preclinical (usually 0.33)
-#'   multiplication factor. Not used for sections `pk_in_silico` or
-#'   `pk_in_vivo`.
+#'   multiplication factor. Not used for sections `naming`, `basic`,
+#'   `pk_in_silico` or `pk_in_vivo`.
 #' @param species Within-species (usually 0.67) or across-species (usually 0.33)
-#'   multiplication factor.
+#'   multiplication factor. Not used for sections `basic`, `pk_in_silico` or
+#'   `pk_in_vivo`.
 #' @param score Average score given by reviewers.
 #' @return A numeric value indicating the score for the section
 #' @export
@@ -37,9 +38,10 @@ calculate_section_score <- function(data, lookup, score = 1, species = 1,
     "pk_in_vivo" = 0.5,
     1
   )
-  ## PK in silico and in vitro do not use clinical multiplier
-  if (section_name %in% c("pk_in_silico", "pk_in_vitro")) {
+  ## Basic data, PK in silico, and in PK in vitro do not use clinical multiplier
+  if (section_name %in% c("naming", "basic", "pk_in_silico", "pk_in_vitro")) {
     clinical <- 1
+    species <- 1
   }
   ## Some sections have no specific fields with partial beta values, but rather
   ## get scored on the presence/absence of the data overall.
