@@ -18,7 +18,6 @@
 #' @param score Average score given by reviewers.
 #' @return A numeric value indicating the score for the section
 #' @export
-
 calculate_section_score <- function(data, lookup, score = 1, species = 1,
                                     clinical = 1) {
   if (nrow(data) == 0) {
@@ -76,6 +75,7 @@ calculate_section_score <- function(data, lookup, score = 1, species = 1,
   sum(section_multiplier * partial_betas$partial_beta, na.rm = TRUE)
 }
 
+## Betas for therapeutic approach
 approach_beta <- function(approach) {
   switch(
     approach,
@@ -87,6 +87,7 @@ approach_beta <- function(approach) {
   )
 }
 
+## Betas of efficacy measure
 efficacy_beta <- function(efficacy_measure) {
   switch(
     efficacy_measure,
