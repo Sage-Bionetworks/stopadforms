@@ -21,9 +21,11 @@
 
 calculate_section_score <- function(data, lookup, score = 1, species = 1,
                                     clinical = 1) {
+  if (nrow(data) == 0) {
+    return(0)
+  }
   section_name <- unique(data$section)
-  print(section_name)
-  if (length(section_name) != 1) {
+  if (length(section_name) > 1) {
     stop("Can only calculate score for one section at a time.")
   }
   ## Clinical section is not scored
@@ -89,7 +91,8 @@ efficacy_beta <- function(efficacy_measure) {
   switch(
     efficacy_measure,
     EC50 = .67,
-    IC50 = .33
+    IC50 = .33,
+    0
   )
 }
 
