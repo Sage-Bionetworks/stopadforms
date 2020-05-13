@@ -127,12 +127,12 @@ calculate_denominator <- function(data) {
     ## numbers in the PK section(s) (in silico and in vitro would have NA, but
     ## in vivo would have 1).
     dplyr::mutate(
-      exp_num = case_when(is.na(.data$exp_num) ~ 1L, TRUE ~ .data$exp_num)
+      exp_num = dplyr::case_when(is.na(.data$exp_num) ~ 1L, TRUE ~ .data$exp_num)
     ) %>%
     dplyr::filter(!.data$section %in% c("measurements", "clinical_data")) %>%
     ## Combine PK sections -- together they get one point
     dplyr::mutate(
-      section = case_when(
+      section = dplyr::case_when(
         .data$section %in% c("pk_in_vitro", "pk_in_vivo", "pk_in_silico") ~ "pk",
         TRUE ~ .data$section
       )
