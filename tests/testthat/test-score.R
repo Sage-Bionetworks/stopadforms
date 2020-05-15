@@ -1,5 +1,100 @@
 context("score.R")
 
+# calculate_submission_score() -------------------------------------------------
+
+test_that("calculate_submission_score returns expected values", {
+  reviews_table <- tibble::tribble(
+           ~step, ~score, ~species,
+    "Basic Data",   0.85,       NA
+  )
+  dat <- tibble::tribble(
+    ~section,        ~step,   ~exp_num,              ~variable,      ~response,
+    "naming",    "Naming", NA_integer_,         "is_off_label",          "Yes",
+    "basic", "Basic Data", NA_integer_, "therapeutic_approach", "prophylactic",
+    "basic", "Basic Data", NA_integer_,      "moa_description",         "test"
+  )
+  expect_equal(
+    calculate_submission_score(
+      data = dat,
+      reviews = reviews_table,
+      lookup = partial_betas
+    ),
+    0.108181818181818
+  )
+})
+
+test_that("If no reviews, calculate_submission_score returns 0", {
+  reviews_table <- tibble::tibble(
+    step = character(0),
+    score = character(0),
+    species = character(0)
+  )
+  dat <- tibble::tribble(
+    ~section,        ~step,   ~exp_num,              ~variable,     ~response,
+    "naming",    "Naming", NA_integer_,         "is_off_label",          "Yes",
+    "basic", "Basic Data", NA_integer_, "therapeutic_approach", "prophylactic",
+    "basic", "Basic Data", NA_integer_,      "moa_description",         "test"
+  )
+  expect_equal(
+    calculate_submission_score(
+      data = dat,
+      reviews = reviews_table,
+      lookup = partial_betas
+    ),
+    0
+  )
+})
+
+test_that("clinical variable is identified and used" , {
+  dat1 <- tibble::tribble(
+    ~section,      ~step, ~exp_num,      ~variable, ~response,
+    "naming",   "Naming",       NA, "is_off_label",      "No",
+    "ld50",   "LD50 [1]",       1L,         "ld50",      "10"
+  )
+  dat2 <- dplyr::mutate(
+    dat1,
+    response = dplyr::case_when(
+      variable == "is_off_label" ~ "Yes",
+      TRUE ~ response
+    )
+  )
+  reviews_table <- tibble::tribble(
+         ~step, ~score, ~species,
+    "LD50 [1]",    0.1, "within"
+  )
+  preclinical <- calculate_submission_score(
+    data = dat1,
+    reviews = reviews_table,
+    lookup = partial_betas
+  )
+  clinical <- calculate_submission_score(
+    data = dat2,
+    reviews = reviews_table,
+    lookup = partial_betas
+  )
+  expect_equal(preclinical, 0.00201)
+  expect_equal(clinical, 0.0040809)
+})
+
+test_that("calculate_submission_score warns if data lacks clinical information", {
+  ## This should be a required field in the form, but just in case
+  dat <- tibble::tribble(
+    ~section,      ~step, ~exp_num,      ~variable, ~response,
+    "ld50",   "LD50 [1]",       1L,         "ld50",      "10"
+  )
+  reviews_table <- tibble::tribble(
+    ~step, ~score, ~species,
+    "LD50 [1]",    0.1, "within"
+  )
+  expect_warning(
+    calculate_submission_score(
+      data = dat,
+      reviews = reviews_table,
+      lookup = partial_betas
+    )
+  )
+})
+
 # calculate_section_score() ----------------------------------------------------
 
 test_that("calculate_section_score returns 0 if data has 0 rows", {

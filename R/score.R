@@ -1,3 +1,49 @@
+#' Score an entire submission
+#'
+#' Given a data frame containing a submission and a table of reviews, calculate
+#' the score for a submission. First, the score for each section is calculated
+#' by multiplying the reviewer's score by the appropriate multipliers (see
+#' [calculate_section_score()]). If multiple reviewers scored the section, the
+#' section score is calculated for each and averaged.
+#'
+#' Then, the scores across all sections are added and divided by the denominator
+#' (see [calculate_denominator()]).
+#'
+#' @seealso [calculate_section_score()]
+#' @seealso [calculate_denominator()]
+#' @param data Data frame containining the submission. Should have columns
+#'   `section`, `step`, `variable`, and `response` at a minimum.
+#' @param reviews Data frame of scores submitted by reviewers.
+#' @inheritParams calculate_section_score
+#' @return The score for the submission
+calculate_submission_score <- function(data, reviews, lookup) {
+  off_label <- data[data$variable == "is_off_label", "response", drop = TRUE]
+  clinical <- ifelse(off_label == "Yes", .67, .33)
+  if (length(clinical) == 0) {
+    warning("Data does not indicate whether compound is available for off-label use. Clinical multiplier will be set to 1 instead of 0.67 (clinical) or 0.33 (preclinical).") # nolint
+    clinical <- 1
+  }
+
+  sect_scores_split <- split(reviews, reviews$step)
+  section_scores_averaged <- purrr::map_dbl(
+    sect_scores_split,
+    function(x) {
+      scores <- purrr::pmap_dbl(x, function(step, score, species, ...) {
+        species <- switch(species, within = 0.67, across = 0.33, 1)
+        calculate_section_score(
+          data = dplyr::filter(data, .data$step == {{ step }}),
+          lookup = lookup,
+          score = score,
+          species = species,
+          clinical = clinical
+        )
+      })
+      mean(scores)
+    }
+  )
+  sum(section_scores_averaged) / calculate_denominator(data)
+}
+
 #' Calculate the score for a section
 #'
 #' Given data for a single section of a submission, calculate that section's
