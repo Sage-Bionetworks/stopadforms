@@ -184,17 +184,17 @@ pull_reviews_table <- function(syn, reviews_table) {
 show_review_table <- function(input, output, reviews, submission_id) {
   to_show <- reactive({
     dplyr::filter(reviews, .data$form_data_id == submission_id()) %>%
-      dplyr::select(.data$section, .data$score, .data$scorer, .data$comments)
+      dplyr::select(.data$step, .data$score, .data$scorer, .data$comments)
   })
 
   output$averaged_scores <- reactable::renderReactable({
     reactable::reactable(
       to_show(),
-      groupBy = "section",
+      groupBy = "step",
       searchable = TRUE,
       pagination = FALSE,
       columns = list(
-        section = reactable::colDef(name = "Section"),
+        step = reactable::colDef(name = "Section"),
         score = reactable::colDef(name = "Score", aggregate = "mean"),
         scorer = reactable::colDef(name = "Scorer(s)", aggregate = "unique"),
         comments = reactable::colDef(
