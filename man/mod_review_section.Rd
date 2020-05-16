@@ -14,8 +14,8 @@ mod_review_section_server(
   synapse,
   syn,
   user,
-  reviews_table,
-  lookup_table
+  submissions,
+  reviews_table
 )
 }
 \arguments{
@@ -32,12 +32,9 @@ mod_review_section_server(
 
 \item{syn}{Synapse client object (e.g. output of `synapse$Synapse()`)}
 
-\item{reviews_table}{Synapse table that stores the scores and comments}
+\item{submissions}{Data frame containing tidied submissions}
 
-\item{lookup_table}{Dataframe with columns "section",
-"step", "variable" , and "label" used for user-friendly section and
-variable display. "step" maps desired "section" names. "label" maps
-desired "variable" names.}
+\item{reviews_table}{Synapse table that stores the scores and comments}
 }
 \description{
 Review and score the selected section of a submission

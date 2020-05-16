@@ -73,7 +73,8 @@ mod_panel_section_ui <- function(id) {
 #' @rdname mod_panel_section
 #' @keywords internal
 mod_panel_section_server <- function(input, output, session, synapse, syn, user,
-                                     reviews_table, submissions_table) {
+                                     submissions, reviews_table,
+                                     submissions_table) {
   ## Load reviews
   reviews <- pull_reviews_table(syn, reviews_table)
 

@@ -8,11 +8,8 @@
 #' @param synapse Synapse client (e.g. output of
 #'   `reticulate::import("synapseclient")`)
 #' @param syn Synapse client object (e.g. output of `synapse$Synapse()`)
+#' @param submissions Data frame containing tidied submissions
 #' @param reviews_table Synapse table that stores the scores and comments
-#' @param lookup_table Dataframe with columns "section",
-#'   "step", "variable" , and "label" used for user-friendly section and
-#'   variable display. "step" maps desired "section" names. "label" maps
-#'   desired "variable" names.
 #'
 #' @rdname mod_review_section
 #'
@@ -94,21 +91,14 @@ mod_review_section_ui <- function(id) {
 #' @rdname mod_review_section
 #' @keywords internal
 mod_review_section_server <- function(input, output, session, synapse, syn,
-                                      user, reviews_table, lookup_table) {
-  # Get submission data in nice table for viewing
-  sub_data <- get_submissions(
-    syn,
-    group = 9,
-    statuses = "SUBMITTED_WAITING_FOR_REVIEW"
-  )
-  sub_data <- process_submissions(sub_data, lookup_table)
+                                      user, submissions, reviews_table) {
 
   updateSelectInput(
     session = getDefaultReactiveDomain(),
     "submission",
     choices = c(
       "",
-      get_submission_list(sub_data)
+      get_submission_list(submissions)
     )
   )
 
@@ -120,7 +110,7 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
         choices = c(
           "",
           get_sections(
-            sub_data,
+            submissions,
             input$submission
           )
         )
@@ -132,7 +122,7 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
     input$submission
   })
   submission_name <- reactive({
-    sub_data$submission[sub_data$form_data_id == input$submission][1]
+    submissions$submission[submissions$form_data_id == input$submission][1]
   })
   section <- reactive({
     input$section
@@ -141,7 +131,7 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
   ## Show section
   to_show <- reactive({
     sub_section <- dplyr::filter(
-      sub_data,
+      submissions,
       .data$form_data_id == submission_id() & .data$step == section()
     )
     sub_section[c("label", "response")]
