@@ -30,11 +30,6 @@ mod_view_all_section_server(
 `reticulate::import("synapseclient")`)}
 
 \item{syn}{Synapse client object (e.g. output of `synapse$Synapse()`)}
-
-\item{lookup_table}{Dataframe with columns "section",
-"step", "variable" , and "label" used for user-friendly section and
-variable display. "step" maps desired "section" names. "label" maps
-desired "variable" names.}
 }
 \description{
 View and search among all submissions

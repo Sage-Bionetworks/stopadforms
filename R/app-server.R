@@ -44,6 +44,14 @@ app_server <- function(input, output, session) {
 
     if (inherits(memb, "check_pass")) {
 
+      ## Get data
+      sub_data <- get_submissions(
+        syn,
+        group = 9,
+        statuses = "SUBMITTED_WAITING_FOR_REVIEW"
+      )
+      sub_data <- process_submissions(sub_data, lookup_table)
+
       ## Show submission data
       callModule(
         mod_review_section_server,
@@ -51,8 +59,8 @@ app_server <- function(input, output, session) {
         synapse = synapse,
         syn = syn,
         user = user,
-        reviews_table = "syn22014561",
-        lookup_table = lookup_table
+        submissions = sub_data,
+        reviews_table = "syn22014561"
       )
 
       callModule(
@@ -61,6 +69,7 @@ app_server <- function(input, output, session) {
         synapse = synapse,
         syn = syn,
         user = user,
+        submissions = sub_data,
         reviews_table = "syn22014561",
         submissions_table = "syn21447678"
       )

@@ -39,7 +39,10 @@ get_submissions <- function(syn, group, statuses) {
 #'
 #' @param submissions A named list of paths to JSON files, i.e. the output of
 #'   [get_submissions()]. The name of each element should be its form data ID.
-#' @inheritParams mod_review_section_server
+#' @param lookup_table Dataframe with columns "section",
+#'   "step", "variable" , and "label" used for user-friendly section and
+#'   variable display. "step" maps desired "section" names. "label" maps
+#'   desired "variable" names.
 #' @param complete If `TRUE`, will join in all section and variable names that
 #'   were not provided as part of the submission. If `FALSE`, will only return
 #'   the data that was present in the JSON file.

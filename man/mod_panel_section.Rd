@@ -14,6 +14,7 @@ mod_panel_section_server(
   synapse,
   syn,
   user,
+  submissions,
   reviews_table,
   submissions_table
 )
@@ -31,6 +32,8 @@ mod_panel_section_server(
 `reticulate::import("synapseclient")`)}
 
 \item{syn}{Synapse client object (e.g. output of `synapse$Synapse()`)}
+
+\item{submissions}{Data frame containing tidied submissions}
 
 \item{reviews_table}{Synapse table that stores the scores and comments}
 
