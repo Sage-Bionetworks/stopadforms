@@ -76,25 +76,6 @@ test_that("clinical variable is identified and used" , {
   expect_equal(clinical, 0.0040809)
 })
 
-test_that("calculate_submission_score warns if data lacks clinical information", {
-  ## This should be a required field in the form, but just in case
-  dat <- tibble::tribble(
-    ~section,      ~step, ~exp_num,      ~variable, ~response,
-    "ld50",   "LD50 [1]",       1L,         "ld50",      "10"
-  )
-  reviews_table <- tibble::tribble(
-    ~step, ~score, ~species,
-    "LD50 [1]",    0.1, "within"
-  )
-  expect_warning(
-    calculate_submission_score(
-      data = dat,
-      reviews = reviews_table,
-      lookup = partial_betas
-    )
-  )
-})
-
 # calculate_section_score() ----------------------------------------------------
 
 test_that("calculate_section_score returns 0 if data has 0 rows", {
@@ -242,6 +223,21 @@ test_that("efficacy_beta returns correct values", {
   expect_equal(efficacy_beta("IC50"), 0.33)
   expect_equal(efficacy_beta("anything else"), 0)
   expect_null(efficacy_beta(NA))
+})
+
+# get_clinical() ---------------------------------------------------------------
+
+test_that("get_clinical warns if data lacks clinical information", {
+  ## This should be a required field in the form, but just in case
+  dat <- tibble::tribble(
+    ~section,      ~step, ~exp_num,      ~variable, ~response,
+    "ld50",   "LD50 [1]",       1L,         "ld50",      "10"
+  )
+  reviews_table <- tibble::tribble(
+    ~step, ~score, ~species,
+    "LD50 [1]",    0.1, "within"
+  )
+  expect_warning(get_clinical(data = dat))
 })
 
 # calculate_denominator() ------------------------------------------------------
