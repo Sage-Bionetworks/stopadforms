@@ -2,8 +2,8 @@
 naming,data_sharing,1,
 basic,moa_description,1,
 basic,therapeutic_approach,,based on values
-binding,cell_line_binding.binding_affinity,1,
-efficacy,cell_line_efficacy.efficacy_measure_type,,based on values
+binding,binding_affinity,1,
+efficacy,efficacy_measure_type,,based on values
 in_vivo_data,ed50,0.67,
 in_vivo_data,dose_range.dose_range_min,,
 pk_in_silico,partition_coefficient,0.5,

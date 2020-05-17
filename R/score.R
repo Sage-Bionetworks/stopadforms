@@ -107,11 +107,11 @@ calculate_section_score <- function(data, lookup, score = 1, species = 1,
     )
   }
   if (section_name == "efficacy") {
-    ef <- data[data$variable == "cell_line_efficacy.efficacy_measure_type", "response", drop = TRUE] # nolint
+    ef <- data[data$variable == "efficacy_measure_type", "response", drop = TRUE] # nolint
     lookup <- dplyr::mutate(
       lookup,
       partial_beta = dplyr::case_when(
-        variable == "cell_line_efficacy.efficacy_measure_type" ~ efficacy_beta(ef), # nolint
+        variable == "efficacy_measure_type" ~ efficacy_beta(ef), # nolint
         TRUE ~ partial_beta
       )
     )

@@ -188,12 +188,12 @@ test_that("therapeutic approach values are scored", {
 test_that("efficacy measure type values are scored", {
   dat1 <- tibble::tibble(
     section = "efficacy",
-    variable = "cell_line_efficacy.efficacy_measure_type",
+    variable = "efficacy_measure_type",
     response = "IC50"
   )
   dat2 <- tibble::tibble(
     section = "efficacy",
-    variable = "cell_line_efficacy.efficacy_measure_type",
+    variable = "efficacy_measure_type",
     response = "EC50"
   )
   expect_equal(calculate_section_score(dat1, partial_betas, score = 1), 0.33)
