@@ -164,14 +164,14 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
       result <- readr::read_csv(
         syn$tableQuery(
           glue::glue(
-            "SELECT * FROM {reviews_table} WHERE (scorer = {syn$getUserProfile()$ownerId} AND formDataId = {submission_id()} AND step = '{input$section}')" # nolint
+            "SELECT * FROM {reviews_table} WHERE (scorer = {syn$getUserProfile()$ownerId} AND form_data_id = {submission_id()} AND step = '{input$section}')" # nolint
           )
         )$filepath
       )
 
       if (nrow(result) == 0) {
         new_row <- data.frame(
-          formDataId = submission_id(),
+          form_data_id = submission_id(),
           submission = submission_name(),
           step = input$section,
           scorer = syn$getUserProfile()$ownerId,
