@@ -37,7 +37,7 @@ mod_panel_section_ui <- function(id) {
     ),
     fluidRow(
       column(
-        6,
+        7,
         offset = 1,
         reactable::reactableOutput(ns("averaged_scores"))
       )
@@ -75,8 +75,11 @@ mod_panel_section_ui <- function(id) {
 mod_panel_section_server <- function(input, output, session, synapse, syn, user,
                                      submissions, reviews_table,
                                      submissions_table) {
-  ## Load reviews
-  reviews <- pull_reviews_table(syn, reviews_table)
+  ## Load submissions and reviews
+  submissions <- append_clinical_to_submission(submissions)
+  reviews <- pull_reviews_table(syn, reviews_table) %>%
+    dplyr::mutate(form_data_id = as.character(.data$form_data_id)) %>%
+    calculate_scores_rowwise(submissions)
 
   submission_id <- reactive({
     input$submission
@@ -93,7 +96,12 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
     "submission",
     choices = c("", get_submission_list(reviews))
   )
-  show_review_table(input, output, reviews, submission_id)
+  show_review_table(
+    input = input,
+    output = output,
+    reviews = reviews,
+    submission_id = submission_id
+  )
 
   observeEvent(input$refresh_comments, {
     dccvalidator::with_busy_indicator_server("refresh_comments", {
@@ -104,7 +112,12 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
         choices = get_submission_list(reviews),
         selected = submission_id()
       )
-      show_review_table(input, output, reviews, submission_id)
+      show_review_table(
+        input = input,
+        output = output,
+        reviews = reviews,
+        submission_id = submission_id
+      )
     })
   })
   certified <- dccvalidator::check_certified_user(user$ownerId, syn = syn)
@@ -183,7 +196,13 @@ pull_reviews_table <- function(syn, reviews_table) {
 show_review_table <- function(input, output, reviews, submission_id) {
   to_show <- reactive({
     dplyr::filter(reviews, .data$form_data_id == submission_id()) %>%
-      dplyr::select(.data$step, .data$score, .data$scorer, .data$comments)
+      dplyr::select(
+        .data$step,
+        .data$score,
+        .data$weighted_score,
+        .data$scorer,
+        .data$comments
+      )
   })
 
   output$averaged_scores <- reactable::renderReactable({
@@ -194,7 +213,8 @@ show_review_table <- function(input, output, reviews, submission_id) {
       pagination = FALSE,
       columns = list(
         step = reactable::colDef(name = "Section"),
-        score = reactable::colDef(name = "Score", aggregate = "mean"),
+        score = reactable::colDef(name = "Gamma", aggregate = "mean"),
+        weighted_score = reactable::colDef(name = "Score", aggregate = "mean"),
         scorer = reactable::colDef(name = "Scorer(s)", aggregate = "unique"),
         comments = reactable::colDef(
           name = "Comments",

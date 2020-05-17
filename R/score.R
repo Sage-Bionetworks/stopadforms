@@ -194,3 +194,60 @@ calculate_denominator <- function(data) {
 
   sum(points$points)
 }
+
+#' Append clinical multiplier to submissions
+#'
+#' Given a data frome of one or more submissions, finds the clinical
+#'
+#' @param submissions Data containing one or more submissiosn
+#' @return Data from `submissions` with an added `clinical` column containing
+#'   the multiplier
+append_clinical_to_submission <- function(submissions) {
+  clinicals <- purrr::map_dfc(
+    split(submissions, submissions$form_data_id),
+    get_clinical
+  ) %>%
+    tidyr::pivot_longer(
+      tidyr::everything(),
+      "form_data_id",
+      values_to = "clinical"
+    )
+  with_clinical <- submissions %>%
+    dplyr::left_join(clinicals, by = "form_data_id")
+  with_clinical
+}
+
+#' Calculate scores rowwise
+#'
+#' Given a data frame of scores, adds a column with the weighted score
+#' calculated.
+#'
+#' @inheritParams show_review_table
+#' @param submissions Data frame of submissions *including* clinical multiplier
+#'   (i.e. the output from [append_clinical_to_submission()]).
+calculate_scores_rowwise <- function(reviews, submissions) {
+  reviews %>%
+    dplyr::left_join(submissions, by = c("submission", "step", "form_data_id")) %>%
+    dplyr::mutate(step2 = .data$step) %>%
+    tidyr::nest(
+      data = c(
+        .data$section,
+        .data$variable,
+        .data$response,
+        .data$exp_num,
+        .data$label,
+        .data$step
+      )
+    ) %>%
+    dplyr::rowwise() %>%
+    dplyr::mutate(
+      weighted_score = calculate_section_score(
+        data = .data$data,
+        lookup = partial_betas,
+        score = .data$score,
+        species = switch(.data$species, within = 0.67, across = 0.33, 1),
+        clinical = .data$clinical
+      )
+    ) %>%
+    dplyr::rename(step = .data$step2)
+}
