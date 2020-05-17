@@ -127,7 +127,7 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
       result <- readr::read_csv(
         syn$tableQuery(
           glue::glue(
-            "SELECT * FROM {submissions_table} WHERE (scorer = {syn$getUserProfile()$ownerId} AND formDataId = {submission_id()})" # nolint
+            "SELECT * FROM {submissions_table} WHERE (scorer = {syn$getUserProfile()$ownerId} AND form_data_id = {submission_id()})" # nolint
           )
         )$filepath
       )
@@ -167,8 +167,6 @@ pull_reviews_table <- function(syn, reviews_table) {
   reviews <- syn$tableQuery(glue::glue("SELECT * FROM {reviews_table}"))
   reviews <- readr::read_csv(reviews$filepath) %>%
     dplyr::mutate(scorer = get_display_name(syn, .data$scorer))
-  # Update name to work with other package functions
-  names(reviews)[which(names(reviews) == "formDataId")] <- "form_data_id"
   reviews
 }
 
