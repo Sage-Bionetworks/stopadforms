@@ -17,13 +17,7 @@
 #' @inheritParams calculate_section_score
 #' @return The score for the submission
 calculate_submission_score <- function(data, reviews, lookup) {
-  off_label <- data[data$variable == "is_off_label", "response", drop = TRUE]
-  clinical <- ifelse(off_label == "Yes", .67, .33)
-  if (length(clinical) == 0) {
-    warning("Data does not indicate whether compound is available for off-label use. Clinical multiplier will be set to 1 instead of 0.67 (clinical) or 0.33 (preclinical).") # nolint
-    clinical <- 1
-  }
-
+  clinical <- get_clinical(data)
   sect_scores_split <- split(reviews, reviews$step)
   section_scores_averaged <- purrr::map_dbl(
     sect_scores_split,
@@ -142,6 +136,18 @@ efficacy_beta <- function(efficacy_measure) {
     0
   )
 }
+
+## Get clinical multiplier
+get_clinical <- function(data) {
+  off_label <- data[data$variable == "is_off_label", "response", drop = TRUE]
+  clinical <- ifelse(off_label == "Yes", .67, .33)
+  if (length(clinical) == 0) {
+    warning("Data does not indicate whether compound is available for off-label use. Clinical multiplier will be set to 1 instead of 0.67 (clinical) or 0.33 (preclinical).") # nolint
+    clinical <- 1
+  }
+  clinical
+}
+
 
 #' Calculate denominator
 #'
