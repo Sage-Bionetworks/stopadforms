@@ -4,16 +4,14 @@
 \alias{calculate_submission_score}
 \title{Score an entire submission}
 \usage{
-calculate_submission_score(data, reviews, lookup)
+calculate_submission_score(submission, reviews)
 }
 \arguments{
-\item{data}{Data frame containining the submission. Should have columns
+\item{submission}{Data frame containining the submission. Should have columns
 `section`, `step`, `variable`, and `response` at a minimum.}
 
-\item{reviews}{Data frame of scores submitted by reviewers.}
-
-\item{lookup}{Lookup table that contains the partial beta weights for
-applicable variables.}
+\item{reviews}{Data frame containing weighted scores (output of
+[calculate_scores_rowwise()]).}
 }
 \value{
 The score for the submission
@@ -30,7 +28,7 @@ Then, the scores across all sections are added and divided by the denominator
 (see [calculate_denominator()]).
 }
 \seealso{
-[calculate_section_score()]
+[calculate_scores_rowwise()]
 
 [calculate_denominator()]
 }

@@ -90,18 +90,38 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
       reviews$submission[reviews$form_data_id == input$submission][1]
     }
   })
+  current_submission <- reactive({
+    req(submissions)
+    if (input$submission != "") {
+      dplyr::filter(submissions, .data$form_data_id == submission_id())
+    }
+  })
 
   updateSelectInput(
     session = getDefaultReactiveDomain(),
     "submission",
     choices = c("", get_submission_list(reviews))
   )
-  show_review_table(
-    input = input,
-    output = output,
-    reviews = reviews,
-    submission_id = submission_id
-  )
+
+  current_reviews <- reactive({
+    show_review_table(
+      input = input,
+      output = output,
+      reviews = reviews,
+      submission_id = submission_id
+    )
+  })
+
+  observeEvent(input$submission, {
+    updateNumericInput(
+      session = getDefaultReactiveDomain(),
+      inputId = "overall_score",
+      value = calculate_submission_score(
+        current_submission(),
+        current_reviews()
+      )
+    )
+  })
 
   observeEvent(input$refresh_comments, {
     dccvalidator::with_busy_indicator_server("refresh_comments", {
@@ -223,4 +243,5 @@ show_review_table <- function(input, output, reviews, submission_id) {
       )
     )
   })
+  return(to_show())
 }
