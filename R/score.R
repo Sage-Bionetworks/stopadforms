@@ -9,33 +9,19 @@
 #' Then, the scores across all sections are added and divided by the denominator
 #' (see [calculate_denominator()]).
 #'
-#' @seealso [calculate_section_score()]
+#' @seealso [calculate_scores_rowwise()]
 #' @seealso [calculate_denominator()]
-#' @param data Data frame containining the submission. Should have columns
+#' @param submission Data frame containining the submission. Should have columns
 #'   `section`, `step`, `variable`, and `response` at a minimum.
-#' @param reviews Data frame of scores submitted by reviewers.
-#' @inheritParams calculate_section_score
+#' @param reviews Data frame containing weighted scores (output of
+#'   [calculate_scores_rowwise()]).
 #' @return The score for the submission
-calculate_submission_score <- function(data, reviews, lookup) {
-  clinical <- get_clinical(data)
-  sect_scores_split <- split(reviews, reviews$step)
-  section_scores_averaged <- purrr::map_dbl(
-    sect_scores_split,
-    function(x) {
-      scores <- purrr::pmap_dbl(x, function(step, score, species, ...) {
-        species <- switch(species, within = 0.67, across = 0.33, 1)
-        calculate_section_score(
-          data = dplyr::filter(data, .data$step == {{ step }}),
-          lookup = lookup,
-          score = score,
-          species = species,
-          clinical = clinical
-        )
-      })
-      mean(scores)
-    }
-  )
-  sum(section_scores_averaged) / calculate_denominator(data)
+calculate_submission_score <- function(submission, reviews) {
+  section_scores_averaged <- reviews %>%
+    dplyr::group_by(.data$step) %>%
+    dplyr::summarize(weighted_score = mean(.data$weighted_score))
+  total <- sum(section_scores_averaged$weighted_score, na.rm = TRUE)
+  total / calculate_denominator(submission)
 }
 
 #' Calculate the score for a section
@@ -158,6 +144,9 @@ get_clinical <- function(data) {
 #'   divided
 #' @export
 calculate_denominator <- function(data) {
+  if (is.null(data)) {
+    return(NULL)
+  }
   base_points <- tibble::tribble(
             ~section, ~points,
     "naming",               1,
