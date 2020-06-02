@@ -4,12 +4,14 @@
 \alias{pull_reviews_table}
 \title{Pull latest review table}
 \usage{
-pull_reviews_table(syn, reviews_table)
+pull_reviews_table(syn, reviews_table, submissions)
 }
 \arguments{
 \item{syn}{Synapse client object (e.g. output of `synapse$Synapse()`)}
 
 \item{reviews_table}{Synapse table that stores the scores and comments}
+
+\item{submissions}{Data frame containing tidied submissions}
 }
 \description{
 Pull latest review table from Synapse.

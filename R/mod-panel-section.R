@@ -77,9 +77,7 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
                                      submissions_table) {
   ## Load submissions and reviews
   submissions <- append_clinical_to_submission(submissions)
-  reviews <- pull_reviews_table(syn, reviews_table) %>%
-    dplyr::mutate(form_data_id = as.character(.data$form_data_id)) %>%
-    calculate_scores_rowwise(submissions)
+  reviews <- pull_reviews_table(syn, reviews_table, submissions)
 
   submission_id <- reactive({
     input$submission
@@ -125,7 +123,7 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
 
   observeEvent(input$refresh_comments, {
     dccvalidator::with_busy_indicator_server("refresh_comments", {
-      reviews <<- pull_reviews_table(syn, reviews_table)
+      reviews <<- pull_reviews_table(syn, reviews_table, submissions)
       updateSelectInput(
         session = getDefaultReactiveDomain(),
         "submission",
@@ -196,11 +194,12 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
 #'
 #' @inheritParams mod_panel_section_server
 #' @keywords internal
-pull_reviews_table <- function(syn, reviews_table) {
+pull_reviews_table <- function(syn, reviews_table, submissions) {
   reviews <- syn$tableQuery(glue::glue("SELECT * FROM {reviews_table}"))
   reviews <- readr::read_csv(reviews$filepath) %>%
-    dplyr::mutate(scorer = get_display_name(syn, .data$scorer))
-  reviews
+    dplyr::mutate(scorer = get_display_name(syn, .data$scorer)) %>%
+    dplyr::mutate(form_data_id = as.character(.data$form_data_id)) %>%
+    calculate_scores_rowwise(submissions)
 }
 
 #' @title Show review table
