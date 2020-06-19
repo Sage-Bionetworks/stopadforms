@@ -22,7 +22,7 @@ calculate_submission_score <- function(submission, reviews) {
   }
   section_scores_averaged <- reviews %>%
     dplyr::group_by(.data$step) %>%
-    dplyr::summarize(weighted_score = mean(.data$weighted_score))
+    dplyr::summarize(weighted_score = geom_mean_score(.data$weighted_score))
   total <- sum(section_scores_averaged$weighted_score, na.rm = TRUE)
   total / calculate_denominator(submission)
 }
@@ -242,4 +242,23 @@ calculate_scores_rowwise <- function(reviews, submissions) {
       )
     ) %>%
     dplyr::rename(step = .data$step2)
+}
+
+#' Calculate geometric mean of non-zero scores
+#'
+#' Discards any zero or NA scores, then calculates the geometric mean of the
+#' remaining scores. If all scores are zero, returns 0.
+#'
+#' @param values Values to average
+geom_mean_score <- function(values) {
+  ## Only take non-NA values > 0. We have both "abstain" and "none" as scoring
+  ## options and ideally they'd both be zero, but shiny won't let both options
+  ## have the same value. Saving NAs to the Synapse table doesn't appear to be
+  ## working so we might have to be hacky and make "abstain" == -1.
+  values <- stats::na.omit(values[values > 0])
+  if (length(values) == 0) {
+    return(0)
+  } else {
+    return(prod(values) ^ (1 / length(values)))
+  }
 }
