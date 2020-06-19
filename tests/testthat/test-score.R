@@ -246,6 +246,14 @@ test_that("calculate_denominator adds 1 for additional experiments", {
   expect_equal(calculate_denominator(dat), 12)
 })
 
+test_that("calculate_denominator adds 0.5 for extra pk_in_vivo data", {
+  dat <- tibble::tibble(
+    section = c("pk_in_vivo", "pk_in_vivo"),
+    exp_num = c(1L, 2L)
+  )
+  expect_equal(calculate_denominator(dat), 11.5)
+})
+
 # calculate_scores_rowwise() ---------------------------------------------------
 
 test_that("if no scores, calculate_scores_rowwise() returns empty df", {
