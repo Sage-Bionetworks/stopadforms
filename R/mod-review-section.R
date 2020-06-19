@@ -166,7 +166,18 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
           glue::glue(
             "SELECT * FROM {reviews_table} WHERE (scorer = {syn$getUserProfile()$ownerId} AND form_data_id = {submission_id()} AND step = '{input$section}')" # nolint
           )
-        )$filepath
+        )$filepath,
+        col_types = readr::cols(
+          ROW_ID = readr::col_double(),
+          ROW_VERSION = readr::col_double(),
+          form_data_id = readr::col_double(),
+          submission = readr::col_character(),
+          step = readr::col_character(),
+          scorer = readr::col_double(),
+          score = readr::col_double(),
+          comments = readr::col_character(),
+          species = readr::col_character()
+        )
       )
 
       if (nrow(result) == 0) {
