@@ -3,21 +3,31 @@ context("score.R")
 # calculate_submission_score() -------------------------------------------------
 
 test_that("calculate_submission_score returns expected values", {
-  reviews_table <- tibble::tribble(
-           ~step, ~score, ~species,
-    "Basic Data",   0.85,       NA
+  reviews_table <- tibble::tibble(
+    step = c("Basic Data"),
+    score = c(0.85),
+    species = c(NA),
+    submission = c("foo"),
+    form_data_id = c("1")
   )
-  dat <- tibble::tribble(
-    ~section,        ~step,   ~exp_num,              ~variable,      ~response,
-    "naming",    "Naming", NA_integer_,         "is_off_label",          "Yes",
-    "basic", "Basic Data", NA_integer_, "therapeutic_approach", "prophylactic",
-    "basic", "Basic Data", NA_integer_,      "moa_description",         "test"
+  dat <- tibble::tibble(
+    section = c("naming", "basic", "basic"),
+    step = c("Naming", "Basic Data", "Basic Data"),
+    exp_num = c(NA_integer_, NA_integer_, NA_integer_),
+    variable = c("is_off_label", "therapeutic_approach","moa_description"),
+    response = c("Yes", "prophylactic", "test"),
+    form_data_id = c("1", "1", "1"),
+    submission = c("foo", "foo", "foo"),
+    label = c("doesn't matter", "doesn't matter", "doesn't matter")
+  )
+  reviews <- calculate_scores_rowwise(
+    reviews_table,
+    submissions = append_clinical_to_submission(dat)
   )
   expect_equal(
     calculate_submission_score(
-      data = dat,
-      reviews = reviews_table,
-      lookup = partial_betas
+      submission = dat,
+      reviews = reviews
     ),
     0.108181818181818
   )
@@ -27,53 +37,31 @@ test_that("If no reviews, calculate_submission_score returns 0", {
   reviews_table <- tibble::tibble(
     step = character(0),
     score = character(0),
-    species = character(0)
+    species = character(0),
+    submission = character(0),
+    form_data_id = character(0)
   )
-  dat <- tibble::tribble(
-    ~section,        ~step,   ~exp_num,              ~variable,     ~response,
-    "naming",    "Naming", NA_integer_,         "is_off_label",          "Yes",
-    "basic", "Basic Data", NA_integer_, "therapeutic_approach", "prophylactic",
-    "basic", "Basic Data", NA_integer_,      "moa_description",         "test"
+  dat <- tibble::tibble(
+    section = c("naming", "basic", "basic"),
+    step = c("Naming", "Basic Data", "Basic Data"),
+    exp_num = c(NA_integer_, NA_integer_, NA_integer_),
+    variable = c("is_off_label", "therapeutic_approach","moa_description"),
+    response = c("Yes", "prophylactic", "test"),
+    form_data_id = c("1", "1", "1"),
+    submission = c("foo", "foo", "foo"),
+    label = c("doesn't matter", "doesn't matter", "doesn't matter")
+  )
+  reviews <- calculate_scores_rowwise(
+    reviews_table,
+    submissions = append_clinical_to_submission(dat)
   )
   expect_equal(
     calculate_submission_score(
-      data = dat,
-      reviews = reviews_table,
-      lookup = partial_betas
+      submission = dat,
+      reviews = reviews_table
     ),
     0
   )
-})
-
-test_that("clinical variable is identified and used" , {
-  dat1 <- tibble::tribble(
-    ~section,      ~step, ~exp_num,      ~variable, ~response,
-    "naming",   "Naming",       NA, "is_off_label",      "No",
-    "ld50",   "LD50 [1]",       1L,         "ld50",      "10"
-  )
-  dat2 <- dplyr::mutate(
-    dat1,
-    response = dplyr::case_when(
-      variable == "is_off_label" ~ "Yes",
-      TRUE ~ response
-    )
-  )
-  reviews_table <- tibble::tribble(
-         ~step, ~score, ~species,
-    "LD50 [1]",    0.1, "within"
-  )
-  preclinical <- calculate_submission_score(
-    data = dat1,
-    reviews = reviews_table,
-    lookup = partial_betas
-  )
-  clinical <- calculate_submission_score(
-    data = dat2,
-    reviews = reviews_table,
-    lookup = partial_betas
-  )
-  expect_equal(preclinical, 0.00201)
-  expect_equal(clinical, 0.0040809)
 })
 
 # calculate_section_score() ----------------------------------------------------
@@ -256,4 +244,70 @@ test_that("calculate_denominator adds 1 for additional experiments", {
     exp_num = c(1L, 2L)
   )
   expect_equal(calculate_denominator(dat), 12)
+})
+
+# calculate_scores_rowwise() ---------------------------------------------------
+
+test_that("if no scores, calculate_scores_rowwise() returns empty df", {
+  reviews_table <- tibble::tibble(
+    step = character(0),
+    score = character(0),
+    species = character(0),
+    submission = character(0),
+    form_data_id = character(0)
+  )
+  dat <- tibble::tibble(
+    section = c("naming", "basic", "basic"),
+    step = c("Naming", "Basic Data", "Basic Data"),
+    exp_num = c(NA_integer_, NA_integer_, NA_integer_),
+    variable = c("is_off_label",
+                 "therapeutic_approach","moa_description"),
+    response = c("Yes", "prophylactic", "test"),
+    form_data_id = c("1", "1", "1"),
+    submission = c("foo", "foo", "foo"),
+    label = c("doesn't matter", "doesn't matter", "doesn't matter")
+  )
+  reviews <- calculate_scores_rowwise(
+    reviews_table,
+    submissions = append_clinical_to_submission(dat)
+  )
+  expect_equal(nrow(reviews), 0)
+  expect_equal(reviews$weighted_score, numeric(0))
+})
+
+test_that("clinical variable is identified and used" , {
+  dat1 <- tibble::tibble(
+    section = c("naming", "ld50"),
+    step = c("Naming", "LD50 [1]"),
+    exp_num = c(NA, 1L),
+    variable = c("is_off_label", "ld50"),
+    response = c("No", "10"),
+    label = c("doesn't matter", "doesn't matter"),
+    form_data_id = c("1", "1"),
+    submission = c("my submission", "my submission")
+  )
+  dat2 <- dplyr::mutate(
+    dat1,
+    response = dplyr::case_when(
+      variable == "is_off_label" ~ "Yes",
+      TRUE ~ response
+    )
+  )
+  reviews_table <- tibble::tibble(
+    step = c("LD50 [1]"),
+    score = c(0.1),
+    species = c("within"),
+    form_data_id = c("1"),
+    submission = c("my submission")
+  )
+  reviews1 <- calculate_scores_rowwise(
+    reviews_table,
+    submissions = append_clinical_to_submission(dat1)
+  )
+  reviews2 <- calculate_scores_rowwise(
+    reviews_table,
+    submissions = append_clinical_to_submission(dat2)
+  )
+  expect_equal(reviews1$weighted_score, 0.02211)
+  expect_equal(reviews2$weighted_score, 0.04489)
 })

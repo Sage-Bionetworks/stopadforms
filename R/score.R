@@ -17,6 +17,9 @@
 #'   [calculate_scores_rowwise()]).
 #' @return The score for the submission
 calculate_submission_score <- function(submission, reviews) {
+  if (nrow(reviews) == 0) {
+    return(0)
+  }
   section_scores_averaged <- reviews %>%
     dplyr::group_by(.data$step) %>%
     dplyr::summarize(weighted_score = mean(.data$weighted_score))
@@ -215,6 +218,11 @@ append_clinical_to_submission <- function(submissions) {
 #' @param submissions Data frame of submissions *including* clinical multiplier
 #'   (i.e. the output from [append_clinical_to_submission()]).
 calculate_scores_rowwise <- function(reviews, submissions) {
+  if (nrow(reviews) == 0) {
+    return(
+      dplyr::mutate(reviews, weighted_score = numeric(0))
+    )
+  }
   reviews %>%
     dplyr::left_join(submissions, by = c("submission", "step", "form_data_id")) %>%
     dplyr::mutate(step2 = .data$step) %>%
