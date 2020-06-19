@@ -157,7 +157,9 @@ calculate_denominator <- function(data) {
     "binding",              1,
     "efficacy",             1,
     "in_vivo_data",         1,
-    "pk",                   1,
+    "pk_in_silico",         0.17,
+    "pk_in_vitro",          0.33,
+    "pk_in_vivo",           0.5,
     "ld50",                 1,
     "acute_dosing",         1,
     "chronic_dosing",       1,
@@ -174,13 +176,6 @@ calculate_denominator <- function(data) {
       exp_num = dplyr::case_when(is.na(.data$exp_num) ~ 1L, TRUE ~ .data$exp_num)
     ) %>%
     dplyr::filter(!.data$section %in% c("measurements", "clinical_data")) %>%
-    ## Combine PK sections -- together they get one point
-    dplyr::mutate(
-      section = dplyr::case_when(
-        .data$section %in% c("pk_in_vitro", "pk_in_vivo", "pk_in_silico") ~ "pk",
-        TRUE ~ .data$section
-      )
-    ) %>%
     unique() %>%
     dplyr::full_join(base_points, by = "section")
 
