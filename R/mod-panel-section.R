@@ -232,8 +232,8 @@ show_review_table <- function(input, output, reviews, submission_id) {
       pagination = FALSE,
       columns = list(
         step = reactable::colDef(name = "Section"),
-        score = reactable::colDef(name = "Gamma", aggregate = "mean"),
-        weighted_score = reactable::colDef(name = "Score", aggregate = "mean"),
+        score = reactable::colDef(name = "Gamma", aggregate = "unique"),
+        weighted_score = reactable::colDef(name = "Score", aggregate = "unique"),
         scorer = reactable::colDef(name = "Scorer(s)", aggregate = "unique"),
         comments = reactable::colDef(
           name = "Comments",

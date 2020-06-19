@@ -33,6 +33,37 @@ test_that("calculate_submission_score returns expected values", {
   )
 })
 
+test_that("calculate_submission_score uses geometric mean", {
+  reviews_table <- tibble::tibble(
+    step = c("Basic Data", "Basic Data"),
+    score = c(0.85, 1),
+    species = c(NA, NA),
+    submission = c("foo", "foo"),
+    form_data_id = c("1", "1")
+  )
+  dat <- tibble::tibble(
+    section = c("naming", "basic", "basic"),
+    step = c("Naming", "Basic Data", "Basic Data"),
+    exp_num = c(NA_integer_, NA_integer_, NA_integer_),
+    variable = c("is_off_label", "therapeutic_approach","moa_description"),
+    response = c("Yes", "prophylactic", "test"),
+    form_data_id = c("1", "1", "1"),
+    submission = c("foo", "foo", "foo"),
+    label = c("doesn't matter", "doesn't matter", "doesn't matter")
+  )
+  reviews <- calculate_scores_rowwise(
+    reviews_table,
+    submissions = append_clinical_to_submission(dat)
+  )
+  expect_equal(
+    calculate_submission_score(
+      submission = dat,
+      reviews = reviews
+    ),
+    0.117727272727273
+  )
+})
+
 test_that("If no reviews, calculate_submission_score returns 0", {
   reviews_table <- tibble::tibble(
     step = character(0),
@@ -318,4 +349,28 @@ test_that("clinical variable is identified and used" , {
   )
   expect_equal(reviews1$weighted_score, 0.02211)
   expect_equal(reviews2$weighted_score, 0.04489)
+})
+
+# geom_mean_score() ------------------------------------------------------------
+
+test_that("geom_mean_score calculates the geometric mean", {
+  expect_equal(geom_mean_score(0.85), 0.85)
+  expect_equal(geom_mean_score(c(1, 1, 1)), 1)
+  expect_equal(geom_mean_score(c(1, 2, 3)), 1.81712059283214)
+  expect_equal(geom_mean_score(0.85), 0.85)
+})
+
+test_that("geom_mean_score can handle zeroes", {
+  expect_equal(geom_mean_score(0), 0)
+  expect_equal(
+    geom_mean_score(c(1, 2, 3, 0, 0, 0)),
+    geom_mean_score(c(1, 2, 3))
+  )
+})
+
+test_that("geom_mean_score can handle NAs", {
+  expect_equal(
+    geom_mean_score(c(1, 2, 3, NA, NA, NA)),
+    geom_mean_score(c(1, 2, 3))
+  )
 })
