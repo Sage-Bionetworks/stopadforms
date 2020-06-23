@@ -14,5 +14,6 @@ Data from `submissions` with an added `clinical` column containing
   the multiplier
 }
 \description{
-Given a data frome of one or more submissions, finds the clinical
+Given a data frome of one or more submissions, finds the clinical value and
+appends it to the data in a new column.
 }
