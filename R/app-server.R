@@ -71,7 +71,7 @@ app_server <- function(input, output, session) {
         user = user,
         submissions = sub_data,
         reviews_table = "syn22014561",
-        submissions_table = "syn21447678"
+        submissions_table = "syn22213241"
       )
 
       callModule(
