@@ -220,7 +220,7 @@ calculate_scores_rowwise <- function(reviews, submissions) {
     )
   }
   reviews %>%
-    dplyr::left_join(submissions, by = c("submission", "step", "form_data_id")) %>%
+    dplyr::inner_join(submissions, by = c("submission", "step", "form_data_id")) %>%
     dplyr::mutate(step2 = .data$step) %>%
     tidyr::nest(
       data = c(
