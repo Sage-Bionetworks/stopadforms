@@ -158,13 +158,13 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
       result <- readr::read_csv(
         syn$tableQuery(
           glue::glue(
-            "SELECT * FROM {submissions_table} WHERE (scorer = {syn$getUserProfile()$ownerId} AND form_data_id = {submission_id()})" # nolint
+            "SELECT * FROM {submissions_table} form_data_id = {submission_id()})" # nolint
           )
         )$filepath
       )
       if (nrow(result) == 0) {
         new_row <- data.frame(
-          formDataId = submission_id(),
+          form_data_id = submission_id(),
           submission = submission_name(),
           scorer = syn$getUserProfile()$ownerId,
           overall_score = input$overall_score,
