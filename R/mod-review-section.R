@@ -57,6 +57,7 @@ mod_review_section_ui <- function(id) {
           inputId = ns("section_score"),
           label = "Score",
           choices = c(
+            "Abstain" = -1,
             "None" = 0,
             "Poor" = 0.1,
             "Fair" = 0.25,

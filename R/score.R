@@ -220,6 +220,13 @@ calculate_scores_rowwise <- function(reviews, submissions) {
     )
   }
   reviews %>%
+    ## We have both "abstain" and "none" as scoring options, ideally they'd both
+    ## represent 0 but shiny won't let two options have the same underlying
+    ## value, so "abstain" gets -1 and we convert it back to zero here. This
+    ## will result in the Gamma column showing a value of 0 in the app.
+    dplyr::mutate(
+      score = dplyr::case_when(.data$score < 0 ~ 0, TRUE ~ .data$score)
+    ) %>%
     dplyr::inner_join(submissions, by = c("submission", "step", "form_data_id")) %>%
     dplyr::mutate(step2 = .data$step) %>%
     tidyr::nest(
