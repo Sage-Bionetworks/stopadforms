@@ -60,7 +60,7 @@ test_that("calculate_submission_score uses geometric mean", {
       submission = dat,
       reviews = reviews
     ),
-    0.117727272727273
+    0.117339656729182
   )
 })
 
