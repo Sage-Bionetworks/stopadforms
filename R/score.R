@@ -184,7 +184,8 @@ calculate_denominator <- function(data) {
 
 #' Append clinical multiplier to submissions
 #'
-#' Given a data frome of one or more submissions, finds the clinical
+#' Given a data frome of one or more submissions, finds the clinical value and
+#' appends it to the data in a new column.
 #'
 #' @param submissions Data containing one or more submissiosn
 #' @return Data from `submissions` with an added `clinical` column containing
