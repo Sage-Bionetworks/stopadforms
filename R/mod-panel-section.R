@@ -158,7 +158,7 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
       result <- readr::read_csv(
         syn$tableQuery(
           glue::glue(
-            "SELECT * FROM {submissions_table} form_data_id = {submission_id()})" # nolint
+            "SELECT * FROM {submissions_table} WHERE form_data_id = {submission_id()})" # nolint
           )
         )$filepath
       )
