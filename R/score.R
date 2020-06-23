@@ -242,7 +242,8 @@ calculate_scores_rowwise <- function(reviews, submissions) {
         clinical = .data$clinical
       )
     ) %>%
-    dplyr::rename(step = .data$step2)
+    dplyr::rename(step = .data$step2) %>%
+    dplyr::select(-.data$data)
 }
 
 #' Calculate geometric mean of non-zero scores
