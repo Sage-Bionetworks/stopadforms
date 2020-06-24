@@ -49,7 +49,7 @@ mod_panel_section_ui <- function(id) {
         numericInput(
           inputId = ns("overall_score"),
           label = "Overall Score",
-          value = 1
+          value = 0
         ),
         textAreaInput(
           inputId = ns("internal_comments"),
