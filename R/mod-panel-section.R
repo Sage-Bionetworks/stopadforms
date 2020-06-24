@@ -101,14 +101,12 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
     choices = c("", get_submission_list(reviews))
   )
 
-  current_reviews <- reactive({
-    show_review_table(
-      input = input,
-      output = output,
-      reviews = reviews,
-      submission_id = submission_id
-    )
-  })
+  current_reviews <- show_review_table(
+    input = input,
+    output = output,
+    reviews = reviews,
+    submission_id = submission_id
+  )
 
   observeEvent(input$submission, {
     updateNumericInput(
@@ -130,11 +128,21 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
         choices = get_submission_list(reviews),
         selected = submission_id()
       )
-      show_review_table(
+      # Something is weird here and I don't know why this is necessary
+      current_reviews <<- show_review_table(
         input = input,
         output = output,
         reviews = reviews,
         submission_id = submission_id
+      )
+
+      updateNumericInput(
+        session = getDefaultReactiveDomain(),
+        inputId = "overall_score",
+        value = calculate_submission_score(
+          current_submission(),
+          current_reviews()
+        )
       )
     })
   })
@@ -212,6 +220,9 @@ pull_reviews_table <- function(syn, reviews_table, submissions) {
 #' @keywords internal
 #' @importFrom rlang .data
 show_review_table <- function(input, output, reviews, submission_id) {
+  # TODO: refactor so that returning data and creating output side effect are
+  # separate
+
   to_show <- reactive({
     dplyr::filter(reviews, .data$form_data_id == submission_id()) %>%
       dplyr::select(
@@ -241,5 +252,5 @@ show_review_table <- function(input, output, reviews, submission_id) {
       )
     )
   })
-  return(to_show())
+  return(to_show)
 }
