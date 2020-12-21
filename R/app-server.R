@@ -48,7 +48,15 @@ app_server <- function(input, output, session) {
               h3(sprintf("Welcome, %s!", syn$getUserProfile()$userName))
             )
           )
-          Sys.sleep(2)
+
+          ## Get data
+          sub_data <- get_submissions(
+            syn,
+            group = 9,
+            statuses = "SUBMITTED_WAITING_FOR_REVIEW"
+          )
+          sub_data <- process_submissions(sub_data, lookup_table)
+
           waiter::waiter_hide()
         }
       }, error = function(err) {
@@ -69,14 +77,6 @@ app_server <- function(input, output, session) {
     req(is_logged_in)
 
     if (inherits(memb, "check_pass")) {
-
-      ## Get data
-      sub_data <- get_submissions(
-        syn,
-        group = 9,
-        statuses = "SUBMITTED_WAITING_FOR_REVIEW"
-      )
-      sub_data <- process_submissions(sub_data, lookup_table)
 
       ## Show submission data
       callModule(
