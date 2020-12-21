@@ -56,12 +56,13 @@ jobs:
         run: |
           export DEBIAN_FRONTEND=noninteractive
           sudo apt-get -y update
-          sudo apt-get install -y make python-minimal pandoc pandoc-citeproc git-core libv8-dev libxml2-dev libcurl4-openssl-dev libssl-dev libssh2-1-dev zlib1g-dev
+          sudo apt-get install -y make python-minimal pandoc pandoc-citeproc git-core libv8-dev libxml2-dev libcurl4-openssl-dev libssl-dev libssh2-1-dev zlib1g-dev libgit2-dev
 
       - name: Install system dependencies (macOS)
         if: runner.os == 'macOS' && matrix.config.r == 'devel'
         run: |
           brew install V8
+          brew install libgit2
 
       # TODO: Remove when https://github.com/r-lib/xml2/issues/296 is fixed on CRAN
       - name: Install dev version of xml2
