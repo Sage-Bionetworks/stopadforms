@@ -57,6 +57,7 @@ app_server <- function(input, output, session) {
           )
           sub_data <- process_submissions(sub_data, lookup_table)
 
+          Sys.sleep(2)
           waiter::waiter_hide()
         }
       }, error = function(err) {
