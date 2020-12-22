@@ -4,53 +4,80 @@ app_server <- function(input, output, session) {
   session$sendCustomMessage(type = "readCookie", message = list())
   syn <- synapse$Synapse()
 
-  ## Show message if user is not logged in to synapse
-  unauthorized <- observeEvent(input$authorized, {
-    showModal(
-      modalDialog(
-        title = "Not logged in",
-        HTML("You must log in to <a href=\"https://www.synapse.org/\">Synapse</a> to use this application. Please log in, and then refresh this page.") # nolint
-      )
-    )
-  })
-
   observeEvent(input$cookie, {
-    ## Log in to Synapse
-    syn$login(sessionToken = input$cookie)
-
-    ## Check if user is in STOP-AD_Reviewers team
-    team <- "3403721"
-    user <- syn$getUserProfile()
-    memb <- dccvalidator::check_team_membership(
-      teams = team,
-      user = user,
-      syn = syn
-    )
-    ## Show message if not in team -- (not using
-    ## dccvalidator::report_unsatisfied_requirements() because it might be
-    ## usefult to view data even if the user isn't certified)
-    if (inherits(memb, "check_fail")) {
-      showModal(
-        modalDialog(
-          title = memb$message,
-          tagList(
-            p(memb$behavior),
-            p("You can request to be added at: "),
-            HTML(glue::glue("<a href=\"https://www.synapse.org/#!Team:{team}\">https://www.synapse.org/#!Team:{team}</a>"))
-          )
+    is_logged_in <- FALSE
+    # If there's no session token, prompt user to log in
+    if (input$cookie == "unauthorized") {
+      waiter::waiter_update(
+        html = tagList(
+          img(src = "www/synapse_logo.png", height = "120px"),
+          h3("Looks like you're not logged in!"),
+          span("Please ", a("log in", href = "https://www.synapse.org/#!LoginPlace:0", target = "_blank"),
+               " to Synapse, then refresh this page.")
         )
       )
+    } else {
+      ### login and update session; otherwise, notify to login to Synapse first
+      tryCatch({
+        syn$login(sessionToken = input$cookie, rememberMe = FALSE)
+        is_logged_in <- TRUE
+
+        ## Check if user is in STOP-AD_Reviewers team
+        team <- "3403721"
+        user <- syn$getUserProfile()
+        memb <- dccvalidator::check_team_membership(
+          teams = team,
+          user = user,
+          syn = syn
+        )
+
+        if (inherits(memb, "check_fail")) {
+          waiter::waiter_update(
+            html = tagList(
+              img(src = "www/synapse_logo.png", height = "120px"),
+              p(memb$behavior),
+              p("You can request to be added at: "),
+              HTML(glue::glue("<a href=\"https://www.synapse.org/#!Team:{team}\">https://www.synapse.org/#!Team:{team}</a>"))
+            )
+          )
+        } else {
+          ### update waiter loading screen once login successful
+          waiter::waiter_update(
+            html = tagList(
+              img(src = "www/synapse_logo.png", height = "120px"),
+              h3(sprintf("Welcome, %s!", syn$getUserProfile()$userName))
+            )
+          )
+
+          ## Get data
+          sub_data <- get_submissions(
+            syn,
+            group = 9,
+            statuses = "SUBMITTED_WAITING_FOR_REVIEW"
+          )
+          sub_data <- process_submissions(sub_data, lookup_table)
+
+          Sys.sleep(2)
+          waiter::waiter_hide()
+        }
+      }, error = function(err) {
+        Sys.sleep(2)
+        waiter::waiter_update(
+          html = tagList(
+            img(src = "www/synapse_logo.png", height = "120px"),
+            h3("Login error"),
+            span(
+              "There was an error with the login process. Please refresh your Synapse session by logging out of and back in to",
+              a("Synapse", href = "https://www.synapse.org/", target = "_blank"),
+              ", then refresh this page. If the problem persists, contact an administrator."
+            )
+          )
+        )
+      })
     }
+    req(is_logged_in)
 
     if (inherits(memb, "check_pass")) {
-
-      ## Get data
-      sub_data <- get_submissions(
-        syn,
-        group = 9,
-        statuses = "SUBMITTED_WAITING_FOR_REVIEW"
-      )
-      sub_data <- process_submissions(sub_data, lookup_table)
 
       ## Show submission data
       callModule(

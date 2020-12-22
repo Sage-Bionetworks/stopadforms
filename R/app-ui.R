@@ -5,6 +5,16 @@ app_ui <- function() {
     # Leave this function for adding external resources
     golem_add_external_resources(),
 
+    # Add waiter loading screen
+    waiter::use_waiter(),
+    waiter::waiter_show_on_load(
+      html = tagList(
+        img(src = "www/loading.gif"),
+        h4("Connecting to Synapse...")
+      ),
+      color = "#424874"
+    ),
+
     # List the first level UI elements here
     navbarPage(
       "STOP-AD submission reviewer",

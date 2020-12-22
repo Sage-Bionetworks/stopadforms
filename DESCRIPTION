@@ -35,10 +35,11 @@ Imports:
     stringr,
     synapseforms,
     tibble,
-    tidyr
+    tidyr,
+    waiter
 Remotes:
     Sage-Bionetworks/synapseforms
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 Suggests: 
     testthat,
     knitr,
