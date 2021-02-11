@@ -1,6 +1,7 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# stopadforms
+stopadforms
+===========
 
 <!-- badges: start -->
 
@@ -20,13 +21,17 @@ must be a member of the [STOP-AD\_Reviewers Synapse
 team](https://www.synapse.org/#!Team:3403721) and be logged in to
 Synapse. To save reviews, you must be a Certified User on Synapse.
 
-## Installation
+Installation
+------------
 
 ``` r
 devtools::install_github("Sage-Bionetworks/stopadforms")
+## Or install locally from within this repository:
+devtools::install()
 ```
 
-## Running the application locally
+Running the application locally
+-------------------------------
 
 ``` r
 library("stopadforms")
@@ -37,7 +42,7 @@ See `vignette("deploying-stopadforms", package = "stopadforms")` for
 information on how we deploy the app on the Sage Bionetworks Shiny Pro
 server.
 
------
+------------------------------------------------------------------------
 
 Please note that the stopadforms project is released with a [Contributor
 Code of Conduct](.github/CODE_OF_CONDUCT.md). By contributing to this

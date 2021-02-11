@@ -35,6 +35,8 @@ Synapse.
 
 ```{r install, eval = FALSE}
 devtools::install_github("Sage-Bionetworks/stopadforms")
+## Or install locally from within this repository:
+devtools::install()
 ```
 
 ## Running the application locally
