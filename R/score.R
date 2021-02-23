@@ -10,12 +10,14 @@
 #' (see [calculate_denominator()]).
 #'
 #' @seealso [calculate_scores_rowwise()]
+#' @seealso [pull_reviews_table()]
 #' @seealso [calculate_denominator()]
 #' @param submission Data frame containining the submission. Should have columns
 #'   `section`, `step`, `variable`, and `response` at a minimum.
 #' @param reviews Data frame containing weighted scores (output of
-#'   [calculate_scores_rowwise()]).
+#'   [calculate_scores_rowwise()], or [pull_reviews_table()]).
 #' @return The score for the submission
+#' @export
 calculate_submission_score <- function(submission, reviews) {
   if (nrow(reviews) == 0) {
     return(0)
@@ -190,6 +192,7 @@ calculate_denominator <- function(data) {
 #' @param submissions Data containing one or more submissiosn
 #' @return Data from `submissions` with an added `clinical` column containing
 #'   the multiplier
+#' @export
 append_clinical_to_submission <- function(submissions) {
   clinicals <- purrr::map_dfc(
     split(submissions, submissions$form_data_id),
@@ -213,6 +216,7 @@ append_clinical_to_submission <- function(submissions) {
 #' @inheritParams show_review_table
 #' @param submissions Data frame of submissions *including* clinical multiplier
 #'   (i.e. the output from [append_clinical_to_submission()]).
+#' @export
 calculate_scores_rowwise <- function(reviews, submissions) {
   if (nrow(reviews) == 0) {
     return(
@@ -270,4 +274,25 @@ geom_mean_score <- function(values) {
   } else {
     return(prod(values) ^ (1 / length(values)))
   }
+}
+
+#' @title Pull latest review table
+#'
+#' Pull latest review table from Synapse and calculate weighted scores based on
+#' the reviewers' scores, clinical/preclinical modifiers, partial beta weights,
+#' species, etc.
+#'
+#' @seealso [calculate_scores_rowwise()]
+#' @inheritParams mod_panel_section_server
+#' @return Data frame containing the reviewers' scores, comments, and calculated
+#'   weighted score (columns will be "ROW_ID", "ROW_VERSION", "form_data_id",
+#'   "submission", "scorer", "score", "comments", "species", "clinical", "step",
+#'   "weighted_score").
+#' @export
+pull_reviews_table <- function(syn, reviews_table, submissions) {
+  reviews <- syn$tableQuery(glue::glue("SELECT * FROM {reviews_table}"))
+  reviews <- readr::read_csv(reviews$filepath) %>%
+    dplyr::mutate(scorer = get_display_name(syn, .data$scorer)) %>%
+    dplyr::mutate(form_data_id = as.character(.data$form_data_id)) %>%
+    calculate_scores_rowwise(submissions)
 }

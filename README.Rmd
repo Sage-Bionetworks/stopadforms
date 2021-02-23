@@ -49,6 +49,47 @@ run_app()
 See `vignette("deploying-stopadforms", package = "stopadforms")` for information
 on how we deploy the app on the Sage Bionetworks Shiny Pro server.
 
+## Example: calculating scores for a submission
+
+```{r score, eval = FALSE}
+library("synapseforms")
+library("reticulate")
+library("tidyverse")
+library("stopadforms")
+
+# Optional: use reticulate::use_python() here to set path to Python version you want
+# to use
+synapse <- import("synapseclient")
+syn <- synapse$Synapse()
+syn$login() # Authenticate to Synapse
+
+## Get rejected submissions (including several test submissions)
+sub_data_files <- get_submissions(
+  syn,
+  group = 9,
+  statuses = "REJECTED"
+)
+
+## Convert to data frame
+dat_full <- process_submissions(
+  sub_data_files,
+  lookup_table = stopadforms:::lookup_table,
+  complete = TRUE
+)
+
+## Filter to one submission of interest -- a test submission I created.
+dat <- filter(dat_full, form_data_id == "242")
+
+## Append clinical modifier used in calculations
+submissions <- append_clinical_to_submission(dat)
+
+## Get scores
+scores <- pull_reviews_table(syn, "syn22014561", submissions)
+
+## Calculate scores
+calculate_submission_score(dat, scores)
+```
+
 ---
 
 Please note that the stopadforms project is released with a [Contributor Code of
