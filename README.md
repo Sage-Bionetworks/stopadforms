@@ -50,7 +50,6 @@ Python package installed, as stopadforms uses this package to interact
 with [Synapse](https://www.synapse.org).
 
 ``` r
-library("synapseforms")
 library("reticulate")
 library("tidyverse")
 library("stopadforms")

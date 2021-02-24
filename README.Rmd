@@ -57,7 +57,6 @@ package installed, as stopadforms uses this package to interact with
 [Synapse](https://www.synapse.org).
 
 ```{r score, eval = FALSE}
-library("synapseforms")
 library("reticulate")
 library("tidyverse")
 library("stopadforms")
