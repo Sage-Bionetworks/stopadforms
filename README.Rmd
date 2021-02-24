@@ -19,7 +19,6 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 [![R build status](https://github.com/Sage-Bionetworks/stopadforms/workflows/R-CMD-check/badge.svg)](https://github.com/Sage-Bionetworks/stopadforms/actions)
-[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 <!-- badges: end -->
 
 stopadforms is an R package and Shiny application to allow reviewers to view and
@@ -35,8 +34,6 @@ Synapse.
 
 ```{r install, eval = FALSE}
 devtools::install_github("Sage-Bionetworks/stopadforms")
-## Or install locally from within this repository:
-devtools::install()
 ```
 
 ## Running the application locally
@@ -63,7 +60,9 @@ synapse <- import("synapseclient")
 syn <- synapse$Synapse()
 syn$login() # Authenticate to Synapse
 
-## Get rejected submissions (including several test submissions)
+## Get rejected submissions (rejected submissions include a test submission I
+## created) -- in order to run this you will need to be part of the
+## STOP-AD_Reviewers team on Synapse (https://www.synapse.org/#!Team:3403721)
 sub_data_files <- get_submissions(
   syn,
   group = 9,
@@ -81,13 +80,13 @@ dat_full <- process_submissions(
 dat <- filter(dat_full, form_data_id == "242")
 
 ## Append clinical modifier used in calculations
-submissions <- append_clinical_to_submission(dat)
+submission <- append_clinical_to_submission(dat)
 
-## Get scores
-scores <- pull_reviews_table(syn, "syn22014561", submissions)
+## Get section scores
+scores <- pull_reviews_table(syn, "syn22014561", submission)
 
-## Calculate scores
-calculate_submission_score(dat, scores)
+## Calculate overall score
+calculate_submission_score(submission, scores)
 ```
 
 ---
