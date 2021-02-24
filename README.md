@@ -41,14 +41,24 @@ server.
 Example: calculating scores for a submission
 --------------------------------------------
 
+Below is an example of how to calculate scores for a submission outside
+of the Shiny app (i.e. in an R script).
+
+To run this, you will need to have Python and the
+[synapseclient](https://python-docs.synapse.org/build/html/index.html)
+Python package installed, as stopadforms uses this package to interact
+with [Synapse](https://www.synapse.org).
+
 ``` r
 library("synapseforms")
 library("reticulate")
 library("tidyverse")
 library("stopadforms")
 
-# Optional: use reticulate::use_python() here to set path to Python version you want
-# to use
+# Optional: use reticulate::use_python() here to tell R which Python version you
+# want to use. Again, the synapseclient Python package must be installed as
+# well.
+
 synapse <- import("synapseclient") # load the synapseclient python package
 syn <- synapse$Synapse()
 syn$login()                        # authenticate to Synapse
