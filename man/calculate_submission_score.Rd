@@ -11,7 +11,7 @@ calculate_submission_score(submission, reviews)
 `section`, `step`, `variable`, and `response` at a minimum.}
 
 \item{reviews}{Data frame containing weighted scores (output of
-[calculate_scores_rowwise()]).}
+[calculate_scores_rowwise()], or [pull_reviews_table()]).}
 }
 \value{
 The score for the submission
@@ -29,6 +29,8 @@ Then, the scores across all sections are added and divided by the denominator
 }
 \seealso{
 [calculate_scores_rowwise()]
+
+[pull_reviews_table()]
 
 [calculate_denominator()]
 }
