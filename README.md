@@ -49,9 +49,9 @@ library("stopadforms")
 
 # Optional: use reticulate::use_python() here to set path to Python version you want
 # to use
-synapse <- import("synapseclient")
+synapse <- import("synapseclient") # load the synapseclient python package
 syn <- synapse$Synapse()
-syn$login() # Authenticate to Synapse
+syn$login()                        # authenticate to Synapse
 
 ## Get rejected submissions (rejected submissions include a test submission I
 ## created) -- in order to run this you will need to be part of the
