@@ -76,7 +76,7 @@ scores <- read.csv(
 calculate_submission_score(submission, scores)
 ```
 
-See `vignette("deploying-stopadforms", package = "stopadforms")` for a detailed
+See `vignette("scoring", package = "stopadforms")` for a detailed
 description of the scoring process and an example of how to score real
 submissions that are stored in Synapse.
 

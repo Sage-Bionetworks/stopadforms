@@ -69,9 +69,9 @@ calculate_submission_score(submission, scores)
 #> [1] 0.2631988
 ```
 
-See `vignette("deploying-stopadforms", package = "stopadforms")` for a
-detailed description of the scoring process and an example of how to
-score real submissions that are stored in Synapse.
+See `vignette("scoring", package = "stopadforms")` for a detailed
+description of the scoring process and an example of how to score real
+submissions that are stored in Synapse.
 
 ------------------------------------------------------------------------
 
