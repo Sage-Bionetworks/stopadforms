@@ -76,58 +76,9 @@ scores <- read.csv(
 calculate_submission_score(submission, scores)
 ```
 
-Below is a more real-world example that shows how to score submissions that are
-stored by Synapse. To run this, you will need to have Python and the
-[synapseclient](https://python-docs.synapse.org/build/html/index.html) Python
-package installed, as stopadforms uses this package to interact with
-[Synapse](https://www.synapse.org). You will also need to be part of the
-STOP-AD_Reviewers team on Synapse (https://www.synapse.org/#!Team:3403721)
-
-```{r score, eval = FALSE}
-library("reticulate")
-library("tidyverse")
-library("stopadforms")
-
-# Optional: use reticulate::use_python() here to tell R which Python version you
-# want to use. Again, the synapseclient Python package must be installed as
-# well.
-
-synapse <- import("synapseclient") # load the synapseclient python package
-syn <- synapse$Synapse()
-syn$login()                        # authenticate to Synapse
-
-## Get rejected submissions (rejected submissions include a test submission I
-## created).
-sub_data_files <- get_submissions(
-  syn,
-  group = 9,
-  statuses = "REJECTED"
-)
-
-## The above command returns a list of pre-signed URLs to the raw JSON data for
-## the submissions. These URLs are ephemeral and expire after a short period of
-## time, so if you experience 403 permissions errors trying to use them, it may
-## be because they have expired and you'll need to re-run the above command.
-
-## Convert to data frame
-dat_full <- process_submissions(
-  sub_data_files,
-  lookup_table = stopadforms:::lookup_table,
-  complete = TRUE
-)
-
-## Filter to one submission of interest -- a test submission I created.
-dat <- filter(dat_full, form_data_id == "242")
-
-## Append clinical modifier used in calculations
-submission <- append_clinical_to_submission(dat)
-
-## Get section scores
-scores <- pull_reviews_table(syn, "syn22014561", submission)
-
-## Calculate overall score
-calculate_submission_score(submission, scores)
-```
+See `vignette("deploying-stopadforms", package = "stopadforms")` for a detailed
+description of the scoring process and an example of how to score real
+submissions that are stored in Synapse.
 
 ---
 
