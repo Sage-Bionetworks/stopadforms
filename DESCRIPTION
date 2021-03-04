@@ -4,14 +4,17 @@ Version: 1.0.0
 Authors@R:
     c(person(given = "Kara",
              family = "Woo",
-             role = c("aut", "cre"),
-             email = "kara.woo@sagebase.org"),
+             role = c("aut")),
       person(given = "Sage Bionetworks",
              role = "cph"),
       person(given = "Nicole",
              family = "Kauer",
              role = "aut",
-             email = "nicole.kauer@sagebase.org"))
+             email = "nicole.kauer@sagebase.org"),
+      person(given = "Phil",
+             family = "Snyder",
+             role = c("cre"),
+             email = "phil.snyder@sagebase.org"))
 Description: Review and score submissions to the STOP-AD Compound Submission Portal.
 License: MIT + file LICENSE
 Encoding: UTF-8
