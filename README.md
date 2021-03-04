@@ -26,20 +26,8 @@ Installation
 devtools::install_github("Sage-Bionetworks/stopadforms")
 ```
 
-Running the application locally
--------------------------------
-
-``` r
-library("stopadforms")
-run_app()
-```
-
-See `vignette("deploying-stopadforms", package = "stopadforms")` for
-information on how we deploy the app on the Sage Bionetworks Shiny Pro
-server.
-
-Example: calculating scores for a submission
---------------------------------------------
+Calculating scores for a submission
+-----------------------------------
 
 Below is an example of how to calculate scores for a submission outside
 of the Shiny app (i.e. in an R script). This example uses sample data
@@ -75,6 +63,21 @@ calculate_submission_score(submission, scores)
 See `vignette("scoring", package = "stopadforms")` for a detailed
 description of the scoring process and an example of how to score real
 submissions that are stored in Synapse.
+
+Running the application locally
+-------------------------------
+
+``` r
+library("stopadforms")
+run_app()
+```
+
+Scores entered while running the application locally will persist on
+Synapse.
+
+See `vignette("deploying-stopadforms", package = "stopadforms")` for
+information on how we deploy the app on the Sage Bionetworks Shiny Pro
+server.
 
 ------------------------------------------------------------------------
 
