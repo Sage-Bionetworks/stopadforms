@@ -1,0 +1,12 @@
+ROW_ID,ROW_VERSION,form_data_id,submission,scorer,score,comments,species,clinical,step,weighted_score
+15,22,242,Woo - test-20200512,Kara Woo,1,NA,NA,0.67,Naming,1
+16,23,242,Woo - test-20200512,Kara Woo,1,NA,NA,0.67,Basic Data,1.4
+17,24,242,Woo - test-20200512,Kara Woo,0.25,NA,across,0.67,Binding [1],0.055275000000000005
+18,33,242,Woo - test-20200512,Kara Woo,0.1,Not so wonderful,within,0.67,In Vivo Data [1],0.03007630000000001
+19,26,242,Woo - test-20200512,Kara Woo,0.25,NA,NA,0.67,PK In Vitro,0.0825
+20,27,242,Woo - test-20200512,Kara Woo,0.85,NA,across,0.67,PK In Vivo [1],0.09396750000000001
+21,28,242,Woo - test-20200512,Kara Woo,1,NA,across,0.67,LD50 [1],0.22110000000000002
+22,51,242,Woo - test-20200512,Kara Woo,0,NA,NA,0.67,Teratogenicity [1],0
+23,50,242,Woo - test-20200512,Kara Woo,0,NA,NA,0.67,PK In Silico,0
+25,33,242,Woo - test-20200512,lurker,0.25,NA,across,0.67,PK In Vivo [1],0.027637500000000002
+26,33,242,Woo - test-20200512,lurker,1,I think this is great,across,0.67,Binding [1],0.22110000000000002

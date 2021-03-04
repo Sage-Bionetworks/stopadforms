@@ -49,12 +49,39 @@ on how we deploy the app on the Sage Bionetworks Shiny Pro server.
 ## Example: calculating scores for a submission
 
 Below is an example of how to calculate scores for a submission outside of the
-Shiny app (i.e. in an R script). 
+Shiny app (i.e. in an R script). This example uses sample data included in the
+package.
 
-To run this, you will need to have Python and the
+
+```{r self-contained-scoring-example}
+library("stopadforms")
+
+## Create a list with the form data id as the name, and the path to the included
+## JSON file as the value
+sample_sub <- list(
+  "242" = system.file("extdata", "testdata.json", package = "stopadforms")
+)
+
+dat <- process_submissions(sample_sub, lookup_table = lookup_table)
+submission <- append_clinical_to_submission(dat)
+
+## Load weighted scores. The contents of this file correspond to the output of
+## the `pull_reviews_table()` function.
+scores <- read.csv(
+  system.file("extdata", "weighted_scores.csv", package = "stopadforms"),
+  stringsAsFactors = FALSE
+)
+
+## Calculate overall score
+calculate_submission_score(submission, scores)
+```
+
+Below is a more real-world example that shows how to score submissions that are
+stored by Synapse. To run this, you will need to have Python and the
 [synapseclient](https://python-docs.synapse.org/build/html/index.html) Python
 package installed, as stopadforms uses this package to interact with
-[Synapse](https://www.synapse.org).
+[Synapse](https://www.synapse.org). You will also need to be part of the
+STOP-AD_Reviewers team on Synapse (https://www.synapse.org/#!Team:3403721)
 
 ```{r score, eval = FALSE}
 library("reticulate")
@@ -70,8 +97,7 @@ syn <- synapse$Synapse()
 syn$login()                        # authenticate to Synapse
 
 ## Get rejected submissions (rejected submissions include a test submission I
-## created) -- in order to run this you will need to be part of the
-## STOP-AD_Reviewers team on Synapse (https://www.synapse.org/#!Team:3403721)
+## created).
 sub_data_files <- get_submissions(
   syn,
   group = 9,
