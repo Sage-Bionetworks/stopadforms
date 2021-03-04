@@ -103,8 +103,9 @@ denominator would be 12. If they included 2 PK In Vivo sections, it would be
 
 ## Example
 
-Below is a more real-world example that shows how to score submissions that are
-stored by Synapse. To run this, you will need to have Python and the
+The code below shows how to score real submissions to the portal. These
+submissions are stored in [Synapse](https://www.synapse.org/#!Team:3403721). To
+run this, you will need to have Python and the
 [synapseclient](https://python-docs.synapse.org/build/html/index.html) Python
 package installed, as stopadforms uses this package to interact with
 [Synapse](https://www.synapse.org). You will also need to be part of the
