@@ -62,7 +62,10 @@ sample_sub <- list(
   "242" = system.file("extdata", "testdata.json", package = "stopadforms")
 )
 
+## Load the JSON data and convert to a data frame
 dat <- process_submissions(sample_sub, lookup_table = lookup_table)
+
+## Append clinical multiplier used in calculations
 submission <- append_clinical_to_submission(dat)
 
 ## Load weighted scores. The contents of this file correspond to the output of
