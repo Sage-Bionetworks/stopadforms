@@ -49,59 +49,36 @@ on how we deploy the app on the Sage Bionetworks Shiny Pro server.
 ## Example: calculating scores for a submission
 
 Below is an example of how to calculate scores for a submission outside of the
-Shiny app (i.e. in an R script). 
+Shiny app (i.e. in an R script). This example uses sample data included in the
+package.
 
-To run this, you will need to have Python and the
-[synapseclient](https://python-docs.synapse.org/build/html/index.html) Python
-package installed, as stopadforms uses this package to interact with
-[Synapse](https://www.synapse.org).
 
-```{r score, eval = FALSE}
-library("reticulate")
-library("tidyverse")
+```{r self-contained-scoring-example}
 library("stopadforms")
 
-# Optional: use reticulate::use_python() here to tell R which Python version you
-# want to use. Again, the synapseclient Python package must be installed as
-# well.
-
-synapse <- import("synapseclient") # load the synapseclient python package
-syn <- synapse$Synapse()
-syn$login()                        # authenticate to Synapse
-
-## Get rejected submissions (rejected submissions include a test submission I
-## created) -- in order to run this you will need to be part of the
-## STOP-AD_Reviewers team on Synapse (https://www.synapse.org/#!Team:3403721)
-sub_data_files <- get_submissions(
-  syn,
-  group = 9,
-  statuses = "REJECTED"
+## Create a list with the form data id as the name, and the path to the included
+## JSON file as the value
+sample_sub <- list(
+  "242" = system.file("extdata", "testdata.json", package = "stopadforms")
 )
 
-## The above command returns a list of pre-signed URLs to the raw JSON data for
-## the submissions. These URLs are ephemeral and expire after a short period of
-## time, so if you experience 403 permissions errors trying to use them, it may
-## be because they have expired and you'll need to re-run the above command.
-
-## Convert to data frame
-dat_full <- process_submissions(
-  sub_data_files,
-  lookup_table = stopadforms:::lookup_table,
-  complete = TRUE
-)
-
-## Filter to one submission of interest -- a test submission I created.
-dat <- filter(dat_full, form_data_id == "242")
-
-## Append clinical modifier used in calculations
+dat <- process_submissions(sample_sub, lookup_table = lookup_table)
 submission <- append_clinical_to_submission(dat)
 
-## Get section scores
-scores <- pull_reviews_table(syn, "syn22014561", submission)
+## Load weighted scores. The contents of this file correspond to the output of
+## the `pull_reviews_table()` function.
+scores <- read.csv(
+  system.file("extdata", "weighted_scores.csv", package = "stopadforms"),
+  stringsAsFactors = FALSE
+)
 
 ## Calculate overall score
 calculate_submission_score(submission, scores)
 ```
+
+See `vignette("deploying-stopadforms", package = "stopadforms")` for a detailed
+description of the scoring process and an example of how to score real
+submissions that are stored in Synapse.
 
 ---
 
