@@ -115,7 +115,10 @@
   <span class="st">"242"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"testdata.json"</span>, package <span class="op">=</span> <span class="st">"stopadforms"</span><span class="op">)</span>
 <span class="op">)</span>
 
+<span class="co">## Load the JSON data and convert to a data frame</span>
 <span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/process_submissions.html">process_submissions</a></span><span class="op">(</span><span class="va">sample_sub</span>, lookup_table <span class="op">=</span> <span class="va">lookup_table</span><span class="op">)</span>
+
+<span class="co">## Append clinical multiplier used in calculations</span>
 <span class="va">submission</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/append_clinical_to_submission.html">append_clinical_to_submission</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span>
 
 <span class="co">## Load weighted scores. The contents of this file correspond to the output of</span>
