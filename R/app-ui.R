@@ -1,28 +1,31 @@
 #' @import shiny
 app_ui <- function() {
 
-  # Submissions
-  submissions <- list("123-ABC", "456-DEF", "789-GHI")
-
-  # Sections
-  sections <- list("1a", "1b", "2", "3")
-
   tagList(
     # Leave this function for adding external resources
     golem_add_external_resources(),
+
+    # Add waiter loading screen
+    waiter::use_waiter(),
+    waiter::waiter_show_on_load(
+      html = tagList(
+        img(src = "www/loading.gif"),
+        h4("Connecting to Synapse...")
+      ),
+      color = "#424874"
+    ),
 
     # List the first level UI elements here
     navbarPage(
       "STOP-AD submission reviewer",
       mod_review_section_ui(
-        "review_section",
-        submissions = submissions,
-        sections = sections
+        "review_section"
       ),
       mod_panel_section_ui(
-        "panel_section",
-        submissions = submissions,
-        sections = sections
+        "panel_section"
+      ),
+      mod_view_all_section_ui(
+        "view_all_section"
       )
     )
   )

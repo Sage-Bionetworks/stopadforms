@@ -5,17 +5,21 @@
 \alias{mod_review_section_server}
 \title{mod_review_section_ui and mod_review_section_server}
 \usage{
-mod_review_section_ui(id, submissions, sections)
+mod_review_section_ui(id)
 
-mod_review_section_server(input, output, session, synapse, syn,
-  reviews_table)
+mod_review_section_server(
+  input,
+  output,
+  session,
+  synapse,
+  syn,
+  user,
+  submissions,
+  reviews_table
+)
 }
 \arguments{
 \item{id}{shiny id}
-
-\item{submissions}{Character vector of available submissions}
-
-\item{sections}{Character vector of sections within submissions}
 
 \item{input}{internal}
 
@@ -27,6 +31,8 @@ mod_review_section_server(input, output, session, synapse, syn,
 `reticulate::import("synapseclient")`)}
 
 \item{syn}{Synapse client object (e.g. output of `synapse$Synapse()`)}
+
+\item{submissions}{Data frame containing tidied submissions}
 
 \item{reviews_table}{Synapse table that stores the scores and comments}
 }

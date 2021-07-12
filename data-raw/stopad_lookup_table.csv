@@ -1,0 +1,149 @@
+step,label,section,variable
+Naming,Data Sharing,naming,data_sharing
+Naming,Is this compound available for off label use?,naming,is_off_label
+Naming,Submission Name,naming,compound_name
+Naming,First Name,naming,first_name
+Naming,Last Name,naming,last_name
+Naming,Title,naming,role_title
+Naming,Institution,naming,institution
+Naming,Contact Email,naming,email
+Naming,Other Applicants,naming,other_applicants
+Naming,Chemical Name,naming,chemical_name
+Naming,Common Name,naming,common_name
+Naming,IUPAC Name,naming,iupac_name
+Naming,CAS Number,naming,CAS_number
+Naming,Drug Class,naming,drug_class
+Measurements,Is the compound a solution?,measurements,is_solution
+Measurements,Available compound amount (mg),measurements,compound_availability
+Measurements,Molecular weight (g/mol),measurements,molecular_weight
+Measurements,Concentration (mg/ml),measurements,compound_concentration
+Measurements,Compound Purity,measurements,compound_purity
+Basic Data,Molecular Target,basic,molecular_target
+Basic Data,Mechanism of Action,basic,moa_description
+Basic Data,Therapeutic Indication,basic,therapeutic_indication_description
+Basic Data,Melting Point (C),basic,melting_point
+Basic Data,Freezing Point (C),basic,freezing_point
+Basic Data,Storage Conditions,basic,storage_temperature
+Basic Data,Is the compound water soluble?,basic,water_soluble
+Basic Data,What is the intended route of administration?,basic,route
+Basic Data,Is the drug orally active?,basic,orally_active
+Basic Data,Solubility Limitations,basic,solubility_limitations
+Basic Data,What is the therapeutic approach?,basic,therapeutic_approach
+Binding,Experiment Name,binding,name
+Binding,What cell line was used for the binding assay?,binding,cell_line
+Binding,Binding assay details,binding,assay_description
+Binding,"If this study has been published, please provide a reference.",binding,reference
+Binding,Binding Affinity (nM),binding,binding_affinity
+Binding,Binding Affinity Constant,binding,binding_affinity_constant
+Efficacy,Experiment Name,efficacy,name
+Efficacy,What cell line was used for the efficacy assay?,efficacy,cell_line
+Efficacy,Efficacy assay details,efficacy,assay_description
+Efficacy,Outcome measures,efficacy,outcome_measures
+Efficacy,"If this study has been published, please provide a reference.",efficacy,reference
+Efficacy,Efficacy,efficacy,efficacy_measure
+Efficacy,Efficacy Measure,efficacy,efficacy_measure_type
+In Vivo Data,Minimum Subject Age,in_vivo_data,age_range.age_range_min
+In Vivo Data,Maximum Subject Age,in_vivo_data,age_range.age_range_max
+In Vivo Data,Minimum Dose Range,in_vivo_data,dose_range.dose_range_min
+In Vivo Data,Maximum Dose Range,in_vivo_data,dose_range.dose_range_max
+In Vivo Data,Experiment Name,in_vivo_data,name
+In Vivo Data,"If this study has been published, please provide a reference.",in_vivo_data,reference
+In Vivo Data,Species,in_vivo_data,species
+In Vivo Data,Model Strain,in_vivo_data,strain
+In Vivo Data,Outcome Measure,in_vivo_data,outcome_measures
+In Vivo Data,Assay Description,in_vivo_data,assay_description
+In Vivo Data,ED50 (mg/kg),in_vivo_data,ed50
+In Vivo Data,Pretreatment Time,in_vivo_data,pretreatment_time
+In Vivo Data,Route of Administration,in_vivo_data,route
+In Vivo Data,Drug Formulation,in_vivo_data,drug_formulation
+In Vivo Data,Adverse events,in_vivo_data,adverse_events_description
+In Vivo Data,Subject Sex,in_vivo_data,sex
+In Vivo Data,Dosing Regimen,in_vivo_data,dose_regimen
+PK In Silico,Drug Partition Coefficient (LogP),pk_in_silico,partition_coefficient
+PK In Silico,Acid Dissociation Constant (pKA),pk_in_silico,dissociation_constant
+PK In Silico,Molecular Weight (g/mol),pk_in_silico,molecular_weight
+PK In Vitro,Cell Permeablity Assay,pk_in_vitro,assay_description
+PK In Vitro,Permeability,pk_in_vitro,permeability
+PK In Vitro,Drug Lipophilicity Coefficient (LogD),pk_in_vitro,lipophilicity
+PK In Vivo,Minimum Subject Age,pk_in_vivo,age_range.age_range_min
+PK In Vivo,Maximum Subject Age,pk_in_vivo,age_range.age_range_max
+PK In Vivo,Experiment Name,pk_in_vivo,name
+PK In Vivo,"If this study has been published, please provide a reference.",pk_in_vivo,reference
+PK In Vivo,Species,pk_in_vivo,species
+PK In Vivo,Model Strain,pk_in_vivo,strain
+PK In Vivo,Clearance Rate (Clp),pk_in_vivo,clearance_rate
+PK In Vivo,Half-life (T 1/2),pk_in_vivo,half_life
+PK In Vivo,Tissue Concentration (nmol/g),pk_in_vivo,tissue_concentration
+PK In Vivo,Plasma Protein Binding,pk_in_vivo,plasma_protein_binding
+PK In Vivo,Liver Metabolism,pk_in_vivo,liver_metabolism
+PK In Vivo,Fractional bioavailability,pk_in_vivo,fractional_bioavailability
+PK In Vivo,Plasma maximum concentration (Cmax),pk_in_vivo,plasma_max_concentration
+PK In Vivo,Volume of distribution (Vd),pk_in_vivo,volume
+PK In Vivo,Subject Sex,pk_in_vivo,sex
+LD50,Minimum Subject Age,ld50,age_range.age_range_min
+LD50,Maximum Subject Age,ld50,age_range.age_range_max
+LD50,Minimum Dose Range,ld50,dose_range.dose_range_min
+LD50,Maximum Dose Range,ld50,dose_range.dose_range_max
+LD50,Experiment Name,ld50,name
+LD50,"If this study has been published, please provide a reference.",ld50,reference
+LD50,Species,ld50,species
+LD50,Model Strain,ld50,strain
+LD50,Assay Description,ld50,assay_description
+LD50,Study Duration,ld50,duration
+LD50,LD50,ld50,ld50
+LD50,What was the route of administration?,ld50,route
+LD50,Drug Formulation,ld50,drug_formulation
+LD50,Subject sex,ld50,sex
+Acute Dosing,Minimum Subject Age,acute_dosing,age_range.age_range_min
+Acute Dosing,Maximum Subject Age,acute_dosing,age_range.age_range_max
+Acute Dosing,Minimum Dose Range,acute_dosing,dose_range.dose_range_min
+Acute Dosing,Maximum Dose Range,acute_dosing,dose_range.dose_range_max
+Acute Dosing,Experiment Name,acute_dosing,name
+Acute Dosing,"If this study has been published, please provide a reference.",acute_dosing,reference
+Acute Dosing,Species,acute_dosing,species
+Acute Dosing,Model Strain,acute_dosing,strain
+Acute Dosing,Assay Description,acute_dosing,assay_description
+Acute Dosing,Study Duration,acute_dosing,duration
+Acute Dosing,What was the route of administration?,acute_dosing,route
+Acute Dosing,Drug Formulation,acute_dosing,drug_formulation
+Acute Dosing,Adverse events,acute_dosing,adverse_events_description
+Acute Dosing,Subject sex,acute_dosing,sex
+Chronic Dosing,Minimum Subject Age,chronic_dosing,age_range.age_range_min
+Chronic Dosing,Maximum Subject Age,chronic_dosing,age_range.age_range_max
+Chronic Dosing,Minimum Dose Range,chronic_dosing,dose_range.dose_range_min
+Chronic Dosing,Maximum Dose Range,chronic_dosing,dose_range.dose_range_max
+Chronic Dosing,Experiment Name,chronic_dosing,name
+Chronic Dosing,"If this study has been published, please provide a reference.",chronic_dosing,reference
+Chronic Dosing,Species,chronic_dosing,species
+Chronic Dosing,Model Strain,chronic_dosing,strain
+Chronic Dosing,Assay Description,chronic_dosing,assay_description
+Chronic Dosing,Study Duration,chronic_dosing,duration
+Chronic Dosing,What was the route of administration?,chronic_dosing,route
+Chronic Dosing,Drug Formulation,chronic_dosing,drug_formulation
+Chronic Dosing,Adverse events,chronic_dosing,adverse_events_description
+Chronic Dosing,Subject sex,chronic_dosing,sex
+Teratogenicity,Minimum Subject Age,teratogenicity,age_range.age_range_min
+Teratogenicity,Maximum Subject Age,teratogenicity,age_range.age_range_max
+Teratogenicity,Minimum Dose Range,teratogenicity,dose_range.dose_range_min
+Teratogenicity,Maximum Dose Range,teratogenicity,dose_range.dose_range_max
+Teratogenicity,Experiment Name,teratogenicity,name
+Teratogenicity,"If this study has been published, please provide a reference.",teratogenicity,reference
+Teratogenicity,Species,teratogenicity,species
+Teratogenicity,Model Strain,teratogenicity,strain
+Teratogenicity,Assay Description,teratogenicity,assay_description
+Teratogenicity,Study Duration,teratogenicity,duration
+Teratogenicity,Route of Administration,teratogenicity,route
+Teratogenicity,Drug Formulation,teratogenicity,drug_formulation
+Teratogenicity,Adverse events,teratogenicity,adverse_events_description
+Teratogenicity,Subject Sex,teratogenicity,sex
+Clinical Data,Were you involved in this clinical study?,clinical_data,clinical_data_involvement
+Clinical Data,What sex is the clinical data subject population?,clinical_data,sex
+Clinical Data,Minimum Subject Age,clinical_data,age_range.age_range_min
+Clinical Data,Maximum Subject Age,clinical_data,age_range.age_range_max
+Clinical Data,"If this study has been published, please provide a reference.",clinical_data,clinical_publication_status
+Clinical Data,Clinical Trials Reference,clinical_data,clinical_trials_reference
+Clinical Data,What is the clinical indication of the patient population?,clinical_data,diagnosis
+Clinical Data,Clinical Measures,clinical_data,clinical_measures
+Clinical Data,Pharmacokinetic Data,clinical_data,pharmacokinetics
+Clinical Data,Safety Data,clinical_data,safety
+Clinical Data,What type of clinical data exists for this compound?,clinical_data,clinical_data_description

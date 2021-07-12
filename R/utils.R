@@ -10,7 +10,19 @@ get_display_name <- function(syn, id) {
   purrr::map_chr(
     id,
     function(x) {
-      syn$getUserProfile(x)$displayName %||% syn$getUserProfile(x)$userName
+      display_name <- tryCatch(
+        {
+          syn$getUserProfile(x)$displayName
+        },
+        error = function(err) {}
+      )
+      user_name <- tryCatch(
+        {
+          syn$getUserProfile(x)$userName
+        },
+        error = function(err) {}
+      )
+      display_name %||% user_name
     }
   )
 }

@@ -1,0 +1,158 @@
+---
+title: "Scoring submissions"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Scoring submissionsxb}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This vignette describes the scoring algorithm used by STOP-AD. Here a
+"submission" refers to an application submitted to the [STOP-AD Compound
+Submission Portal](https://stopadportal.synapse.org/). Submissions are scored by
+a panel of reviewers, and the final score is aggregated based on these reviews.
+
+## Scoring sections of a submission
+
+Reviewers give ratings to submissions on a section-by-section basis. That is,
+they score the Binding, LD50, PK In Vivo, etc. sections independently. They rate
+each section as None (no data; 0), Poor (0.1), Fair (0.25), Good (0.85), or
+Excellent (1). Reviewers can abstain from reviewing a section if they feel they
+cannot rate it. Reviewers also record whether the section contains data from
+within or across species.
+
+The score for a section is generally determined by several factors: the rating
+given by the reviewer, whether the data is within- or across-species (referred
+to as the "species multiplier": 0.67 if within-species, 0.33 if across), whether
+the compound is available for off-label use (referred to as the "clinical
+multiplier": 0.67 if yes, 0.33 if no), and the partial beta weights of fields
+within the section (contained in the `partial_betas` table within this R
+package; these were originally sourced from the scoring spreadsheet upon which
+this scoring system was derived).
+
+However, there are exceptions to the above: the Naming, Basic Data, PK In
+Silico, and PK In Vitro sections do not use the clinical or species multipliers,
+so these multipliers are set to 1 in the calculations. 
+
+Most of the time, the contents of the submission itself do not directly affect
+the score; it is the reviewer's rating of those contents that affect the score.
+But, there are exceptions. The main exception is the clinical multiplier, which
+is derived from the answer to the question "Is this compound available for off
+label use?". The clinical multiplier affects the scoring of most sections. In
+the other exceptions, the partial beta weight for a field is not drawn from the
+`partial_betas` table, but rather derived from the data. This is the case for
+the efficacy measure (EC50 gets a weight of 0.67, IC50: 0.33) and therapeutic
+approach (prophylactic: 0.4, symptomatic: 0.2, both: 0.3, unknown: 0.1).
+
+Most sections are equally weighted relative to each other, but the 3 PK
+sections---PK In Vivo, PK In Vitro, PK In Silico---are weighted differently.
+They are treated as 3 components of a larger section, with PK In Silico getting
+a weight of 0.17, PK In Vitro getting a weight of 0.33, and PK In Vivo getting a
+weight of 0.5. These weights are referred to as the "section multiplier"; for
+the rest of the sections in the submission, the section multiplier is 1.
+
+Some sections (Acute Dosing, Chronic Dosing, and Teratogenicity) do not assign
+partial beta weights for individual fields. Instead, if there is any data
+provided for the section at all the partial beta is set to 1.
+
+The score of a section for a given reviewer is calculated by multiplying the
+section multiplier, clinical multiplier, species multiplier, and reviewer score
+by the vector of partial beta weights for the questions within that section.
+This multiplication results in a vector of numbers, the sum of which produces
+the score for the section. We repeat this process for all sections of the
+submission and all reviews.
+
+## Aggregating across reviewers
+
+The previous section describes how we calculate the score for each section based
+on a single reviewer's rating. The next step in scoring is to aggregate the
+section scores across multiple reviewers. For each section of a submission, we
+take the geometric mean of the scores that were calculated for each reviewer.
+Where `values` is a vector of scores for the current section, the geometric mean
+is calculated by:
+
+```{r geom-mean, eval = FALSE}
+prod(values) ^ (1 / length(values))
+```
+
+This leaves us with a single score for each section of the submission.
+
+## Final score
+
+The final step in scoring is to add up the section scores from the previous
+section and divide by a denominator. Again, at this point the section scores are
+the geometric means of the scores from the different reviewers.
+
+The base denominator is 11, which corresponds to the number of sections in a
+submission, but with the 3 PK sections together making 1, and with the Basic
+Data section getting double weight. The clinical data and metadata sections are
+not scored, so they are not included in the denominator. 
+
+A submission can have different numbers of sections, however, because applicants
+can add extra sections if they have multiple experiments to report. Thus the
+denominator can vary. If someone included two binding experiments, then the
+denominator would be 12. If they included 2 PK In Vivo sections, it would be
+11.5.
+
+## Example
+
+The code below shows how to score real submissions to the portal. These
+submissions are stored in [Synapse](https://www.synapse.org/#!Team:3403721). To
+run this, you will need to have Python and the
+[synapseclient](https://python-docs.synapse.org/build/html/index.html) Python
+package installed, as stopadforms uses this package to interact with
+[Synapse](https://www.synapse.org). You will also need to be part of the
+STOP-AD_Reviewers team on Synapse (https://www.synapse.org/#!Team:3403721)
+
+```{r score, eval = FALSE}
+library("reticulate")
+library("tidyverse")
+library("stopadforms")
+
+# Optional: use reticulate::use_python() here to tell R which Python version you
+# want to use. Again, the synapseclient Python package must be installed as
+# well.
+
+synapse <- import("synapseclient") # load the synapseclient python package
+syn <- synapse$Synapse()
+syn$login()                        # authenticate to Synapse
+
+## Get rejected submissions (rejected submissions include a test submission I
+## created).
+sub_data_files <- get_submissions(
+  syn,
+  group = 9,
+  statuses = "REJECTED"
+)
+
+## The above command returns a list of pre-signed URLs to the raw JSON data for
+## the submissions. These URLs are ephemeral and expire after a short period of
+## time, so if you experience 403 permissions errors trying to use them, it may
+## be because they have expired and you'll need to re-run the above command.
+
+## Convert to data frame
+dat_full <- process_submissions(
+  sub_data_files,
+  lookup_table = stopadforms:::lookup_table,
+  complete = TRUE
+)
+
+## Filter to one submission of interest -- a test submission I created.
+dat <- filter(dat_full, form_data_id == "242")
+
+## Append clinical modifier used in calculations
+submission <- append_clinical_to_submission(dat)
+
+## Get section scores
+scores <- pull_reviews_table(syn, "syn22014561", submission)
+
+## Calculate overall score
+calculate_submission_score(submission, scores)
+```

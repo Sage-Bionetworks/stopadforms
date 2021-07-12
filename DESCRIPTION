@@ -1,32 +1,50 @@
 Package: stopadforms
 Title: STOP-AD Forms
-Version: 0.0.0.9000
+Version: 1.0.0
 Authors@R:
     c(person(given = "Kara",
              family = "Woo",
-             role = c("aut", "cre"),
-             email = "kara.woo@sagebase.org"),
+             role = c("aut")),
       person(given = "Sage Bionetworks",
-             role = "cph"))
+             role = "cph"),
+      person(given = "Nicole",
+             family = "Kauer",
+             role = "aut",
+             email = "nicole.kauer@sagebase.org"),
+      person(given = "Phil",
+             family = "Snyder",
+             role = c("cre"),
+             email = "phil.snyder@sagebase.org"))
 Description: Review and score submissions to the STOP-AD Compound Submission Portal.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
+URL: https://sage-bionetworks.github.io/stopadforms, https://github.com/Sage-Bionetworks/stopadforms
 Depends: R (>= 3.4.0)
 Imports:
-    dccvalidator,
-    dplyr,
+    dccvalidator (>= 0.1.0),
+    dplyr (>= 0.8.99),
     glue,
     golem,
+    jsonlite,
     magrittr,
     purrr,
     reactable,
     readr,
     reticulate,
     rlang,
-    shiny
+    shiny,
+    shinyjs,
+    stringr,
+    synapseforms,
+    tibble,
+    tidyr,
+    waiter
 Remotes:
-    Sage-Bionetworks/dccvalidator
-RoxygenNote: 6.1.1
+    Sage-Bionetworks/synapseforms
+RoxygenNote: 7.1.1
 Suggests: 
-    testthat
+    testthat,
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
