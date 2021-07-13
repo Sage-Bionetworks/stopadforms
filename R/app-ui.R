@@ -1,5 +1,5 @@
 #' @import shiny
-app_ui <- function() {
+app_ui <- function(request) {
   if (interactive()) {
     ## Running locally; skip OAuth
     mod_main_ui("main")
