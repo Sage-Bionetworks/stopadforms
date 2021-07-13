@@ -1,0 +1,5 @@
+default:
+  app_url: http://shinypro.synapse.org/users/nkauer/stopadforms/
+
+testing:
+  app_url: http://shinypro.synapse.org/users/nkauer/stopadforms-test/
