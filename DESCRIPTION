@@ -24,8 +24,10 @@ Depends: R (>= 3.4.0)
 Imports:
     dccvalidator (>= 0.1.0),
     dplyr (>= 0.8.99),
+    config,
     glue,
     golem,
+    httr,
     jsonlite,
     magrittr,
     purrr,
