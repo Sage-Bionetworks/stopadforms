@@ -8,7 +8,7 @@ app_server <- function(input, output, session) {
   } else {
     ## Oauth
     syn <- callModule(
-      mod_oauth_server,
+      mod_synapse_oauth_server,
       "oauth",
       syn = syn
     )
