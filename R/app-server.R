@@ -2,7 +2,7 @@
 app_server <- function(input, output, session) {
   ## Synapse client for a specific user
   syn <- synapse$Synapse()
-  
+
   if (interactive()) {
     attempt_login(syn)
   } else {

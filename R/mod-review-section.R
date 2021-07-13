@@ -40,7 +40,6 @@ mod_review_section_ui <- function(id) {
         )
       )
     ),
-
     fluidRow(
       column(
         7,
@@ -48,7 +47,6 @@ mod_review_section_ui <- function(id) {
         reactable::reactableOutput(ns("data_section_subset"))
       )
     ),
-
     fluidRow(
       column(
         4,
@@ -93,7 +91,6 @@ mod_review_section_ui <- function(id) {
 #' @keywords internal
 mod_review_section_server <- function(input, output, session, synapse, syn,
                                       user, submissions, reviews_table) {
-
   updateSelectInput(
     session = getDefaultReactiveDomain(),
     "submission",

@@ -63,8 +63,7 @@ calculate_section_score <- function(data, lookup, score = 1, species = 1,
     return(0)
   }
   ## PK sections have an additional multiplier
-  section <- switch(
-    section_name,
+  section <- switch(section_name,
     "pk_in_silico" = 0.17,
     "pk_in_vitro" = 0.33,
     "pk_in_vivo" = 0.5,
@@ -108,8 +107,7 @@ calculate_section_score <- function(data, lookup, score = 1, species = 1,
 
 ## Betas for therapeutic approach
 approach_beta <- function(approach) {
-  switch(
-    approach,
+  switch(approach,
     prophylactic = 0.4,
     symptomatic = 0.2,
     "prophylactic, symptomatic" = 0.3,
@@ -120,8 +118,7 @@ approach_beta <- function(approach) {
 
 ## Betas of efficacy measure
 efficacy_beta <- function(efficacy_measure) {
-  switch(
-    efficacy_measure,
+  switch(efficacy_measure,
     EC50 = .67,
     IC50 = .33,
     0
@@ -153,19 +150,19 @@ calculate_denominator <- function(data) {
     return(NULL)
   }
   base_points <- tibble::tribble(
-            ~section, ~points,
-    "naming",               1,
-    "basic",                2,
-    "binding",              1,
-    "efficacy",             1,
-    "in_vivo_data",         1,
-    "pk_in_silico",         0.17,
-    "pk_in_vitro",          0.33,
-    "pk_in_vivo",           0.5,
-    "ld50",                 1,
-    "acute_dosing",         1,
-    "chronic_dosing",       1,
-    "teratogenicity",       1
+    ~section, ~points,
+    "naming", 1,
+    "basic", 2,
+    "binding", 1,
+    "efficacy", 1,
+    "in_vivo_data", 1,
+    "pk_in_silico", 0.17,
+    "pk_in_vitro", 0.33,
+    "pk_in_vivo", 0.5,
+    "ld50", 1,
+    "acute_dosing", 1,
+    "chronic_dosing", 1,
+    "teratogenicity", 1
   )
 
   points <- data %>%
@@ -249,7 +246,11 @@ calculate_scores_rowwise <- function(reviews, submissions) {
         data = .data$data,
         lookup = partial_betas,
         score = .data$score,
-        species = switch(.data$species, within = 0.67, across = 0.33, 1),
+        species = switch(.data$species,
+          within = 0.67,
+          across = 0.33,
+          1
+        ),
         clinical = .data$clinical
       )
     ) %>%
@@ -272,7 +273,7 @@ geom_mean_score <- function(values) {
   if (length(values) == 0) {
     return(0)
   } else {
-    return(prod(values) ^ (1 / length(values)))
+    return(prod(values)^(1 / length(values)))
   }
 }
 

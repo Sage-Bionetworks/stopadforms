@@ -74,7 +74,7 @@ authorization_url <- NULL
 mod_synapse_oauth_ui <- function(id, request,
                                  main_ui = mod_main_ui, main_ui_id = "main") {
   ns <- NS(id)
-  
+
   # If access token not available, launch OAuth, else launch main app UI
   if (!has_auth_code(parseQueryString(request$QUERY_STRING))) {
     # authorization_url = httr::oauth2.0_authorize_url(api, app, scope = scope)

@@ -4,11 +4,11 @@
 #' @import shiny
 mod_main_ui <- function(id) {
   ns <- NS(id)
-  
+
   tagList(
     # Leave this function for adding external resources
     golem_add_external_resources(),
-    
+
     # Add waiter loading screen
     waiter::use_waiter(),
     waiter::waiter_show_on_load(
@@ -18,7 +18,7 @@ mod_main_ui <- function(id) {
       ),
       color = "#424874"
     ),
-    
+
     # List the first level UI elements here
     navbarPage(
       "STOP-AD submission reviewer",
@@ -38,8 +38,9 @@ mod_main_ui <- function(id) {
 #' @import shiny
 mod_main_server <- function(input, output, session, syn) {
   shiny::req(inherits(syn, "synapseclient.client.Synapse") & logged_in(syn))
-  
-  tryCatch({
+
+  tryCatch(
+    {
       ## Check if user is in STOP-AD_Reviewers team
       team <- "3403721"
       user <- syn$getUserProfile()
@@ -48,7 +49,7 @@ mod_main_server <- function(input, output, session, syn) {
         user = user,
         syn = syn
       )
-      
+
       if (inherits(memb, "check_fail")) {
         waiter::waiter_update(
           html = tagList(
@@ -66,7 +67,7 @@ mod_main_server <- function(input, output, session, syn) {
             h3(sprintf("Welcome, %s!", syn$getUserProfile()$userName))
           )
         )
-        
+
         ## Get data
         sub_data <- get_submissions(
           syn,
@@ -74,11 +75,11 @@ mod_main_server <- function(input, output, session, syn) {
           statuses = "SUBMITTED_WAITING_FOR_REVIEW"
         )
         sub_data <- process_submissions(sub_data, lookup_table)
-        
+
         Sys.sleep(2)
         waiter::waiter_hide()
       }
-  },
+    },
     error = function(err) {
       Sys.sleep(2)
       waiter::waiter_update(
@@ -92,7 +93,8 @@ mod_main_server <- function(input, output, session, syn) {
           )
         )
       )
-  })
+    }
+  )
 
   if (inherits(memb, "check_pass")) {
     ## Show submission data
@@ -105,7 +107,7 @@ mod_main_server <- function(input, output, session, syn) {
       submissions = sub_data,
       reviews_table = "syn22014561"
     )
-    
+
     callModule(
       mod_panel_section_server,
       "panel_section",
@@ -116,7 +118,7 @@ mod_main_server <- function(input, output, session, syn) {
       reviews_table = "syn22014561",
       submissions_table = "syn22213241"
     )
-    
+
     callModule(
       mod_view_all_section_server,
       "view_all_section",

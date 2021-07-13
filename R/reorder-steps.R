@@ -10,12 +10,14 @@
 #'   sections in the form
 #' @noRd
 reorder_steps <- function(steps,
-                          full_order = c("Naming", "Measurements", "Basic Data",
-                                         "Binding", "Efficacy", "In Vivo Data",
-                                         "PK In Silico", "PK In Vitro",
-                                         "PK In Vivo", "LD50", "Acute Dosing",
-                                         "Chronic Dosing", "Teratogenicity",
-                                         "Clinical Data")) {
+                          full_order = c(
+                            "Naming", "Measurements", "Basic Data",
+                            "Binding", "Efficacy", "In Vivo Data",
+                            "PK In Silico", "PK In Vitro",
+                            "PK In Vivo", "LD50", "Acute Dosing",
+                            "Chronic Dosing", "Teratogenicity",
+                            "Clinical Data"
+                          )) {
   ## Indices of elements in full_order that match the elements in steps
   ix <- purrr::map_dbl(steps, function(x) {
     unsuffixed_name <- stringr::str_remove(x, " \\[\\d\\]")
