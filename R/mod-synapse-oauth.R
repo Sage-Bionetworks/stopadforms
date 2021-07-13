@@ -94,20 +94,15 @@ mod_synapse_oauth_ui <- function(id, request,
 #' @import shiny
 #' @param id The module id.
 #' @param syn Synapse client object
-mod_synapse_oauth_server <- function(id, syn) {
-  moduleServer(
-    id,
-    function(input, output, session) {
-      url_params <- parseQueryString(isolate(session$clientData$url_search))
-      if (has_auth_code(url_params)) {
-        accessToken <- oauth_process(params = url_params)
-        if (inherits(accessToken, "character")) {
-          attempt_login(syn, authToken = accessToken)
-        }
-      }
-      return(syn)
+mod_synapse_oauth_server <- function(input, output, session, syn) {
+  url_params <- parseQueryString(isolate(session$clientData$url_search))
+  if (has_auth_code(url_params)) {
+    accessToken <- oauth_process(params = url_params)
+    if (inherits(accessToken, "character")) {
+      attempt_login(syn, authToken = accessToken)
     }
-  )
+  }
+  return(syn)
 }
 
 #' @title Sets up global OAuth variables
