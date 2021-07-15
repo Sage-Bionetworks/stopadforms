@@ -271,7 +271,7 @@ therapeutic_approach_response <- function(data) {
     data,
     response = dplyr::case_when(
       variable == "therapeutic_approach" & response == "both" ~
-        "prophylactic, symptomatic",
+      "prophylactic, symptomatic",
       TRUE ~ response
     )
   )

@@ -1,6 +1,6 @@
 Package: stopadforms
 Title: STOP-AD Forms
-Version: 1.0.0
+Version: 1.1.0
 Authors@R:
     c(person(given = "Kara",
              family = "Woo",
@@ -24,8 +24,10 @@ Depends: R (>= 3.4.0)
 Imports:
     dccvalidator (>= 0.1.0),
     dplyr (>= 0.8.99),
+    config,
     glue,
     golem,
+    httr,
     jsonlite,
     magrittr,
     purrr,

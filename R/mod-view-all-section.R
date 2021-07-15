@@ -56,62 +56,61 @@ mod_view_all_section_ui <- function(id) {
 #' @keywords internal
 mod_view_all_section_server <- function(input, output, session, synapse, syn,
                                         group, lookup_table) {
-
   observeEvent(input$select_status, {
     dccvalidator::with_busy_indicator_server("select_status", {
-        submissions <- get_submissions(
-          syn,
-          group,
-          input$status
+      submissions <- get_submissions(
+        syn,
+        group,
+        input$status
+      ) %>%
+        process_submissions(lookup_table) %>%
+        ## Make step an ordered factor
+        dplyr::mutate(
+          step = factor(
+            .data$step,
+            levels = reorder_steps(unique(.data$step)),
+            ordered = TRUE
+          )
         ) %>%
-          process_submissions(lookup_table) %>%
-          ## Make step an ordered factor
-          dplyr::mutate(
-            step = factor(
-              .data$step,
-              levels = reorder_steps(unique(.data$step)),
-              ordered = TRUE
-            )
-          ) %>%
-          ## Arrange by submission and step
-          dplyr::arrange(.data$submission, .data$step)
+        ## Arrange by submission and step
+        dplyr::arrange(.data$submission, .data$step)
 
-        if (is.null(submissions)) {
-          stop("No submissions found with requested status(es)")
-        }
-        output$submissions <- reactable::renderReactable({
-          reactable::reactable(
-            submissions,
-            groupBy = c("submission", "step"),
-            searchable = TRUE,
-            highlight = TRUE,
-            columns = list(
-              submission = reactable::colDef(
-                name = "Submission",
-                aggregate = "unique"
-              ),
-              form_data_id = reactable::colDef(name = "ID"),
-              step = reactable::colDef(
-                name = "Section",
-                aggregate = reactable::JS(
-                  "function(values, rows) { return '...' }"
-                )
-              ),
-              label = reactable::colDef(
-                name = "Label",
-                aggregate = reactable::JS(
-                  "function(values, rows) { return '...' }"
-                )
-              ),
-              response = reactable::colDef(
-                name = "Reponse",
-                aggregate = reactable::JS(
-                  "function(values, rows) { return '...' }"
-                )
+      if (is.null(submissions)) {
+        stop("No submissions found with requested status(es)")
+      }
+      output$submissions <- reactable::renderReactable({
+        reactable::reactable(
+          submissions,
+          groupBy = c("submission", "step"),
+          searchable = TRUE,
+          highlight = TRUE,
+          columns = list(
+            submission = reactable::colDef(
+              name = "Submission",
+              aggregate = "unique"
+            ),
+            form_data_id = reactable::colDef(name = "ID"),
+            step = reactable::colDef(
+              name = "Section",
+              aggregate = reactable::JS(
+                "function(values, rows) { return '...' }"
+              )
+            ),
+            label = reactable::colDef(
+              name = "Label",
+              aggregate = reactable::JS(
+                "function(values, rows) { return '...' }"
+              )
+            ),
+            response = reactable::colDef(
+              name = "Reponse",
+              aggregate = reactable::JS(
+                "function(values, rows) { return '...' }"
               )
             )
           )
-        })
+        )
+      })
     })
   })
 }
