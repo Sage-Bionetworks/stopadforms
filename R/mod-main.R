@@ -98,6 +98,7 @@ mod_main_server <- function(input, output, session, syn) {
 
   if (inherits(memb, "check_pass")) {
     ## Show submission data
+    
     callModule(
       mod_review_section_server,
       "review_section",

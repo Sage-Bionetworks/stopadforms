@@ -191,6 +191,9 @@ calculate_denominator <- function(data) {
 #'   the multiplier
 #' @export
 append_clinical_to_submission <- function(submissions) {
+  
+  print(submissions)
+  
   clinicals <- purrr::map_dfc(
     split(submissions, submissions$form_data_id),
     get_clinical

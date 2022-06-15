@@ -91,6 +91,7 @@ mod_review_section_ui <- function(id) {
 #' @keywords internal
 mod_review_section_server <- function(input, output, session, synapse, syn,
                                       user, submissions, reviews_table) {
+  
   updateSelectInput(
     session = getDefaultReactiveDomain(),
     "submission",
@@ -213,7 +214,9 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
 #' @return named list where names are the submission names
 #'   and values are their form_data_ids.
 get_submission_list <- function(data) {
+  
   sub_ids <- as.list(unique(data$form_data_id))
+  
   sub_names <- purrr::map(
     sub_ids,
     function(x) {

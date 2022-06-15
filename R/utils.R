@@ -40,6 +40,7 @@ get_display_name <- function(syn, id) {
 #' `password` or `apiKey`.
 attempt_login <- function(syn, ...) {
   is_logged_in <- FALSE
+  
   ## Try logging in with .synapseConfig
   try(
     {
@@ -50,8 +51,11 @@ attempt_login <- function(syn, ...) {
   )
   ## If failed to login, try using credentials provided
   if (!is_logged_in) {
+    
+    
     tryCatch(
       {
+        print(is_logged_in)
         syn$login(...)
       },
       error = function(e) {

@@ -1,0 +1,13 @@
+name: stopadforms
+title: stopadforms
+username:
+account: sagebio
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 6364629
+bundleId: 6011786
+url: https://sagebio.shinyapps.io/stopadforms/
+when: 1655327989.68388
+lastSyncTime: 1655327989.68388
+asMultiple: FALSE
+asStatic: FALSE

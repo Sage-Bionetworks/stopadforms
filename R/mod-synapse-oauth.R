@@ -18,14 +18,12 @@ authorization_url <- NULL
 #' @param pkgname default R .onLoad() parameter
 .onLoad <- function(libname, pkgname) {
   synapse <<- reticulate::import("synapseclient", delay_load = TRUE)
-  if (!interactive()) {
-    setup_global_oauth_vars(
-      app_url = get_golem_config("app_url"),
-      client_name = Sys.getenv("client_name"),
-      client_id = Sys.getenv("client_id"),
-      client_secret = Sys.getenv("client_secret")
-    )
-  }
+  setup_global_oauth_vars(
+    app_url = get_golem_config("app_url"),
+    client_name = get_golem_config("client_name"),
+    client_id = Sys.getenv("client_id"),
+    client_secret = Sys.getenv("client_secret")
+  )
 }
 
 #' @title Synapse Oauth Module
@@ -95,6 +93,7 @@ mod_synapse_oauth_ui <- function(id, request,
 #' @param id The module id.
 #' @param syn Synapse client object
 mod_synapse_oauth_server <- function(input, output, session, syn) {
+  
   url_params <- parseQueryString(isolate(session$clientData$url_search))
   if (has_auth_code(url_params)) {
     accessToken <- oauth_process(params = url_params)

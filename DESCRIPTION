@@ -50,3 +50,7 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
+GithubRepo: stopadforms
+GithubUsername: karawoo
+GithubRef: master
+GithubSHA1: 16867703d01e61704c319c514f21eeb233ea3ca9
