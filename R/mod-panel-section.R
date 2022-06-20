@@ -76,7 +76,8 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
                                      submissions, reviews_table,
                                      submissions_table) {
   ## Load submissions and reviews
-  submissions <- append_clinical_to_submission(submissions)
+  submissions <- append_clinical_to_submission(submissions) %>%
+    dplyr::mutate(submission = submission %>% trimws())
   reviews <- pull_reviews_table(syn, reviews_table, submissions)
 
   submission_id <- reactive({
