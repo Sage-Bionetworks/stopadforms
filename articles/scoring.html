@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,23 +33,17 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">stopadforms</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.1.0</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -64,7 +60,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/Sage-Bionetworks/stopadforms/">
+  <a href="https://github.com/Sage-Bionetworks/stopadforms/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -85,17 +81,17 @@
       <h1 data-toc-skip>Scoring submissions</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/Sage-Bionetworks/stopadforms/blob/master/vignettes/scoring.Rmd"><code>vignettes/scoring.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Sage-Bionetworks/stopadforms/blob/HEAD/vignettes/scoring.Rmd" class="external-link"><code>vignettes/scoring.Rmd</code></a></small>
       <div class="hidden name"><code>scoring.Rmd</code></div>
 
     </div>
 
     
     
-<p>This vignette describes the scoring algorithm used by STOP-AD. Here a “submission” refers to an application submitted to the <a href="https://stopadportal.synapse.org/">STOP-AD Compound Submission Portal</a>. Submissions are scored by a panel of reviewers, and the final score is aggregated based on these reviews.</p>
-<div id="scoring-sections-of-a-submission" class="section level2">
-<h2 class="hasAnchor">
-<a href="#scoring-sections-of-a-submission" class="anchor"></a>Scoring sections of a submission</h2>
+<p>This vignette describes the scoring algorithm used by STOP-AD. Here a “submission” refers to an application submitted to the <a href="https://stopadportal.synapse.org/" class="external-link">STOP-AD Compound Submission Portal</a>. Submissions are scored by a panel of reviewers, and the final score is aggregated based on these reviews.</p>
+<div class="section level2">
+<h2 id="scoring-sections-of-a-submission">Scoring sections of a submission<a class="anchor" aria-label="anchor" href="#scoring-sections-of-a-submission"></a>
+</h2>
 <p>Reviewers give ratings to submissions on a section-by-section basis. That is, they score the Binding, LD50, PK In Vivo, etc. sections independently. They rate each section as None (no data; 0), Poor (0.1), Fair (0.25), Good (0.85), or Excellent (1). Reviewers can abstain from reviewing a section if they feel they cannot rate it. Reviewers also record whether the section contains data from within or across species.</p>
 <p>The score for a section is generally determined by several factors: the rating given by the reviewer, whether the data is within- or across-species (referred to as the “species multiplier”: 0.67 if within-species, 0.33 if across), whether the compound is available for off-label use (referred to as the “clinical multiplier”: 0.67 if yes, 0.33 if no), and the partial beta weights of fields within the section (contained in the <code>partial_betas</code> table within this R package; these were originally sourced from the scoring spreadsheet upon which this scoring system was derived).</p>
 <p>However, there are exceptions to the above: the Naming, Basic Data, PK In Silico, and PK In Vitro sections do not use the clinical or species multipliers, so these multipliers are set to 1 in the calculations.</p>
@@ -104,35 +100,35 @@
 <p>Some sections (Acute Dosing, Chronic Dosing, and Teratogenicity) do not assign partial beta weights for individual fields. Instead, if there is any data provided for the section at all the partial beta is set to 1.</p>
 <p>The score of a section for a given reviewer is calculated by multiplying the section multiplier, clinical multiplier, species multiplier, and reviewer score by the vector of partial beta weights for the questions within that section. This multiplication results in a vector of numbers, the sum of which produces the score for the section. We repeat this process for all sections of the submission and all reviews.</p>
 </div>
-<div id="aggregating-across-reviewers" class="section level2">
-<h2 class="hasAnchor">
-<a href="#aggregating-across-reviewers" class="anchor"></a>Aggregating across reviewers</h2>
+<div class="section level2">
+<h2 id="aggregating-across-reviewers">Aggregating across reviewers<a class="anchor" aria-label="anchor" href="#aggregating-across-reviewers"></a>
+</h2>
 <p>The previous section describes how we calculate the score for each section based on a single reviewer’s rating. The next step in scoring is to aggregate the section scores across multiple reviewers. For each section of a submission, we take the geometric mean of the scores that were calculated for each reviewer. Where <code>values</code> is a vector of scores for the current section, the geometric mean is calculated by:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/prod.html">prod</a></span><span class="op">(</span><span class="va">values</span><span class="op">)</span> <span class="op">^</span> <span class="op">(</span><span class="fl">1</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">values</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/prod.html" class="external-link">prod</a></span><span class="op">(</span><span class="va">values</span><span class="op">)</span> <span class="op">^</span> <span class="op">(</span><span class="fl">1</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">values</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p>This leaves us with a single score for each section of the submission.</p>
 </div>
-<div id="final-score" class="section level2">
-<h2 class="hasAnchor">
-<a href="#final-score" class="anchor"></a>Final score</h2>
+<div class="section level2">
+<h2 id="final-score">Final score<a class="anchor" aria-label="anchor" href="#final-score"></a>
+</h2>
 <p>The final step in scoring is to add up the section scores from the previous section and divide by a denominator. Again, at this point the section scores are the geometric means of the scores from the different reviewers.</p>
 <p>The base denominator is 11, which corresponds to the number of sections in a submission, but with the 3 PK sections together making 1, and with the Basic Data section getting double weight. The clinical data and metadata sections are not scored, so they are not included in the denominator.</p>
 <p>A submission can have different numbers of sections, however, because applicants can add extra sections if they have multiple experiments to report. Thus the denominator can vary. If someone included two binding experiments, then the denominator would be 12. If they included 2 PK In Vivo sections, it would be 11.5.</p>
 </div>
-<div id="example" class="section level2">
-<h2 class="hasAnchor">
-<a href="#example" class="anchor"></a>Example</h2>
-<p>The code below shows how to score real submissions to the portal. These submissions are stored in <a href="https://www.synapse.org/#!Team:3403721">Synapse</a>. To run this, you will need to have Python and the <a href="https://python-docs.synapse.org/build/html/index.html">synapseclient</a> Python package installed, as stopadforms uses this package to interact with <a href="https://www.synapse.org">Synapse</a>. You will also need to be part of the STOP-AD_Reviewers team on Synapse (<a href="https://www.synapse.org/#!Team:3403721" class="uri">https://www.synapse.org/#!Team:3403721</a>)</p>
+<div class="section level2">
+<h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
+</h2>
+<p>The code below shows how to score real submissions to the portal. These submissions are stored in <a href="https://www.synapse.org/#!Team:3403721" class="external-link">Synapse</a>. To run this, you will need to have Python and the <a href="https://python-docs.synapse.org/build/html/index.html" class="external-link">synapseclient</a> Python package installed, as stopadforms uses this package to interact with <a href="https://www.synapse.org" class="external-link">Synapse</a>. You will also need to be part of the STOP-AD_Reviewers team on Synapse (<a href="https://www.synapse.org/#!Team:3403721" class="external-link uri">https://www.synapse.org/#!Team:3403721</a>)</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/rstudio/reticulate">"reticulate"</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st">"tidyverse"</span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://sage-bionetworks.github.io/stopadforms">"stopadforms"</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://rstudio.github.io/reticulate/" class="external-link">"reticulate"</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://tidyverse.tidyverse.org" class="external-link">"tidyverse"</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://sage-bionetworks.github.io/stopadforms" class="external-link">"stopadforms"</a></span><span class="op">)</span>
 
 <span class="co"># Optional: use reticulate::use_python() here to tell R which Python version you</span>
 <span class="co"># want to use. Again, the synapseclient Python package must be installed as</span>
 <span class="co"># well.</span>
 
-<span class="va">synapse</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/reticulate/man/import.html">import</a></span><span class="op">(</span><span class="st">"synapseclient"</span><span class="op">)</span> <span class="co"># load the synapseclient python package</span>
+<span class="va">synapse</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rstudio.github.io/reticulate/reference/import.html" class="external-link">import</a></span><span class="op">(</span><span class="st">"synapseclient"</span><span class="op">)</span> <span class="co"># load the synapseclient python package</span>
 <span class="va">syn</span> <span class="op">&lt;-</span> <span class="va">synapse</span><span class="op">$</span><span class="fu">Synapse</span><span class="op">(</span><span class="op">)</span>
 <span class="va">syn</span><span class="op">$</span><span class="fu">login</span><span class="op">(</span><span class="op">)</span>                        <span class="co"># authenticate to Synapse</span>
 
@@ -157,7 +153,7 @@
 <span class="op">)</span>
 
 <span class="co">## Filter to one submission of interest -- a test submission I created.</span>
-<span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">dat_full</span>, <span class="va">form_data_id</span> <span class="op">==</span> <span class="st">"242"</span><span class="op">)</span>
+<span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">dat_full</span>, <span class="va">form_data_id</span> <span class="op">==</span> <span class="st">"242"</span><span class="op">)</span>
 
 <span class="co">## Append clinical modifier used in calculations</span>
 <span class="va">submission</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/append_clinical_to_submission.html">append_clinical_to_submission</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span>
@@ -181,11 +177,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Kara Woo, Nicole Kauer, Phil Snyder.</p>
+  <p></p>
+<p>Developed by Kara Woo, Nicole Kauer, Phil Snyder.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer>
@@ -193,6 +191,8 @@
 
   
 
+
+  
 
   </body>
 </html>

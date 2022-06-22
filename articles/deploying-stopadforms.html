@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,23 +33,17 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">stopadforms</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.1.0</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -64,7 +60,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/Sage-Bionetworks/stopadforms/">
+  <a href="https://github.com/Sage-Bionetworks/stopadforms/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -85,21 +81,21 @@
       <h1 data-toc-skip>Deploying stopadforms</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/Sage-Bionetworks/stopadforms/blob/master/vignettes/deploying-stopadforms.Rmd"><code>vignettes/deploying-stopadforms.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/Sage-Bionetworks/stopadforms/blob/HEAD/vignettes/deploying-stopadforms.Rmd" class="external-link"><code>vignettes/deploying-stopadforms.Rmd</code></a></small>
       <div class="hidden name"><code>deploying-stopadforms.Rmd</code></div>
 
     </div>
 
     
     
-<p>This vignette is applicable to Sage employees who are deploying the application on our Shiny Pro server. To learn about the server and how to get credentials, please read the <a href="https://sagebionetworks.jira.com/wiki/spaces/SageShinyServer/pages/75497489/Shiny+Server">Confluence documentation</a>.</p>
+<p>This vignette is applicable to Sage employees who are deploying the application on our Shiny Pro server. To learn about the server and how to get credentials, please read the <a href="https://sagebionetworks.jira.com/wiki/spaces/SageShinyServer/pages/75497489/Shiny+Server" class="external-link">Confluence documentation</a>.</p>
 <p>The app is deployed on the server through the following steps:</p>
 <ol style="list-style-type: decimal">
 <li>ssh into the Shiny Pro server and navigate to <code>/home/kwoo/ShinyApps/stopadforms</code>
 </li>
 <li>
 <code>git pull</code> changes from GitHub</li>
-<li>To ensure packages are up-to-date, open an R session and run <code><a href="https://rstudio.github.io/renv//reference/restore.html">renv::restore()</a></code>
+<li>To ensure packages are up-to-date, open an R session and run <code><a href="https://rstudio.github.io/renv/reference/restore.html" class="external-link">renv::restore()</a></code>
 </li>
 </ol>
 <p>You may need to run <code>touch restart.txt</code> afterward to ensure the application is restarted.</p>
@@ -114,11 +110,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Kara Woo, Nicole Kauer, Phil Snyder.</p>
+  <p></p>
+<p>Developed by Kara Woo, Nicole Kauer, Phil Snyder.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer>
@@ -126,6 +124,8 @@
 
   
 
+
+  
 
   </body>
 </html>

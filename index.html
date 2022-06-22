@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,23 +33,17 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">stopadforms</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.1.0</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -64,7 +60,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/Sage-Bionetworks/stopadforms/">
+  <a href="https://github.com/Sage-Bionetworks/stopadforms/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -81,30 +77,29 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="stopadforms" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#stopadforms" class="anchor"></a>stopadforms</h1></div>
+<div class="section level1">
+<div class="page-header"><h1 id="stopadforms">stopadforms<a class="anchor" aria-label="anchor" href="#stopadforms"></a>
+</h1></div>
 <!-- badges: start -->
-
-<p>stopadforms is an R package and Shiny application to allow reviewers to view and score submissions to the <a href="https://stopadportal.synapse.org/#/">STOP-AD Compound Submission Portal</a>.</p>
-<p>The application is hosted at <a href="https://shinypro.synapse.org/users/kwoo/stopadforms/" class="uri">https://shinypro.synapse.org/users/kwoo/stopadforms/</a>. To use it, you must be a member of the <a href="https://www.synapse.org/#!Team:3403721">STOP-AD_Reviewers Synapse team</a> and be logged in to Synapse. To save reviews, you must be a Certified User on Synapse.</p>
-<div id="installation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#installation" class="anchor"></a>Installation</h2>
+<p>stopadforms is an R package and Shiny application to allow reviewers to view and score submissions to the <a href="https://stopadportal.synapse.org/#/" class="external-link">STOP-AD Compound Submission Portal</a>.</p>
+<p>The application is hosted at <a href="https://shinypro.synapse.org/users/kwoo/stopadforms/" class="external-link uri">https://shinypro.synapse.org/users/kwoo/stopadforms/</a>. To use it, you must be a member of the <a href="https://www.synapse.org/#!Team:3403721" class="external-link">STOP-AD_Reviewers Synapse team</a> and be logged in to Synapse. To save reviews, you must be a Certified User on Synapse.</p>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"Sage-Bionetworks/stopadforms"</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="calculating-scores-for-a-submission" class="section level2">
-<h2 class="hasAnchor">
-<a href="#calculating-scores-for-a-submission" class="anchor"></a>Calculating scores for a submission</h2>
+<div class="section level2">
+<h2 id="calculating-scores-for-a-submission">Calculating scores for a submission<a class="anchor" aria-label="anchor" href="#calculating-scores-for-a-submission"></a>
+</h2>
 <p>Below is an example of how to calculate scores for a submission outside of the Shiny app (i.e. in an R script). This example uses sample data included in the package.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://sage-bionetworks.github.io/stopadforms">"stopadforms"</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://sage-bionetworks.github.io/stopadforms" class="external-link">"stopadforms"</a></span><span class="op">)</span>
 
 <span class="co">## Create a list with the form data id as the name, and the path to the included</span>
 <span class="co">## JSON file as the value</span>
-<span class="va">sample_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>
-  <span class="st">"242"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"testdata.json"</span>, package <span class="op">=</span> <span class="st">"stopadforms"</span><span class="op">)</span>
+<span class="va">sample_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
+  <span class="st">"242"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"testdata.json"</span>, package <span class="op">=</span> <span class="st">"stopadforms"</span><span class="op">)</span>
 <span class="op">)</span>
 
 <span class="co">## Load the JSON data and convert to a data frame</span>
@@ -115,8 +110,8 @@
 
 <span class="co">## Load weighted scores. The contents of this file correspond to the output of</span>
 <span class="co">## the `pull_reviews_table()` function.</span>
-<span class="va">scores</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html">read.csv</a></span><span class="op">(</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"weighted_scores.csv"</span>, package <span class="op">=</span> <span class="st">"stopadforms"</span><span class="op">)</span>,
+<span class="va">scores</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"weighted_scores.csv"</span>, package <span class="op">=</span> <span class="st">"stopadforms"</span><span class="op">)</span>,
   stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span>
 <span class="op">)</span>
 
@@ -125,11 +120,11 @@
 <span class="co">#&gt; [1] 0.2631988</span></code></pre></div>
 <p>See <code><a href="articles/scoring.html">vignette("scoring", package = "stopadforms")</a></code> for a detailed description of the scoring process and an example of how to score real submissions that are stored in Synapse.</p>
 </div>
-<div id="running-the-application-locally" class="section level2">
-<h2 class="hasAnchor">
-<a href="#running-the-application-locally" class="anchor"></a>Running the application locally</h2>
+<div class="section level2">
+<h2 id="running-the-application-locally">Running the application locally<a class="anchor" aria-label="anchor" href="#running-the-application-locally"></a>
+</h2>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://sage-bionetworks.github.io/stopadforms">"stopadforms"</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://sage-bionetworks.github.io/stopadforms" class="external-link">"stopadforms"</a></span><span class="op">)</span>
 <span class="fu"><a href="reference/run_app.html">run_app</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p>Scores entered while running the application locally will persist on Synapse.</p>
 <p>See <code><a href="articles/deploying-stopadforms.html">vignette("deploying-stopadforms", package = "stopadforms")</a></code> for information on how we deploy the app on the Sage Bionetworks Shiny Pro server.</p>
@@ -141,51 +136,63 @@
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
-<h2>Links</h2>
+<h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li>Browse source code at <br><a href="https://github.com/Sage-Bionetworks/stopadforms/">https://​github.com/​Sage-Bionetworks/​stopadforms/​</a>
-</li>
+<li><a href="https://github.com/Sage-Bionetworks/stopadforms/" class="external-link">Browse source code</a></li>
 </ul>
 </div>
+
 <div class="license">
-<h2>License</h2>
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li><a href="LICENSE.html">Full license</a></li>
-<li><small><a href="https://opensource.org/licenses/mit-license.php">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a></small></li>
+<li><small><a href="https://opensource.org/licenses/mit-license.php" class="external-link">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a></small></li>
 </ul>
 </div>
+
 <div class="community">
-<h2>Community</h2>
+<h2 data-toc-skip>Community</h2>
 <ul class="list-unstyled">
 <li><a href="CODE_OF_CONDUCT.html">Code of conduct</a></li>
 </ul>
 </div>
+
+<div class="citation">
+<h2 data-toc-skip>Citation</h2>
+<ul class="list-unstyled">
+<li><a href="authors.html#citation">Citing stopadforms</a></li>
+</ul>
+</div>
+
 <div class="developers">
-<h2>Developers</h2>
+<h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
 <li>Kara Woo <br><small class="roles"> Author </small>  </li>
 <li>Nicole Kauer <br><small class="roles"> Author </small>  </li>
 <li>Phil Snyder <br><small class="roles"> Maintainer </small>  </li>
-<li><a href="authors.html">All authors...</a></li>
+<li><a href="authors.html">More about authors...</a></li>
 </ul>
 </div>
 
-  <div class="dev-status">
-<h2>Dev status</h2>
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/Sage-Bionetworks/stopadforms/actions"><img src="https://github.com/Sage-Bionetworks/stopadforms/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
+<li><a href="https://github.com/Sage-Bionetworks/stopadforms/actions" class="external-link"><img src="https://github.com/Sage-Bionetworks/stopadforms/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
 </ul>
 </div>
-</div>
+
+  </div>
 </div>
 
 
       <footer><div class="copyright">
-  <p>Developed by Kara Woo, Nicole Kauer, Phil Snyder.</p>
+  <p></p>
+<p>Developed by Kara Woo, Nicole Kauer, Phil Snyder.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer>
@@ -193,6 +200,8 @@
 
   
 
+
+  
 
   </body>
 </html>
