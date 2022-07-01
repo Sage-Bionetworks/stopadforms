@@ -14,6 +14,7 @@ golem_add_external_resources <- function() {
     "www", system.file("app/www", package = "stopadforms")
   )
 
+  #hack fix for refresh error
   tags$head(
     golem::activate_js(),
     golem::favicon(),
