@@ -77,8 +77,6 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
                                      submissions_table) {
   ## Load submissions and reviews
   submissions <- append_clinical_to_submission(submissions) %>%
-    #bug fix for extra whitespace
-    #suggested further upstream fix in future
     dplyr::mutate(submission = submission %>% trimws())
   reviews <- pull_reviews_table(syn, reviews_table, submissions)
 
