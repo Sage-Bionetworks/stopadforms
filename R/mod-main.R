@@ -21,6 +21,7 @@ mod_main_ui <- function(id) {
 
     # List the first level UI elements here
     navbarPage(
+      #name for refresh hack
       "STOP-AD submission reviewer",
       mod_review_section_ui(
         ns("review_section")

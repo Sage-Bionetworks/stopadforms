@@ -41,7 +41,8 @@ Imports:
     synapseforms,
     tibble,
     tidyr,
-    waiter
+    waiter,
+    htmlwidgets
 Remotes:
     Sage-Bionetworks/synapseforms
 RoxygenNote: 7.1.1
