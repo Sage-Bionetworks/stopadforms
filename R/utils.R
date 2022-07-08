@@ -40,6 +40,7 @@ get_display_name <- function(syn, id) {
 #' `password` or `apiKey`.
 attempt_login <- function(syn, ...) {
   is_logged_in <- FALSE
+  
   ## Try logging in with .synapseConfig
   try(
     {
@@ -50,8 +51,11 @@ attempt_login <- function(syn, ...) {
   )
   ## If failed to login, try using credentials provided
   if (!is_logged_in) {
+    
+    
     tryCatch(
       {
+        print(is_logged_in)
         syn$login(...)
       },
       error = function(e) {
@@ -76,3 +80,27 @@ logged_in <- function(syn) {
     return(TRUE)
   }
 }
+
+# https://ryouready.wordpress.com/2008/12/18/generate-random-string-name/
+###############################################################
+#
+# MHmakeRandomString(n, length)
+# function generates a random string random string of the
+# length (length), made up of numbers, small and capital letters
+
+MHmakeRandomString <- function(n=1, length=12)
+{
+  randomString <- c(1:n)                  # initialize vector
+  for (i in 1:n)
+  {
+    randomString[i] <- paste(sample(c(0:9, letters, LETTERS),
+                                    length, replace=TRUE),
+                             collapse="")
+  }
+  return(randomString)
+}
+
+#  > MHmakeRandomString()
+#  [1] "XM2xjggXX19r"
+
+###############################################################
