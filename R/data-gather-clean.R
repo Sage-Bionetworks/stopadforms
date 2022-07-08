@@ -99,7 +99,7 @@ create_table_from_json_file <- function(filename, data_id, lookup_table,
   R_string <- MHmakeRandomString(length = 10)
   newFilename <- paste0(R_string, ".json")
   
-  download.file(filename, newFilename)
+  utils::download.file(filename, newFilename)
   
   ## Load JSON
   data <- jsonlite::fromJSON(newFilename, simplifyVector = FALSE)
