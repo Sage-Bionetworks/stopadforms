@@ -46,11 +46,16 @@ json <- '
 }
 '
 
+# write to file to allow data-gather-clean.R
+# create_table_from_json_file to operate
+write(json, "test1.json")
+json1 <- "file://test1.json"
+
 # create_table_from_json_file() ------------------------------------------------
 
 test_that("create_table_from_json_file creates (at least) one row per row in lookup table", { # nolint
   dat <- create_table_from_json_file(
-    json,
+    json1,
     data_id = "1",
     lookup_table = lookup_table,
     complete = TRUE
@@ -60,7 +65,7 @@ test_that("create_table_from_json_file creates (at least) one row per row in loo
 
 test_that("All sections are represented if complete = TRUE", {
   dat <- create_table_from_json_file(
-    json,
+    json1,
     data_id = "1",
     lookup_table = lookup_table,
     complete = TRUE
@@ -70,7 +75,7 @@ test_that("All sections are represented if complete = TRUE", {
 
 test_that("create_table_from_json_file creates one row per response if complete = FALSE", { # nolint
   dat <- create_table_from_json_file(
-    json,
+    json1,
     data_id = "1",
     lookup_table = lookup_table,
     complete = FALSE
@@ -80,7 +85,7 @@ test_that("create_table_from_json_file creates one row per response if complete 
 
 test_that("Submission is named by user name and compound name", {
   dat <- create_table_from_json_file(
-    json,
+    json1,
     data_id = "1",
     lookup_table = lookup_table,
     complete = FALSE
@@ -90,7 +95,7 @@ test_that("Submission is named by user name and compound name", {
 
 test_that("Submission's data ID is added to data", {
   dat <- create_table_from_json_file(
-    json,
+    json1,
     data_id = "1",
     lookup_table = lookup_table,
     complete = FALSE
@@ -105,7 +110,7 @@ test_that("create_table_from_json_file gets missing sections added to each exper
     variable = c("reference", "duration"),
     label = c("Provide a reference", "Duration")
   )
-
+  
   json <- '
 {
   "naming": {
@@ -125,8 +130,11 @@ test_that("create_table_from_json_file gets missing sections added to each exper
   }
 }
 '
+  write(json, "test2.json")
+  json2 <- "file://test2.json"
+  
   res <- create_table_from_json_file(
-    json,
+    json2,
     data_id = "1",
     lookup_table = lookup_table,
     complete = TRUE
@@ -139,7 +147,7 @@ test_that("create_table_from_json_file returns correct columns", {
   correct <- c("section", "variable", "response", "label", "exp_num", "step",
                "form_data_id", "submission")
   res <- create_table_from_json_file(
-    json,
+    json1,
     data_id = "1",
     lookup_table = lookup_table,
     complete = TRUE
@@ -198,7 +206,7 @@ test_that("create_section_table returns multiple selections from responses", {
   )
   routes <- res %>%
     dplyr::filter(variable ==  "route")
-
+  
   expect_equal(
     routes[routes$exp_num == 1, "response", drop = TRUE],
     "sublingual, injection, transdermal"
