@@ -28,7 +28,6 @@ get_submissions <- function(syn, group, statuses) {
   )
   
   if (all(is.null(unlist(json_file_paths)))) {
-    print(json_file_paths)
     return(NULL)
   } else {
     return(json_file_paths)
