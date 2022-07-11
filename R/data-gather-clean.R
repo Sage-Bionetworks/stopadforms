@@ -12,9 +12,11 @@
 #' @importFrom rlang .data
 #' @export
 get_submissions <- function(syn, group, statuses) {
+  
   if (is.null(statuses)) {
     return(NULL)
   }
+  
   json_file_paths <- purrr::flatten(
     purrr::map(statuses, function(x) {
       synapseforms::download_all_submissions_temp(
@@ -24,6 +26,7 @@ get_submissions <- function(syn, group, statuses) {
       )
     })
   )
+  
   if (all(is.null(unlist(json_file_paths)))) {
     return(NULL)
   } else {
@@ -54,6 +57,7 @@ process_submissions <- function(submissions, lookup_table, complete = TRUE) {
   if (is.null(submissions)) {
     stop("No submissions to process", call. = FALSE)
   }
+  
   ## Main table creation, along with submission name. Suppress warnings about
   ## vectorizing 'glue' attributes.
   suppressWarnings(
@@ -68,7 +72,7 @@ process_submissions <- function(submissions, lookup_table, complete = TRUE) {
       )
     )
   )
-
+  
   ## Remove metadata section
   all_subs <- dplyr::filter(all_subs, .data$section != "metadata") %>%
     ## Fix display of some responses
@@ -88,9 +92,18 @@ process_submissions <- function(submissions, lookup_table, complete = TRUE) {
 #' @export
 create_table_from_json_file <- function(filename, data_id, lookup_table,
                                         complete = TRUE) {
+  
+  # Download file first to avoid parsing error from Amazon tokens
+  # ALZ-88
+  R_string <- MHmakeRandomString(length = 10)
+  newFilename <- paste0(R_string, ".json")
+  
+  utils::download.file(filename, newFilename)
+  
   ## Load JSON
-  data <- jsonlite::fromJSON(filename, simplifyVector = FALSE)
-
+  data <- jsonlite::fromJSON(newFilename, simplifyVector = FALSE)
+  file.remove(newFilename)
+  
   ## Iterate over list of sections to create data frame
   sub <- purrr::imap_dfr(
     data,
@@ -98,11 +111,11 @@ create_table_from_json_file <- function(filename, data_id, lookup_table,
     lookup_table = lookup_table,
     complete = complete
   )
-
+  
   ## Add unanswered sections, append experiment numbers to section names
   sub <- map_names(sub, lookup_table = lookup_table, complete = complete) %>%
     append_exp_nums()
-
+  
   ## Add form data ID and sub name
   user_name <- sub[sub$variable == "last_name", "response", drop = TRUE]
   compound_name <- sub[sub$variable == "compound_name", "response", drop = TRUE]
@@ -271,7 +284,7 @@ therapeutic_approach_response <- function(data) {
     data,
     response = dplyr::case_when(
       variable == "therapeutic_approach" & response == "both" ~
-      "prophylactic, symptomatic",
+        "prophylactic, symptomatic",
       TRUE ~ response
     )
   )
