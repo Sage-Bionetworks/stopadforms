@@ -87,45 +87,45 @@
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"Sage-Bionetworks/stopadforms"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"Sage-Bionetworks/stopadforms"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="calculating-scores-for-a-submission">Calculating scores for a submission<a class="anchor" aria-label="anchor" href="#calculating-scores-for-a-submission"></a>
 </h2>
 <p>Below is an example of how to calculate scores for a submission outside of the Shiny app (i.e. in an R script). This example uses sample data included in the package.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://sage-bionetworks.github.io/stopadforms" class="external-link">"stopadforms"</a></span><span class="op">)</span>
-
-<span class="co">## Create a list with the form data id as the name, and the path to the included</span>
-<span class="co">## JSON file as the value</span>
-<span class="va">sample_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-  <span class="st">"242"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"testdata.json"</span>, package <span class="op">=</span> <span class="st">"stopadforms"</span><span class="op">)</span>
-<span class="op">)</span>
-
-<span class="co">## Load the JSON data and convert to a data frame</span>
-<span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/process_submissions.html">process_submissions</a></span><span class="op">(</span><span class="va">sample_sub</span>, lookup_table <span class="op">=</span> <span class="va">lookup_table</span><span class="op">)</span>
-
-<span class="co">## Append clinical multiplier used in calculations</span>
-<span class="va">submission</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/append_clinical_to_submission.html">append_clinical_to_submission</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span>
-
-<span class="co">## Load weighted scores. The contents of this file correspond to the output of</span>
-<span class="co">## the `pull_reviews_table()` function.</span>
-<span class="va">scores</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span>
-  <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"weighted_scores.csv"</span>, package <span class="op">=</span> <span class="st">"stopadforms"</span><span class="op">)</span>,
-  stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span>
-<span class="op">)</span>
-
-<span class="co">## Calculate overall score</span>
-<span class="fu"><a href="reference/calculate_submission_score.html">calculate_submission_score</a></span><span class="op">(</span><span class="va">submission</span>, <span class="va">scores</span><span class="op">)</span>
-<span class="co">#&gt; [1] 0.2631988</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://sage-bionetworks.github.io/stopadforms" class="external-link">"stopadforms"</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## Create a list with the form data id as the name, and the path to the included</span></span>
+<span><span class="co">## JSON file as the value</span></span>
+<span><span class="va">sample_sub</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  <span class="st">"242"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"testdata.json"</span>, package <span class="op">=</span> <span class="st">"stopadforms"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## Load the JSON data and convert to a data frame</span></span>
+<span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/process_submissions.html">process_submissions</a></span><span class="op">(</span><span class="va">sample_sub</span>, lookup_table <span class="op">=</span> <span class="va">lookup_table</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## Append clinical multiplier used in calculations</span></span>
+<span><span class="va">submission</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/append_clinical_to_submission.html">append_clinical_to_submission</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## Load weighted scores. The contents of this file correspond to the output of</span></span>
+<span><span class="co">## the `pull_reviews_table()` function.</span></span>
+<span><span class="va">scores</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"weighted_scores.csv"</span>, package <span class="op">=</span> <span class="st">"stopadforms"</span><span class="op">)</span>,</span>
+<span>  stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## Calculate overall score</span></span>
+<span><span class="fu"><a href="reference/calculate_submission_score.html">calculate_submission_score</a></span><span class="op">(</span><span class="va">submission</span>, <span class="va">scores</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 0.2631988</span></span></code></pre></div>
 <p>See <code><a href="articles/scoring.html">vignette("scoring", package = "stopadforms")</a></code> for a detailed description of the scoring process and an example of how to score real submissions that are stored in Synapse.</p>
 </div>
 <div class="section level2">
 <h2 id="running-the-application-locally">Running the application locally<a class="anchor" aria-label="anchor" href="#running-the-application-locally"></a>
 </h2>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://sage-bionetworks.github.io/stopadforms" class="external-link">"stopadforms"</a></span><span class="op">)</span>
-<span class="fu"><a href="reference/run_app.html">run_app</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://sage-bionetworks.github.io/stopadforms" class="external-link">"stopadforms"</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/run_app.html">run_app</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>Scores entered while running the application locally will persist on Synapse.</p>
 <p>See <code><a href="articles/deploying-stopadforms.html">vignette("deploying-stopadforms", package = "stopadforms")</a></code> for information on how we deploy the app on the Sage Bionetworks Shiny Pro server.</p>
 <hr>
@@ -192,7 +192,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
       </footer>

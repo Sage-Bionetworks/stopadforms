@@ -105,7 +105,7 @@
 </h2>
 <p>The previous section describes how we calculate the score for each section based on a single reviewer’s rating. The next step in scoring is to aggregate the section scores across multiple reviewers. For each section of a submission, we take the geometric mean of the scores that were calculated for each reviewer. Where <code>values</code> is a vector of scores for the current section, the geometric mean is calculated by:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/prod.html" class="external-link">prod</a></span><span class="op">(</span><span class="va">values</span><span class="op">)</span> <span class="op">^</span> <span class="op">(</span><span class="fl">1</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">values</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/prod.html" class="external-link">prod</a></span><span class="op">(</span><span class="va">values</span><span class="op">)</span> <span class="op">^</span> <span class="op">(</span><span class="fl">1</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">values</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>This leaves us with a single score for each section of the submission.</p>
 </div>
 <div class="section level2">
@@ -120,49 +120,49 @@
 </h2>
 <p>The code below shows how to score real submissions to the portal. These submissions are stored in <a href="https://www.synapse.org/#!Team:3403721" class="external-link">Synapse</a>. To run this, you will need to have Python and the <a href="https://python-docs.synapse.org/build/html/index.html" class="external-link">synapseclient</a> Python package installed, as stopadforms uses this package to interact with <a href="https://www.synapse.org" class="external-link">Synapse</a>. You will also need to be part of the STOP-AD_Reviewers team on Synapse (<a href="https://www.synapse.org/#!Team:3403721" class="external-link uri">https://www.synapse.org/#!Team:3403721</a>)</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://rstudio.github.io/reticulate/" class="external-link">"reticulate"</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://tidyverse.tidyverse.org" class="external-link">"tidyverse"</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://sage-bionetworks.github.io/stopadforms" class="external-link">"stopadforms"</a></span><span class="op">)</span>
-
-<span class="co"># Optional: use reticulate::use_python() here to tell R which Python version you</span>
-<span class="co"># want to use. Again, the synapseclient Python package must be installed as</span>
-<span class="co"># well.</span>
-
-<span class="va">synapse</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rstudio.github.io/reticulate/reference/import.html" class="external-link">import</a></span><span class="op">(</span><span class="st">"synapseclient"</span><span class="op">)</span> <span class="co"># load the synapseclient python package</span>
-<span class="va">syn</span> <span class="op">&lt;-</span> <span class="va">synapse</span><span class="op">$</span><span class="fu">Synapse</span><span class="op">(</span><span class="op">)</span>
-<span class="va">syn</span><span class="op">$</span><span class="fu">login</span><span class="op">(</span><span class="op">)</span>                        <span class="co"># authenticate to Synapse</span>
-
-<span class="co">## Get rejected submissions (rejected submissions include a test submission I</span>
-<span class="co">## created).</span>
-<span class="va">sub_data_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_submissions.html">get_submissions</a></span><span class="op">(</span>
-  <span class="va">syn</span>,
-  group <span class="op">=</span> <span class="fl">9</span>,
-  statuses <span class="op">=</span> <span class="st">"REJECTED"</span>
-<span class="op">)</span>
-
-<span class="co">## The above command returns a list of pre-signed URLs to the raw JSON data for</span>
-<span class="co">## the submissions. These URLs are ephemeral and expire after a short period of</span>
-<span class="co">## time, so if you experience 403 permissions errors trying to use them, it may</span>
-<span class="co">## be because they have expired and you'll need to re-run the above command.</span>
-
-<span class="co">## Convert to data frame</span>
-<span class="va">dat_full</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/process_submissions.html">process_submissions</a></span><span class="op">(</span>
-  <span class="va">sub_data_files</span>,
-  lookup_table <span class="op">=</span> <span class="fu">stopadforms</span><span class="fu">:::</span><span class="va"><a href="../reference/lookup_table.html">lookup_table</a></span>,
-  complete <span class="op">=</span> <span class="cn">TRUE</span>
-<span class="op">)</span>
-
-<span class="co">## Filter to one submission of interest -- a test submission I created.</span>
-<span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">dat_full</span>, <span class="va">form_data_id</span> <span class="op">==</span> <span class="st">"242"</span><span class="op">)</span>
-
-<span class="co">## Append clinical modifier used in calculations</span>
-<span class="va">submission</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/append_clinical_to_submission.html">append_clinical_to_submission</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span>
-
-<span class="co">## Get section scores</span>
-<span class="va">scores</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pull_reviews_table.html">pull_reviews_table</a></span><span class="op">(</span><span class="va">syn</span>, <span class="st">"syn22014561"</span>, <span class="va">submission</span><span class="op">)</span>
-
-<span class="co">## Calculate overall score</span>
-<span class="fu"><a href="../reference/calculate_submission_score.html">calculate_submission_score</a></span><span class="op">(</span><span class="va">submission</span>, <span class="va">scores</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://rstudio.github.io/reticulate/" class="external-link">"reticulate"</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://tidyverse.tidyverse.org" class="external-link">"tidyverse"</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://sage-bionetworks.github.io/stopadforms" class="external-link">"stopadforms"</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Optional: use reticulate::use_python() here to tell R which Python version you</span></span>
+<span><span class="co"># want to use. Again, the synapseclient Python package must be installed as</span></span>
+<span><span class="co"># well.</span></span>
+<span></span>
+<span><span class="va">synapse</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rstudio.github.io/reticulate/reference/import.html" class="external-link">import</a></span><span class="op">(</span><span class="st">"synapseclient"</span><span class="op">)</span> <span class="co"># load the synapseclient python package</span></span>
+<span><span class="va">syn</span> <span class="op">&lt;-</span> <span class="va">synapse</span><span class="op">$</span><span class="fu">Synapse</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">syn</span><span class="op">$</span><span class="fu">login</span><span class="op">(</span><span class="op">)</span>                        <span class="co"># authenticate to Synapse</span></span>
+<span></span>
+<span><span class="co">## Get rejected submissions (rejected submissions include a test submission I</span></span>
+<span><span class="co">## created).</span></span>
+<span><span class="va">sub_data_files</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_submissions.html">get_submissions</a></span><span class="op">(</span></span>
+<span>  <span class="va">syn</span>,</span>
+<span>  group <span class="op">=</span> <span class="fl">9</span>,</span>
+<span>  statuses <span class="op">=</span> <span class="st">"REJECTED"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## The above command returns a list of pre-signed URLs to the raw JSON data for</span></span>
+<span><span class="co">## the submissions. These URLs are ephemeral and expire after a short period of</span></span>
+<span><span class="co">## time, so if you experience 403 permissions errors trying to use them, it may</span></span>
+<span><span class="co">## be because they have expired and you'll need to re-run the above command.</span></span>
+<span></span>
+<span><span class="co">## Convert to data frame</span></span>
+<span><span class="va">dat_full</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/process_submissions.html">process_submissions</a></span><span class="op">(</span></span>
+<span>  <span class="va">sub_data_files</span>,</span>
+<span>  lookup_table <span class="op">=</span> <span class="fu">stopadforms</span><span class="fu">:::</span><span class="va"><a href="../reference/lookup_table.html">lookup_table</a></span>,</span>
+<span>  complete <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## Filter to one submission of interest -- a test submission I created.</span></span>
+<span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">dat_full</span>, <span class="va">form_data_id</span> <span class="op">==</span> <span class="st">"242"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## Append clinical modifier used in calculations</span></span>
+<span><span class="va">submission</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/append_clinical_to_submission.html">append_clinical_to_submission</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## Get section scores</span></span>
+<span><span class="va">scores</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pull_reviews_table.html">pull_reviews_table</a></span><span class="op">(</span><span class="va">syn</span>, <span class="st">"syn22014561"</span>, <span class="va">submission</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">## Calculate overall score</span></span>
+<span><span class="fu"><a href="../reference/calculate_submission_score.html">calculate_submission_score</a></span><span class="op">(</span><span class="va">submission</span>, <span class="va">scores</span><span class="op">)</span></span></code></pre></div>
 </div>
   </div>
 
@@ -183,7 +183,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
 </div>
 
       </footer>
