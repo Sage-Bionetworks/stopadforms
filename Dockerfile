@@ -3,5 +3,4 @@ ARG INSTALL_DIR=/srv/shiny-server/stopadforms
 RUN mkdir $INSTALL_DIR
 WORKDIR $INSTALL_DIR
 COPY ./ ./
-RUN ls -al
 RUN Rscript -e "install.packages('renv', repos='http://cran.rstudio.com/'); renv::restore()"

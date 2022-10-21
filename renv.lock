@@ -801,13 +801,6 @@
       "Repository": "CRAN",
       "Hash": "b227d13e29222b4574486cfcbde077fa"
     },
-    "testthat": {
-      "Package": "testthat",
-      "Version": "2.3.2",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "0829b987b8961fb07f3b1b64a2fbc495"
-    },
     "tibble": {
       "Package": "tibble",
       "Version": "3.0.4",

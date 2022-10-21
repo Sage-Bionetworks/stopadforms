@@ -5,4 +5,12 @@
 Sys.setenv(R_CONFIG_ACTIVE = "default") # Replace "default" with your config
 pkgload::load_all()
 options("golem.app.prod" = TRUE)
+
+# Map AWS Secrets Manager secrets, if any, to environment variables
+secrets_manager_secrets_string<-Sys.getenv("SECRETS_MANAGER_SECRETS")
+if (!is.null(secrets_manager_secrets_string) && nchar(secrets_manager_secrets_string)>0) {
+	secrets_manager_secrets<-rjson::fromJSON(secrets_manager_secrets_string)
+	lapply(names(secrets_manager_secrets), function(x){Sys.setenv(x=secrets_manager_secrets[x])})
+}
+
 stopadforms::run_app() # add parameters here (if any)
