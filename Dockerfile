@@ -6,6 +6,7 @@ COPY ./ ./
 #
 # Error: install of package 'waldo' failed
 # namespace 'rlang' 0.4.9 is being loaded, but >= 1.0.0 is required
-RUN Rscript -e "remove.packages(rlang)"
+# Address this by installing the latest version up front
+RUN Rscript -e "install.packages('rlang', repos='http://cran.rstudio.com/')"
 #
 RUN Rscript -e "install.packages('renv', repos='http://cran.rstudio.com/'); renv::restore()"
