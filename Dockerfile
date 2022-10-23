@@ -4,3 +4,6 @@ RUN mkdir $INSTALL_DIR
 WORKDIR $INSTALL_DIR
 COPY ./ ./
 RUN Rscript -e "install.packages('renv', repos='http://cran.rstudio.com/'); renv::restore()"
+# Send application logs to stderr
+ENV SHINY_LOG_STDERR=1
+ENV SHINY_LOG_LEVEL=TRACE
