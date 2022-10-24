@@ -13,4 +13,8 @@ if (!is.null(secrets_manager_secrets_string) && nchar(secrets_manager_secrets_st
 	lapply(names(secrets_manager_secrets), function(x){Sys.setenv(x=secrets_manager_secrets[x])})
 }
 
+# TODO remove the following two debug lines
+print("Env vars in app.R")
+print(Sys.getenv())
+
 stopadforms::run_app() # add parameters here (if any)
