@@ -2,11 +2,6 @@
 app_server <- function(input, output, session) {
   ## Synapse client for a specific user
   syn <- synapse$Synapse()
-  
-  # TODO remove the following two debug lines
-	print("Env vars in app-server.R")
-	print(Sys.getenv())
-  
 
   if (interactive()) {
     attempt_login(syn)
