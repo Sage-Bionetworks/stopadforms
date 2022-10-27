@@ -1,5 +1,8 @@
 default:
-  app_url: http://127.0.0.1:8100
+  app_url: https://shinypro.synapse.org/users/nkauer/stopadforms/
 
 testing:
   app_url: https://shinypro.synapse.org/users/nkauer/stopadforms-test/
+  
+aws-testing:
+  app_url: http://127.0.0.1:8100
