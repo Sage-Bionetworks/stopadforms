@@ -31,7 +31,7 @@ jobs:
           # running this step as 'sudo' is necessary to be able to install packages in default library
           install.packages(c('renv'))
           renv::restore()
-          install.packages('rsconnect'))
+          install.packages('rsconnect')
         shell: sudo Rscript {0}
 
       - name: Deploy app
