@@ -6,7 +6,7 @@ name: shiny-deploy
 on:
   push:
     branches:
-      - develop
+      - master
       - release*
 
 jobs:
