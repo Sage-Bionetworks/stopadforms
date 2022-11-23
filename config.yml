@@ -5,4 +5,4 @@ testing:
   app_url: https://shinypro.synapse.org/users/nkauer/stopadforms-test/
   
 aws-testing:
-  app_url: http://stopa-stopa-12JOPODWV9K8F-16973554.us-east-1.elb.amazonaws.com
+  app_url: https://stopadforms.dev.sagebase.org
