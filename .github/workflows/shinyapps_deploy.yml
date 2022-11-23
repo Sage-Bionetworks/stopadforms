@@ -46,6 +46,9 @@ jobs:
           rsConnectUser <-"${{ secrets.RSCONNECT_USER }}"
           rsConnectToken <- "${{ secrets.RSCONNECT_TOKEN }}"
           rsConnectSecret <- "${{ secrets.RSCONNECT_SECRET }}" 
+          # https://github.com/rstudio/rsconnect/issues/124
+          options(rsconnect.max.bundle.files=100000)
+          options(rsconnect.max.bundle.size=3145728000)
           rsconnect::setAccountInfo(rsConnectUser, rsConnectToken, rsConnectSecret)
           # omit archive/ folder from the collection to be deployed
           # (Tried using .rcsignore file but it did not work as documented.)
