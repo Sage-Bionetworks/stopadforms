@@ -40,14 +40,11 @@ jobs:
           rsConnectToken <- "${{ secrets.RSCONNECT_TOKEN }}"
           rsConnectSecret <- "${{ secrets.RSCONNECT_SECRET }}" 
           
-          
-           
           # create env file
           config <- "CLIENT_ID: ${{ secrets.OAUTH_CLIENT_ID }}"
           config <- c(config, "CLIENT_SECRET: ${{ secrets.OAUTH_CLIENT_SECRET }}")
           appUrl<- sprintf("https://%s.shinyapps.io/%s", rsConnectUser, appName)
           config <- c(config, sprintf("APP_URL: %s", appUrl))
-          config <- c(config, "CONDA_NAME: ${{ env.CONDA_ENV_NAME }}")
          
           envFileConn<-file(".Renviron")
           tryCatch(
