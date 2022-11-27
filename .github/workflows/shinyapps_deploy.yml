@@ -23,13 +23,6 @@ jobs:
  
       - uses: actions/checkout@v2
         
-      - name: Create and Activate Python Virtual Environment
-        shell: bash
-        run: |
-          python3 -m venv "${{ env.CONDA_ENV_NAME }}"
-          chmod 755 "${{ env.CONDA_ENV_NAME }}"/bin/activate
-          source "${{ env.CONDA_ENV_NAME }}"/bin/activate
-        
       - name: Install R packages
         run: |
           R -f install-pkgs.R

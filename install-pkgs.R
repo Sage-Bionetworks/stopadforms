@@ -29,3 +29,9 @@ gh <- c("dreamRs/shinypop", "Sage-Bionetworks/dccvalidator", "Sage-Bionetworks/s
 options(repos = c(REPO_NAME = "https://packagemanager.rstudio.com/all/__linux__/bionic/latest", getOption("repos")))
 install.packages(cran)
 remotes::install_github(gh)
+
+# Install Python and the Synapse Python client
+reticulate::install_miniconda()
+reticulate::py_discover_config()
+reticulate::py_install('synapseclient', pip = TRUE, pip_ignore_installed=TRUE)
+
