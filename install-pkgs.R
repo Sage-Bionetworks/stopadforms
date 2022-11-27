@@ -1,4 +1,5 @@
 cran <- c(
+"remotes",
 "dplyr",
 "config",
 "glue",
