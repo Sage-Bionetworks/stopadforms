@@ -39,6 +39,22 @@ jobs:
           rsConnectUser <-"${{ secrets.RSCONNECT_USER }}"
           rsConnectToken <- "${{ secrets.RSCONNECT_TOKEN }}"
           rsConnectSecret <- "${{ secrets.RSCONNECT_SECRET }}" 
+          
+          
+           
+          # create env file
+          config <- "CLIENT_ID: ${{ secrets.OAUTH_CLIENT_ID }}"
+          config <- c(config, "CLIENT_SECRET: ${{ secrets.OAUTH_CLIENT_SECRET }}")
+          appUrl<- sprintf("https://%s.shinyapps.io/%s", rsConnectUser, appName)
+          config <- c(config, sprintf("APP_URL: %s", appUrl))
+          config <- c(config, "CONDA_NAME: ${{ env.CONDA_ENV_NAME }}")
+         
+          envFileConn<-file(".Renviron")
+          tryCatch(
+             writeLines(config, envFileConn),
+             finally=close(envFileConn)
+          )         
+          
           # https://github.com/rstudio/rsconnect/issues/124
           options(rsconnect.max.bundle.files=100000)
           options(rsconnect.max.bundle.size=3145728000)
