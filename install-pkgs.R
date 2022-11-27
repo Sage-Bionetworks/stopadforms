@@ -17,8 +17,8 @@ cran <- c(
 "tibble",
 "tidyr",
 "waiter",
-"htmlwidgets"
-"rsconnect",
+"htmlwidgets",
+"rsconnect"
 )
 
 gh <- c("dreamRs/shinypop", "Sage-Bionetworks/dccvalidator", "Sage-Bionetworks/synapseforms")
