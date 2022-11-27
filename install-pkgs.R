@@ -21,7 +21,7 @@ cran <- c(
 "htmlwidgets",
 "rsconnect",
 "brio",
-"callr"",
+"callr",
 "diffobj",
 "praise",
 "processx",
@@ -30,7 +30,6 @@ cran <- c(
 "rmarkdown",
 "testthat",
 "tinytex"
-
 )
 
 gh <- c("dreamRs/shinypop", "Sage-Bionetworks/dccvalidator", "Sage-Bionetworks/synapseforms")
