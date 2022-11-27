@@ -23,18 +23,17 @@ jobs:
  
       - uses: actions/checkout@v2
         
+      - name: Create and Activate Python Virtual Environment
+        shell: bash
+        run: |
+          python3 -m venv "${{ env.CONDA_ENV_NAME }}"
+          chmod 755 "${{ env.CONDA_ENV_NAME }}"/bin/activate
+          source "${{ env.CONDA_ENV_NAME }}"/bin/activate
+        
       - name: Install R packages
         run: |
-          # The binary package distributions from R Studio dramatically speed up installation time
-          options(repos = c(REPO_NAME = "https://packagemanager.rstudio.com/all/__linux__/focal/latest", 
-             getOption("repos")))
-          # running this step as 'sudo' is necessary to be able to install packages in default library
-          install.packages(c('renv'))
-          renv::restore()
-          install.packages('rsconnect')
-          renv::isolate()
-        shell: sudo Rscript {0}
-
+          R -f install-pkgs.R
+          
       - name: Deploy app
         run: |
           branch<-Sys.getenv("GITHUB_REF_NAME")
