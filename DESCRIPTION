@@ -15,7 +15,6 @@ Authors@R:
              family = "Snyder",
              role = c("cre"),
              email = "phil.snyder@sagebase.org"))
-GithubUsername: j-hendrickson-sage
 Description: Review and score submissions to the STOP-AD Compound Submission Portal.
 License: MIT + file LICENSE
 Encoding: UTF-8
