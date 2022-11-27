@@ -26,7 +26,8 @@ jobs:
       - name: Install R packages
         run: |
           R -f install-pkgs.R
-          
+        shell: sudo Rscript {0}
+       
       - name: Deploy app
         run: |
           branch<-Sys.getenv("GITHUB_REF_NAME")
