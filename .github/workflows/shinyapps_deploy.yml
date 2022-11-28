@@ -60,6 +60,8 @@ jobs:
           # omit archive/ folder from the collection to be deployed
           # (Tried using .rcsignore file but it did not work as documented.)
           appFiles<-dir(all.files=TRUE, include.dirs=TRUE)[which(dir()!="archive")]
-          rsconnect::deployApp(appName = appName, appFiles=appFiles)
+
+          py_path='/root/.local/share/r-miniconda/envs/r-reticulate/bin/python'
+          rsconnect::deployApp(appName = appName, appFiles=appFiles, python=py_path)
           # important NOT to run this step as sudo, otherwise env var's will be missing
         shell: Rscript {0}
