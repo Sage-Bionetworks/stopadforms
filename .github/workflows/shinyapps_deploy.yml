@@ -41,11 +41,11 @@ jobs:
           rsConnectSecret <- "${{ secrets.RSCONNECT_SECRET }}" 
           
           # create env file
-          config <- "client_name: Stop AD Forms"
-          config <- c(config, "client_id: ${{ secrets.OAUTH_CLIENT_ID }}")
-          config <- c(config, "client_secret: ${{ secrets.OAUTH_CLIENT_SECRET }}")
+          config <- "client_name=Stop AD Forms"
+          config <- c(config, "client_id=${{ secrets.OAUTH_CLIENT_ID }}")
+          config <- c(config, "client_secret=${{ secrets.OAUTH_CLIENT_SECRET }}")
           appUrl<- sprintf("https://%s.shinyapps.io/%s", rsConnectUser, appName)
-          config <- c(config, sprintf("app_url: %s", appUrl))
+          config <- c(config, sprintf("app_url=%s", appUrl))
          
           envFileConn<-file(".Renviron")
           tryCatch(
