@@ -59,6 +59,8 @@ jobs:
           # omit archive/ folder from the collection to be deployed
           # (Tried using .rcsignore file but it did not work as documented.)
           appFiles<-dir(all.files=TRUE, include.dirs=TRUE)[which(dir()!="archive")]
+          # double check that .Renviron is in appFiles
+          appFiles
           rsconnect::deployApp(appName = appName, appFiles=appFiles)
           # important NOT to run this step as sudo, otherwise env var's will be missing
         shell: Rscript {0}
