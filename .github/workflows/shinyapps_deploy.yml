@@ -41,10 +41,11 @@ jobs:
           rsConnectSecret <- "${{ secrets.RSCONNECT_SECRET }}" 
           
           # create env file
-          config <- "CLIENT_ID: ${{ secrets.OAUTH_CLIENT_ID }}"
-          config <- c(config, "CLIENT_SECRET: ${{ secrets.OAUTH_CLIENT_SECRET }}")
+          config <- "client_name: Stop AD Forms"
+          config <- c(config, "client_id: ${{ secrets.OAUTH_CLIENT_ID }}")
+          config <- c(config, "client_secret: ${{ secrets.OAUTH_CLIENT_SECRET }}")
           appUrl<- sprintf("https://%s.shinyapps.io/%s", rsConnectUser, appName)
-          config <- c(config, sprintf("APP_URL: %s", appUrl))
+          config <- c(config, sprintf("app_url: %s", appUrl))
          
           envFileConn<-file(".Renviron")
           tryCatch(
@@ -59,8 +60,6 @@ jobs:
           # omit archive/ folder from the collection to be deployed
           # (Tried using .rcsignore file but it did not work as documented.)
           appFiles<-dir(all.files=TRUE, include.dirs=TRUE)[which(dir()!="archive")]
-          # double check that .Renviron is in appFiles
-          appFiles
           rsconnect::deployApp(appName = appName, appFiles=appFiles)
           # important NOT to run this step as sudo, otherwise env var's will be missing
         shell: Rscript {0}
