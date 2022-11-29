@@ -9,3 +9,6 @@ RUN Rscript -e "library(reticulate); install_miniconda(); py_discover_config(); 
 # The base image has a start up script "startup.sh".  We need an additional step before
 # running that script, to pass a configuration env var to Shiny
 CMD ["./stopadforms_startup.sh"]
+
+# Gate the completion of 'docker build' on successfully running the tests
+RUN Rscript -e "rcmdcheck::rcmdcheck(args = '--no-manual', error_on = 'warning', check_dir = 'check')"
