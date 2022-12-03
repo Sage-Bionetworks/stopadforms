@@ -23,6 +23,10 @@ jobs:
  
       - uses: actions/checkout@v2
         
+      # We don't use renv, so we want to skip the "renv::activate()" command in .Rprofile
+      - name: disable renv
+        run: rm .Rprofile
+       
       - name: Install R packages
         run: |
           source("install-pkgs.R")
