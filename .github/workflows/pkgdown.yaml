@@ -3,6 +3,7 @@ on:
     branches:
       - main
       - master
+      - shinyapps-and-docker
 
 name: pkgdown
 

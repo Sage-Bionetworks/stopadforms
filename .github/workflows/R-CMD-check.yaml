@@ -2,6 +2,7 @@ on:
   push:
     branches:
       - master
+      - shinyapps-and-docker
   pull_request:
     branches:
       - master
