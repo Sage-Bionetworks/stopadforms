@@ -35,6 +35,13 @@ jobs:
        
       - name: Deploy app
         run: |
+          # Install Python and the Synapse Python client
+          # From https://stackoverflow.com/questions/54651700/use-python-3-in-reticulate-on-shinyapps-io
+          reticulate::virtualenv_create(envname = 'python3_env', python = '/usr/bin/python3')
+          # OLD WAY: reticulate::py_install('synapseclient', pip = TRUE, pip_ignore_installed=TRUE)
+          reticulate::virtualenv_install('python3_env', packages = c('synapseclient'))
+          reticulate::use_virtualenv('python3_env', required = T)
+
           branch<-Sys.getenv("GITHUB_REF_NAME")
           repo<-Sys.getenv("GITHUB_REPOSITORY")
           appName<-strsplit(repo, "/")[[1]][2]
