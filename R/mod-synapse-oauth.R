@@ -17,6 +17,9 @@ authorization_url <- NULL
 #' @param libname default R .onLoad() parameter
 #' @param pkgname default R .onLoad() parameter
 .onLoad <- function(libname, pkgname) {
+  if (Sys.getenv("R_CONFIG_ACTIVE") == "shinyapps") {
+  	reticulate::use_virtualenv('python3_env', required = T)
+  }
   synapse <<- reticulate::import("synapseclient", delay_load = TRUE)
   if (!interactive()) {
     setup_global_oauth_vars(
