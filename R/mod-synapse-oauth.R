@@ -18,6 +18,12 @@ authorization_url <- NULL
 #' @param pkgname default R .onLoad() parameter
 .onLoad <- function(libname, pkgname) {
   if (Sys.getenv("R_CONFIG_ACTIVE") == "shinyapps") {
+  
+  	message("Listing of '~':")
+  	list.files("~", all.files = TRUE, include.dirs = TRUE)
+   	message("Listing of '~/.virtualenvs':")
+  	list.files("~/.virtualenvs", all.files = TRUE, include.dirs = TRUE)
+  
   	reticulate::use_virtualenv('python3_env', required = T)
   }
   synapse <<- reticulate::import("synapseclient", delay_load = TRUE)
