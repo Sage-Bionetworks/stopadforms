@@ -41,11 +41,3 @@ options(repos = c(REPO_NAME = "https://packagemanager.rstudio.com/all/__linux__/
 install.packages(cran)
 remotes::install_github(gh)
 
-# Install Python and the Synapse Python client
-# From https://stackoverflow.com/questions/54651700/use-python-3-in-reticulate-on-shinyapps-io
-reticulate::virtualenv_create(envname = 'python3_env', python = '/usr/bin/python3')
-
-# OLD WAY: reticulate::py_install('synapseclient', pip = TRUE, pip_ignore_installed=TRUE)
-reticulate::virtualenv_install('python3_env', packages = c('synapseclient'))
-
-reticulate::use_virtualenv('python3_env', required = T)
