@@ -3,10 +3,7 @@ FROM sagebionetworks/shiny-base:release-1.0
 WORKDIR /srv/shiny-server/app
 COPY --chown=shiny ./ ./
 # renv restore
-# TODO running R (Rscript, below) invokes renv/activate.R, which ensures renv is available
-# TODO So we should not have to install the renv package.  Does the build work with the following
-# TODO line removed?
-# RUN Rscript -e "install.packages(c('renv'), repos='http://cran.rstudio.com/'); renv::restore()"
+RUN Rscript -e "renv::restore()"
 # Set up Python and install the Synapse Python client
 RUN Rscript -e "library(reticulate); install_miniconda(); py_discover_config(); py_install('synapseclient', pip = TRUE, pip_ignore_installed=TRUE)"
 # The base image has a start up script "startup.sh".  We need an additional step before
