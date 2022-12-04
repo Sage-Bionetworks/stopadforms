@@ -65,7 +65,7 @@ jobs:
           # (Tried using .rcsignore file but it did not work as documented.)
           appFiles<-dir(all.files=TRUE, include.dirs=TRUE)[which(dir()!="archive")]
 
-          py_path='/root/.local/share/r-miniconda/envs/r-reticulate/bin/python'
-          rsconnect::deployApp(appName = appName, appFiles=appFiles, python=py_path)
+          # previous we added the parameter 'python=py_path' to the following line
+          rsconnect::deployApp(appName = appName, appFiles=appFiles)
           # important NOT to run this step as sudo, otherwise env var's will be missing
         shell: Rscript {0}
