@@ -40,7 +40,7 @@ jobs:
           reticulate::virtualenv_create(envname = './python3_env', python = '/usr/bin/python3')
           # OLD WAY: reticulate::py_install('synapseclient', pip = TRUE, pip_ignore_installed=TRUE)
           reticulate::virtualenv_install('python3_env', packages = c('synapseclient'))
-          reticulate::use_virtualenv('python3_env', required = T)
+          reticulate::use_virtualenv('./python3_env', required = T)
 
           branch<-Sys.getenv("GITHUB_REF_NAME")
           repo<-Sys.getenv("GITHUB_REPOSITORY")

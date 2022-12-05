@@ -26,7 +26,7 @@ authorization_url <- NULL
   	print("\nvirtualenv_root():")
   	print(reticulate::virtualenv_root())
   
-  	reticulate::use_virtualenv('python3_env', required = T)
+  	reticulate::use_virtualenv('./python3_env', required = T)
   }
   synapse <<- reticulate::import("synapseclient", delay_load = TRUE)
   if (!interactive()) {
