@@ -19,10 +19,12 @@ authorization_url <- NULL
 .onLoad <- function(libname, pkgname) {
   if (Sys.getenv("R_CONFIG_ACTIVE") == "shinyapps") {
   
-  	print("Listing of '~':")
-  	print(list.files("~", all.files = TRUE, include.dirs = TRUE))
-   	print("Listing of '~/.virtualenvs':")
-  	print(list.files("~/.virtualenvs", all.files = TRUE, include.dirs = TRUE))
+  	print("\nListing of '.':")
+  	print(list.files(".", all.files = TRUE, include.dirs = TRUE))
+   	print("\nListing of './python3_env':")
+  	print(list.files("./python3_env", all.files = TRUE, include.dirs = TRUE))
+  	print("\nvirtualenv_root():")
+  	print(virtualenv_root())
   
   	reticulate::use_virtualenv('python3_env', required = T)
   }
