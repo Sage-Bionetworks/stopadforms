@@ -24,7 +24,7 @@ authorization_url <- NULL
    	print("\nListing of './python3_env':")
   	print(list.files("./python3_env", all.files = TRUE, include.dirs = TRUE))
   	print("\nvirtualenv_root():")
-  	print(virtualenv_root())
+  	print(reticulate::virtualenv_root())
   
   	reticulate::use_virtualenv('python3_env', required = T)
   }
