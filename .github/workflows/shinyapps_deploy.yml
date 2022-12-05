@@ -33,7 +33,7 @@ jobs:
           source("install-pkgs.R")
         shell: sudo Rscript {0}
        
-      - name: Deploy app
+      - name: Install Python and the Synapse Python client
         run: |
           # Install Python and the Synapse Python client
           # From https://stackoverflow.com/questions/54651700/use-python-3-in-reticulate-on-shinyapps-io
@@ -42,6 +42,13 @@ jobs:
           reticulate::virtualenv_install('python3_env', packages = c('synapseclient'))
           reticulate::use_virtualenv('./python3_env', required = T)
 
+      # We get a 126 status for ./python3_env/bin/python, which means the user executing
+      # Shiny doesn't have execution access.  Let's add execute (and read) access to the whole folder
+      - name: Make folder executable
+        run: chmod -R a+rx .
+            
+      - name: Deploy app
+        run: |
           branch<-Sys.getenv("GITHUB_REF_NAME")
           repo<-Sys.getenv("GITHUB_REPOSITORY")
           appName<-strsplit(repo, "/")[[1]][2]
