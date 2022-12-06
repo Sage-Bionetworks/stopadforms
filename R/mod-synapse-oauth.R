@@ -21,11 +21,12 @@ authorization_url <- NULL
     # unzip python3_env.zip  into ./python3_env
     zip_file<-"python3_env.zip"
     if (file.exists(zip_file)) {
+     	message(sprintf("Does the folder 'python3_env' exist? %s ", file.exists('python3_env')))
     	message(sprintf("%s exists, so we will unzip", zip_file))
-    	utils::unzip(zip_file)
-    	message("Unzip is complete.  Now we remove the zipped archive.")
-    	file.remove(zip_file)
-    	message("Removal of archive is done.")
+    	unzip_result<-utils::unzip(zip_file)
+    	message(sprintf("Unzip is complete. %s files were extracted.  Now we remove the zipped archive.", length(unzip_result)))
+    	remove_result<-file.remove(zip_file)
+    	message(sprintf("Removal of archive is done with returned value %s.", remove_result))
     } else {
     	message(sprintf("%s does NOT exist.", zip_file))
     }
