@@ -39,7 +39,7 @@ jobs:
           # From https://stackoverflow.com/questions/54651700/use-python-3-in-reticulate-on-shinyapps-io
           reticulate::virtualenv_create(envname = './python3_env', python = '/usr/bin/python3')
           reticulate::virtualenv_install('./python3_env', packages = c('synapseclient'))
-          reticulate::use_virtualenv('./python3_env', required = T)
+          # In the app' we need to call, reticulate::use_virtualenv('./python3_env', required = T)
         shell: Rscript {0}
             
       - name: Deploy app

@@ -18,9 +18,8 @@ authorization_url <- NULL
 #' @param pkgname default R .onLoad() parameter
 .onLoad <- function(libname, pkgname) {
   if (Sys.getenv("R_CONFIG_ACTIVE") == "shinyapps") {
-  	# 126 status for '/srv/connect/apps/stopadforms-staging/python3_env/bin/python'
-  	# unless we do this:
-  	Sys.chmod('/srv/connect/apps/stopadforms-staging/python3_env/bin/python', "774")
+  	# 126 status for './python3_env/bin/python' unless we do this:
+  	Sys.chmod('./python3_env/bin/python', "774")
   
   	reticulate::use_virtualenv('./python3_env', required = T)
   }
