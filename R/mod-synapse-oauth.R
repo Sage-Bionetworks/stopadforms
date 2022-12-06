@@ -21,8 +21,13 @@ authorization_url <- NULL
     # unzip python3_env.zip  into ./python3_env
     zip_file<-"python3_env.zip"
     if (file.exists(zip_file)) {
+    	message(sprintf("%s exists, so we will unzip", zip_file))
     	utils::unzip(zip_file)
+    	message("Unzip is complete.  Now we remove the zipped archive.")
     	file.remove(zip_file)
+    	message("Removal of archive is done.")
+    } else {
+    	message(sprintf("%s does NOT exist.", zip_file))
     }
   	# 126 status for './python3_env/bin/python' unless we do this:
   	Sys.chmod('./python3_env/bin/python', "774")
