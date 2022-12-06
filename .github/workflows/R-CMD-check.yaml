@@ -41,9 +41,7 @@ jobs:
 
       - name: Query dependencies
         run: |
-          install.packages(c("remotes", "renv"), repos = "https://cloud.r-project.org/")
-          source("renv/activate.R") 
-          renv::restore()
+          install.packages('remotes')
           saveRDS(remotes::dev_package_deps(dependencies = TRUE), "depends.Rds", version = 2)
         shell: Rscript {0}
 
@@ -84,6 +82,7 @@ jobs:
           deps <- readRDS("depends.Rds")
           deps[["installed"]] <- vapply(deps[["package"]], remotes:::local_sha, character(1))
           update(deps)
+          install.packages("dccvalidator", version='0.3.0.9010')
           remotes::install_cran("rcmdcheck")
         shell: Rscript {0}
 
