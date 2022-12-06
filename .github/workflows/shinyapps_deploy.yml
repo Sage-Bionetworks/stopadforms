@@ -43,6 +43,13 @@ jobs:
           # In the app' we need to call, reticulate::use_virtualenv('./python3_env', required = T)
         shell: Rscript {0}
             
+      - name: zip virtualenv
+        shell: bash
+        # ShinyApps has a maximum file count.  As a workaround we zip the 
+        # Python virtual environment and later unzip it.
+        run: |
+          zip -rm python3_env.zip ./python3_env
+
       - name: Deploy app
         run: |
           branch<-Sys.getenv("GITHUB_REF_NAME")
@@ -69,12 +76,11 @@ jobs:
           )         
           
           # https://github.com/rstudio/rsconnect/issues/124
-          options(rsconnect.max.bundle.files=10000)
+          options(rsconnect.max.bundle.files=100000)
           options(rsconnect.max.bundle.size=3145728000)
           rsconnect::setAccountInfo(rsConnectUser, rsConnectToken, rsConnectSecret)
-          # omit archive/ folder from the collection to be deployed
-          # (Tried using .rcsignore file but it did not work as documented.)
-          appFiles<-dir(all.files=TRUE, include.dirs=TRUE)[which(dir()!="archive")]
+
+          appFiles<-dir(all.files=TRUE, include.dirs=TRUE)
 
           # previous we added the parameter 'python=py_path' to the following line
           rsconnect::deployApp(appName = appName, appFiles=appFiles)

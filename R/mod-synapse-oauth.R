@@ -18,6 +18,12 @@ authorization_url <- NULL
 #' @param pkgname default R .onLoad() parameter
 .onLoad <- function(libname, pkgname) {
   if (Sys.getenv("R_CONFIG_ACTIVE") == "shinyapps") {
+    # unzip python3_env.zip  into ./python3_env
+    zip_file<-"python3_env.zip"
+    if (file.exists(zip_file)) {
+    	utils::unzip(zip_file)
+    	file.remove(zip_file)
+    }
   	# 126 status for './python3_env/bin/python' unless we do this:
   	Sys.chmod('./python3_env/bin/python', "774")
   
