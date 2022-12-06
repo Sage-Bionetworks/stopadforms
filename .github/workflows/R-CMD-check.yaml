@@ -82,8 +82,8 @@ jobs:
           deps <- readRDS("depends.Rds")
           deps[["installed"]] <- vapply(deps[["package"]], remotes:::local_sha, character(1))
           update(deps)
-          install.packages("dccvalidator", version='0.3.0.9010')
           remotes::install_cran("rcmdcheck")
+          remotes::install_github("Sage-Bionetworks/dccvalidator@v0.3.0")
         shell: Rscript {0}
 
       - name: Check
