@@ -32,12 +32,20 @@ cran <- c(
 "tinytex"
 )
 
+cran_mini <- c(
+"remotes",
+"reticulate",
+"shiny",
+"shinyjs",
+"rsconnect"
+)
+
 gh <- c("dreamRs/shinypop", "Sage-Bionetworks/dccvalidator", "Sage-Bionetworks/synapseforms")
 
 # The binary package distributions from R Studio dramatically speed up installation time
 # For Ubuntu 18.04 (Bionic) it's https://packagemanager.rstudio.com/all/__linux__/bionic/latest
 # For Ubuntu 20.04 (Focal)  it's https://packagemanager.rstudio.com/all/__linux__/focal/latest
 options(repos = c(REPO_NAME = "https://packagemanager.rstudio.com/all/__linux__/bionic/latest", getOption("repos")))
-install.packages(cran)
+install.packages(cran_mini) # TODO change back to cran
 remotes::install_github(gh)
 
