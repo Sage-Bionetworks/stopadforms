@@ -41,7 +41,9 @@ jobs:
 
       - name: Query dependencies
         run: |
-          install.packages('remotes')
+          install.packages(c("remotes", "renv"), repos = "https://cloud.r-project.org/")
+          source("renv/activate.R") 
+          renv::restore()
           saveRDS(remotes::dev_package_deps(dependencies = TRUE), "depends.Rds", version = 2)
         shell: Rscript {0}
 
