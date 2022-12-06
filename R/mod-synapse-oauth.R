@@ -26,8 +26,8 @@ authorization_url <- NULL
     	reticulate::virtualenv_install(venv_folder, packages = c('synapseclient'))
   		# 126 status for './python3_env/bin/python' unless we do this:
   		Sys.chmod(file.path(venv_folder, '/bin/python'), "774")
-  		reticulate::use_virtualenv(venv_folder, required = T)
-    }
+     }
+ 	reticulate::use_virtualenv(venv_folder, required = T)
   }
   
   synapse <<- reticulate::import("synapseclient", delay_load = TRUE)
