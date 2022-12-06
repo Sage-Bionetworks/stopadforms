@@ -18,25 +18,13 @@ authorization_url <- NULL
 #' @param pkgname default R .onLoad() parameter
 .onLoad <- function(libname, pkgname) {
   if (Sys.getenv("R_CONFIG_ACTIVE") == "shinyapps") {
-  
-  	print("\nListing of '.':")
-  	print(list.files(".", all.files = TRUE, include.dirs = TRUE))
-   	print("\nListing of './python3_env':")
-  	print(list.files("./python3_env", all.files = TRUE, include.dirs = TRUE))
-  	print("\nvirtualenv_root():")
-  	print(reticulate::virtualenv_root())
-  	
   	# 126 status for '/srv/connect/apps/stopadforms-staging/python3_env/bin/python'
-  	print("File Info for /srv/connect/apps/stopadforms-staging/python3_env/bin/python:")
-  	print(file.info('/srv/connect/apps/stopadforms-staging/python3_env/bin/python'))
-  	print("Login and user:")
-  	print(Sys.info()[c('login','user')])
-  	
-  	print("Now chmod on '/srv/connect/apps/stopadforms-staging/python3_env/bin/python'")
-  	Sys.chmod('/srv/connect/apps/stopadforms-staging/python3_env/bin/python', "777")
+  	# unless we do this:
+  	Sys.chmod('/srv/connect/apps/stopadforms-staging/python3_env/bin/python', "774")
   
   	reticulate::use_virtualenv('./python3_env', required = T)
   }
+  
   synapse <<- reticulate::import("synapseclient", delay_load = TRUE)
   if (!interactive()) {
     setup_global_oauth_vars(

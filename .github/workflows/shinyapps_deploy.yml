@@ -38,17 +38,9 @@ jobs:
           # Install Python and the Synapse Python client
           # From https://stackoverflow.com/questions/54651700/use-python-3-in-reticulate-on-shinyapps-io
           reticulate::virtualenv_create(envname = './python3_env', python = '/usr/bin/python3')
-          # OLD WAY: reticulate::py_install('synapseclient', pip = TRUE, pip_ignore_installed=TRUE)
-          reticulate::virtualenv_install('python3_env', packages = c('synapseclient'))
+          reticulate::virtualenv_install('./python3_env', packages = c('synapseclient'))
           reticulate::use_virtualenv('./python3_env', required = T)
         shell: Rscript {0}
- 
-      # We get a 126 status for ./python3_env/bin/python, which means the user executing
-      # Shiny doesn't have execution access.  Let's add execute (and read) access to the whole folder
-      - name: Make folder executable
-        run: |
-          chmod -R a+rx .
-          ls -al ./python3_env/bin/
             
       - name: Deploy app
         run: |
