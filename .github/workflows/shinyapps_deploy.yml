@@ -34,22 +34,6 @@ jobs:
           source("install-pkgs.R")
         shell: sudo Rscript {0}
        
-      - name: Install Python and the Synapse Python client
-        run: |
-          # Install Python and the Synapse Python client
-          # From https://stackoverflow.com/questions/54651700/use-python-3-in-reticulate-on-shinyapps-io
-          reticulate::virtualenv_create(envname = './python3_env', python = '/usr/bin/python3')
-          reticulate::virtualenv_install('./python3_env', packages = c('synapseclient'))
-          # In the app' we need to call, reticulate::use_virtualenv('./python3_env', required = T)
-        shell: Rscript {0}
-            
-      - name: zip virtualenv
-        shell: bash
-        # ShinyApps has a maximum file count.  As a workaround we zip the 
-        # Python virtual environment and later unzip it.
-        run: |
-          zip -rm python3_env.zip ./python3_env
-
       - name: Deploy app
         run: |
           branch<-Sys.getenv("GITHUB_REF_NAME")

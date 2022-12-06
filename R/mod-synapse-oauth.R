@@ -18,29 +18,16 @@ authorization_url <- NULL
 #' @param pkgname default R .onLoad() parameter
 .onLoad <- function(libname, pkgname) {
   if (Sys.getenv("R_CONFIG_ACTIVE") == "shinyapps") {
-    # unzip python3_env.zip  into ./python3_env
-    zip_file<-"python3_env.zip"
-    if (file.exists(zip_file)) {
-     	message(sprintf("%s exists, so we will unzip it.  First, list the state of '.':", zip_file))
-     	print(list.files(".", all.files = TRUE, include.dirs = TRUE))
-    	unzip_result<-utils::unzip(zip_file)
-    	message(sprintf("Unzip is complete. %s files were extracted.  Now we remove the zipped archive.", length(unzip_result)))
-    	remove_result<-file.remove(zip_file)
-    	message(sprintf("Removal of archive is done with returned value %s.  Now list the contents of '.':", remove_result))
-		print(list.files(".", all.files = TRUE, include.dirs = TRUE))
-		message("Finally, list the contents of './python3_env:'")
-		print(list.files("./python3_env", all.files = TRUE, include.dirs = TRUE))
-    } else {
-    	message(sprintf("%s does NOT exist.", zip_file))
-    	message("List the contents of '.':")
-		print(list.files(".", all.files = TRUE, include.dirs = TRUE))
-		message("List the contents of './python3_env:'")
-		print(list.files("./python3_env", all.files = TRUE, include.dirs = TRUE))
+  	venv_folder<-'./python3_env'
+  	if (!file.exists(venv_folder)) {
+    	# Install Python and the Synapse Python client
+    	# From https://stackoverflow.com/questions/54651700/use-python-3-in-reticulate-on-shinyapps-io
+    	reticulate::virtualenv_create(envname = venv_folder, python = '/usr/bin/python3')
+    	reticulate::virtualenv_install(venv_folder, packages = c('synapseclient'))
+  		# 126 status for './python3_env/bin/python' unless we do this:
+  		Sys.chmod(file.path(venv_folder, '/bin/python'), "774")
+  		reticulate::use_virtualenv(venv_folder, required = T)
     }
-  	# 126 status for './python3_env/bin/python' unless we do this:
-  	Sys.chmod('./python3_env/bin/python', "774")
-  
-  	reticulate::use_virtualenv('./python3_env', required = T)
   }
   
   synapse <<- reticulate::import("synapseclient", delay_load = TRUE)
