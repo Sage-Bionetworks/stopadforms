@@ -25,6 +25,12 @@ authorization_url <- NULL
   	print(list.files("./python3_env", all.files = TRUE, include.dirs = TRUE))
   	print("\nvirtualenv_root():")
   	print(reticulate::virtualenv_root())
+  	
+  	# 126 status for '/srv/connect/apps/stopadforms-staging/python3_env/bin/python'
+  	print("File Info for /srv/connect/apps/stopadforms-staging/python3_env/bin/python:")
+  	print(file.info('/srv/connect/apps/stopadforms-staging/python3_env/bin/python'))
+  	print("Login and user:")
+  	print(Sys.info()[c('login','user')])
   
   	reticulate::use_virtualenv('./python3_env', required = T)
   }
