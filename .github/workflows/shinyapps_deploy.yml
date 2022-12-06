@@ -69,7 +69,7 @@ jobs:
           )         
           
           # https://github.com/rstudio/rsconnect/issues/124
-          options(rsconnect.max.bundle.files=100000)
+          options(rsconnect.max.bundle.files=10000)
           options(rsconnect.max.bundle.size=3145728000)
           rsconnect::setAccountInfo(rsConnectUser, rsConnectToken, rsConnectSecret)
           # omit archive/ folder from the collection to be deployed
