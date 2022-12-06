@@ -46,7 +46,9 @@ jobs:
       # We get a 126 status for ./python3_env/bin/python, which means the user executing
       # Shiny doesn't have execution access.  Let's add execute (and read) access to the whole folder
       - name: Make folder executable
-        run: chmod -R 777 .
+        run: |
+          chmod -R a+rx .
+          ls -al ./python3_env/bin/
             
       - name: Deploy app
         run: |

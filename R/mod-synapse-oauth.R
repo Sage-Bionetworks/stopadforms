@@ -31,6 +31,9 @@ authorization_url <- NULL
   	print(file.info('/srv/connect/apps/stopadforms-staging/python3_env/bin/python'))
   	print("Login and user:")
   	print(Sys.info()[c('login','user')])
+  	
+  	print("Now chmod on '/srv/connect/apps/stopadforms-staging/python3_env/bin/python'")
+  	Sys.chmod('/srv/connect/apps/stopadforms-staging/python3_env/bin/python', "777")
   
   	reticulate::use_virtualenv('./python3_env', required = T)
   }
