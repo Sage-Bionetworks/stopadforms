@@ -6,6 +6,7 @@ on:
   pull_request:
     branches:
       - master
+  workflow_dispatch:
 
 name: R-CMD-check
 
@@ -31,13 +32,13 @@ jobs:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: r-lib/actions/setup-r@v1
+      - uses: r-lib/actions/setup-r@v2
         with:
           r-version: ${{ matrix.config.r }}
 
-      - uses: r-lib/actions/setup-pandoc@v1
+      - uses: r-lib/actions/setup-pandoc@v2
 
       - name: Query dependencies
         run: |
@@ -58,7 +59,10 @@ jobs:
         run: |
           export DEBIAN_FRONTEND=noninteractive
           sudo apt-get -y update
-          sudo apt-get install -y make python-minimal pandoc pandoc-citeproc git-core libv8-dev libxml2-dev libcurl4-openssl-dev libssl-dev libssh2-1-dev zlib1g-dev libgit2-dev
+          sudo add-apt-repository ppa:cran/libgit2
+          sudo apt-get update
+          sudo apt-get install libgit2-dev
+          sudo apt-get install -y make python-minimal pandoc pandoc-citeproc git-core libv8-dev libxml2-dev libcurl4-openssl-dev libssl-dev libssh2-1-dev zlib1g-dev
 
       - name: Install system dependencies (macOS)
         if: runner.os == 'macOS' && matrix.config.r == 'devel'
@@ -76,6 +80,10 @@ jobs:
       - name: Install dependencies
         run: |
           library(remotes)
+          install.packages("stringi", configure.args="--with-extra-cxxflags='--std=c++11'", version = "1.5.3")
+          install.packages("renv", repos = "https://cloud.r-project.org/")
+          source("renv/activate.R")
+          renv::restore()
           deps <- readRDS("depends.Rds")
           deps[["installed"]] <- vapply(deps[["package"]], remotes:::local_sha, character(1))
           update(deps)
