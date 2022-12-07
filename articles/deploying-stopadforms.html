@@ -75,7 +75,7 @@
 
       
 
-      </header><script src="deploying-stopadforms_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Deploying stopadforms</h1>
@@ -88,17 +88,23 @@
 
     
     
-<p>This vignette is applicable to Sage employees who are deploying the application on our Shiny Pro server. To learn about the server and how to get credentials, please read the <a href="https://sagebionetworks.jira.com/wiki/spaces/SageShinyServer/pages/75497489/Shiny+Server" class="external-link">Confluence documentation</a>.</p>
+<p>This vignette is applicable to Sage employees who are deploying the
+application on our Shiny Pro server. To learn about the server and how
+to get credentials, please read the <a href="https://sagebionetworks.jira.com/wiki/spaces/SageShinyServer/pages/75497489/Shiny+Server" class="external-link">Confluence
+documentation</a>.</p>
 <p>The app is deployed on the server through the following steps:</p>
 <ol style="list-style-type: decimal">
-<li>ssh into the Shiny Pro server and navigate to <code>/home/kwoo/ShinyApps/stopadforms</code>
+<li>ssh into the Shiny Pro server and navigate to
+<code>/home/kwoo/ShinyApps/stopadforms</code>
 </li>
 <li>
 <code>git pull</code> changes from GitHub</li>
-<li>To ensure packages are up-to-date, open an R session and run <code><a href="https://rstudio.github.io/renv/reference/restore.html" class="external-link">renv::restore()</a></code>
+<li>To ensure packages are up-to-date, open an R session and run
+<code><a href="https://rstudio.github.io/renv/reference/restore.html" class="external-link">renv::restore()</a></code>
 </li>
 </ol>
-<p>You may need to run <code>touch restart.txt</code> afterward to ensure the application is restarted.</p>
+<p>You may need to run <code>touch restart.txt</code> afterward to
+ensure the application is restarted.</p>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

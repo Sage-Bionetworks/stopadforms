@@ -75,7 +75,7 @@
 
       
 
-      </header><script src="scoring_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Scoring submissions</h1>
@@ -88,37 +88,105 @@
 
     
     
-<p>This vignette describes the scoring algorithm used by STOP-AD. Here a “submission” refers to an application submitted to the <a href="https://stopadportal.synapse.org/" class="external-link">STOP-AD Compound Submission Portal</a>. Submissions are scored by a panel of reviewers, and the final score is aggregated based on these reviews.</p>
+<p>This vignette describes the scoring algorithm used by STOP-AD. Here a
+“submission” refers to an application submitted to the <a href="https://stopadportal.synapse.org/" class="external-link">STOP-AD Compound Submission
+Portal</a>. Submissions are scored by a panel of reviewers, and the
+final score is aggregated based on these reviews.</p>
 <div class="section level2">
 <h2 id="scoring-sections-of-a-submission">Scoring sections of a submission<a class="anchor" aria-label="anchor" href="#scoring-sections-of-a-submission"></a>
 </h2>
-<p>Reviewers give ratings to submissions on a section-by-section basis. That is, they score the Binding, LD50, PK In Vivo, etc. sections independently. They rate each section as None (no data; 0), Poor (0.1), Fair (0.25), Good (0.85), or Excellent (1). Reviewers can abstain from reviewing a section if they feel they cannot rate it. Reviewers also record whether the section contains data from within or across species.</p>
-<p>The score for a section is generally determined by several factors: the rating given by the reviewer, whether the data is within- or across-species (referred to as the “species multiplier”: 0.67 if within-species, 0.33 if across), whether the compound is available for off-label use (referred to as the “clinical multiplier”: 0.67 if yes, 0.33 if no), and the partial beta weights of fields within the section (contained in the <code>partial_betas</code> table within this R package; these were originally sourced from the scoring spreadsheet upon which this scoring system was derived).</p>
-<p>However, there are exceptions to the above: the Naming, Basic Data, PK In Silico, and PK In Vitro sections do not use the clinical or species multipliers, so these multipliers are set to 1 in the calculations.</p>
-<p>Most of the time, the contents of the submission itself do not directly affect the score; it is the reviewer’s rating of those contents that affect the score. But, there are exceptions. The main exception is the clinical multiplier, which is derived from the answer to the question “Is this compound available for off label use?”. The clinical multiplier affects the scoring of most sections. In the other exceptions, the partial beta weight for a field is not drawn from the <code>partial_betas</code> table, but rather derived from the data. This is the case for the efficacy measure (EC50 gets a weight of 0.67, IC50: 0.33) and therapeutic approach (prophylactic: 0.4, symptomatic: 0.2, both: 0.3, unknown: 0.1).</p>
-<p>Most sections are equally weighted relative to each other, but the 3 PK sections—PK In Vivo, PK In Vitro, PK In Silico—are weighted differently. They are treated as 3 components of a larger section, with PK In Silico getting a weight of 0.17, PK In Vitro getting a weight of 0.33, and PK In Vivo getting a weight of 0.5. These weights are referred to as the “section multiplier”; for the rest of the sections in the submission, the section multiplier is 1.</p>
-<p>Some sections (Acute Dosing, Chronic Dosing, and Teratogenicity) do not assign partial beta weights for individual fields. Instead, if there is any data provided for the section at all the partial beta is set to 1.</p>
-<p>The score of a section for a given reviewer is calculated by multiplying the section multiplier, clinical multiplier, species multiplier, and reviewer score by the vector of partial beta weights for the questions within that section. This multiplication results in a vector of numbers, the sum of which produces the score for the section. We repeat this process for all sections of the submission and all reviews.</p>
+<p>Reviewers give ratings to submissions on a section-by-section basis.
+That is, they score the Binding, LD50, PK In Vivo, etc. sections
+independently. They rate each section as None (no data; 0), Poor (0.1),
+Fair (0.25), Good (0.85), or Excellent (1). Reviewers can abstain from
+reviewing a section if they feel they cannot rate it. Reviewers also
+record whether the section contains data from within or across
+species.</p>
+<p>The score for a section is generally determined by several factors:
+the rating given by the reviewer, whether the data is within- or
+across-species (referred to as the “species multiplier”: 0.67 if
+within-species, 0.33 if across), whether the compound is available for
+off-label use (referred to as the “clinical multiplier”: 0.67 if yes,
+0.33 if no), and the partial beta weights of fields within the section
+(contained in the <code>partial_betas</code> table within this R
+package; these were originally sourced from the scoring spreadsheet upon
+which this scoring system was derived).</p>
+<p>However, there are exceptions to the above: the Naming, Basic Data,
+PK In Silico, and PK In Vitro sections do not use the clinical or
+species multipliers, so these multipliers are set to 1 in the
+calculations.</p>
+<p>Most of the time, the contents of the submission itself do not
+directly affect the score; it is the reviewer’s rating of those contents
+that affect the score. But, there are exceptions. The main exception is
+the clinical multiplier, which is derived from the answer to the
+question “Is this compound available for off label use?”. The clinical
+multiplier affects the scoring of most sections. In the other
+exceptions, the partial beta weight for a field is not drawn from the
+<code>partial_betas</code> table, but rather derived from the data. This
+is the case for the efficacy measure (EC50 gets a weight of 0.67, IC50:
+0.33) and therapeutic approach (prophylactic: 0.4, symptomatic: 0.2,
+both: 0.3, unknown: 0.1).</p>
+<p>Most sections are equally weighted relative to each other, but the 3
+PK sections—PK In Vivo, PK In Vitro, PK In Silico—are weighted
+differently. They are treated as 3 components of a larger section, with
+PK In Silico getting a weight of 0.17, PK In Vitro getting a weight of
+0.33, and PK In Vivo getting a weight of 0.5. These weights are referred
+to as the “section multiplier”; for the rest of the sections in the
+submission, the section multiplier is 1.</p>
+<p>Some sections (Acute Dosing, Chronic Dosing, and Teratogenicity) do
+not assign partial beta weights for individual fields. Instead, if there
+is any data provided for the section at all the partial beta is set to
+1.</p>
+<p>The score of a section for a given reviewer is calculated by
+multiplying the section multiplier, clinical multiplier, species
+multiplier, and reviewer score by the vector of partial beta weights for
+the questions within that section. This multiplication results in a
+vector of numbers, the sum of which produces the score for the section.
+We repeat this process for all sections of the submission and all
+reviews.</p>
 </div>
 <div class="section level2">
 <h2 id="aggregating-across-reviewers">Aggregating across reviewers<a class="anchor" aria-label="anchor" href="#aggregating-across-reviewers"></a>
 </h2>
-<p>The previous section describes how we calculate the score for each section based on a single reviewer’s rating. The next step in scoring is to aggregate the section scores across multiple reviewers. For each section of a submission, we take the geometric mean of the scores that were calculated for each reviewer. Where <code>values</code> is a vector of scores for the current section, the geometric mean is calculated by:</p>
+<p>The previous section describes how we calculate the score for each
+section based on a single reviewer’s rating. The next step in scoring is
+to aggregate the section scores across multiple reviewers. For each
+section of a submission, we take the geometric mean of the scores that
+were calculated for each reviewer. Where <code>values</code> is a vector
+of scores for the current section, the geometric mean is calculated
+by:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/prod.html" class="external-link">prod</a></span><span class="op">(</span><span class="va">values</span><span class="op">)</span> <span class="op">^</span> <span class="op">(</span><span class="fl">1</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">values</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p>This leaves us with a single score for each section of the submission.</p>
+<p>This leaves us with a single score for each section of the
+submission.</p>
 </div>
 <div class="section level2">
 <h2 id="final-score">Final score<a class="anchor" aria-label="anchor" href="#final-score"></a>
 </h2>
-<p>The final step in scoring is to add up the section scores from the previous section and divide by a denominator. Again, at this point the section scores are the geometric means of the scores from the different reviewers.</p>
-<p>The base denominator is 11, which corresponds to the number of sections in a submission, but with the 3 PK sections together making 1, and with the Basic Data section getting double weight. The clinical data and metadata sections are not scored, so they are not included in the denominator.</p>
-<p>A submission can have different numbers of sections, however, because applicants can add extra sections if they have multiple experiments to report. Thus the denominator can vary. If someone included two binding experiments, then the denominator would be 12. If they included 2 PK In Vivo sections, it would be 11.5.</p>
+<p>The final step in scoring is to add up the section scores from the
+previous section and divide by a denominator. Again, at this point the
+section scores are the geometric means of the scores from the different
+reviewers.</p>
+<p>The base denominator is 11, which corresponds to the number of
+sections in a submission, but with the 3 PK sections together making 1,
+and with the Basic Data section getting double weight. The clinical data
+and metadata sections are not scored, so they are not included in the
+denominator.</p>
+<p>A submission can have different numbers of sections, however, because
+applicants can add extra sections if they have multiple experiments to
+report. Thus the denominator can vary. If someone included two binding
+experiments, then the denominator would be 12. If they included 2 PK In
+Vivo sections, it would be 11.5.</p>
 </div>
 <div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h2>
-<p>The code below shows how to score real submissions to the portal. These submissions are stored in <a href="https://www.synapse.org/#!Team:3403721" class="external-link">Synapse</a>. To run this, you will need to have Python and the <a href="https://python-docs.synapse.org/build/html/index.html" class="external-link">synapseclient</a> Python package installed, as stopadforms uses this package to interact with <a href="https://www.synapse.org" class="external-link">Synapse</a>. You will also need to be part of the STOP-AD_Reviewers team on Synapse (<a href="https://www.synapse.org/#!Team:3403721" class="external-link uri">https://www.synapse.org/#!Team:3403721</a>)</p>
+<p>The code below shows how to score real submissions to the portal.
+These submissions are stored in <a href="https://www.synapse.org/#!Team:3403721" class="external-link">Synapse</a>. To run this,
+you will need to have Python and the <a href="https://python-docs.synapse.org/build/html/index.html" class="external-link">synapseclient</a>
+Python package installed, as stopadforms uses this package to interact
+with <a href="https://www.synapse.org" class="external-link">Synapse</a>. You will also need
+to be part of the STOP-AD_Reviewers team on Synapse (<a href="https://www.synapse.org/#!Team:3403721" class="external-link uri">https://www.synapse.org/#!Team:3403721</a>)</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://rstudio.github.io/reticulate/" class="external-link">"reticulate"</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="http://tidyverse.tidyverse.org" class="external-link">"tidyverse"</a></span><span class="op">)</span></span>
