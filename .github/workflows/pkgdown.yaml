@@ -12,11 +12,11 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: r-lib/actions/setup-r@v1
+      - uses: r-lib/actions/setup-r@v2
 
-      - uses: r-lib/actions/setup-pandoc@v1
+      - uses: r-lib/actions/setup-pandoc@v2
 
       - name: Query dependencies
         run: |
@@ -34,6 +34,10 @@ jobs:
 
       - name: Install dependencies
         run: |
+          install.packages("stringi", configure.args="--with-extra-cxxflags='--std=c++11'", version = "1.5.3")
+          install.packages("renv", repos = "https://cloud.r-project.org/")
+          source("renv/activate.R")
+          renv::restore()
           remotes::install_deps(dependencies = TRUE)
           install.packages("pkgdown", type = "binary")
         shell: Rscript {0}
