@@ -79,7 +79,7 @@ jobs:
       - name: Install dependencies
         run: |
           library(remotes)
-          install.packages("stringi", configure.args="--with-extra-cxxflags='--std=c++11'")
+          install.packages("stringi", configure.args="--with-extra-cxxflags='--std=c++11'", version = "1.5.3")
           renv::restore()
           deps <- readRDS("depends.Rds")
           deps[["installed"]] <- vapply(deps[["package"]], remotes:::local_sha, character(1))
