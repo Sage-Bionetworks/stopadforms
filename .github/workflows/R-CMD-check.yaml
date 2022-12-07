@@ -83,7 +83,7 @@ jobs:
           # install.packages("renv"), repos = "https://cloud.r-project.org/")
           # source("renv/activate.R")
           # renv::restore()
-          # deps <- readRDS("depends.Rds")
+          deps <- readRDS("depends.Rds")
           deps[["installed"]] <- vapply(deps[["package"]], remotes:::local_sha, character(1))
           update(deps)
           remotes::install_cran("rcmdcheck")
