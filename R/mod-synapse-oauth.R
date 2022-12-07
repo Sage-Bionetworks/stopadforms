@@ -23,7 +23,7 @@ authorization_url <- NULL
     	# Install Python and the Synapse Python client
     	# From https://stackoverflow.com/questions/54651700/use-python-3-in-reticulate-on-shinyapps-io
     	reticulate::virtualenv_create(envname = venv_folder, python = '/usr/bin/python3')
-    	reticulate::virtualenv_install(venv_folder, packages = c('synapseclient'))
+    	reticulate::virtualenv_install(venv_folder, packages = c('synapseclient', 'pandas'))
   		# 126 status for './python3_env/bin/python' unless we do this:
   		Sys.chmod(file.path(venv_folder, '/bin/python'), "774")
      }
