@@ -83,7 +83,7 @@ jobs:
           install.packages("golem", version = "0.2.1")
           install.packages("readr", version = "1.4.0")
           install.packages("shiny", version = "1.5.0")
-          install.packages("renv"), repos = "https://cloud.r-project.org/")
+          install.packages("renv", repos = "https://cloud.r-project.org/")
           source("renv/activate.R")
           renv::restore()
           deps <- readRDS("depends.Rds")
