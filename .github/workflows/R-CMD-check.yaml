@@ -79,11 +79,11 @@ jobs:
       - name: Install dependencies
         run: |
           library(remotes)
+          renv::restore()
           deps <- readRDS("depends.Rds")
           deps[["installed"]] <- vapply(deps[["package"]], remotes:::local_sha, character(1))
           update(deps)
           remotes::install_cran("rcmdcheck")
-          remotes::install_github("Sage-Bionetworks/dccvalidator@v0.3.0")
         shell: Rscript {0}
 
       - name: Check
