@@ -39,6 +39,5 @@ options(repos = c(REPO_NAME = "https://packagemanager.rstudio.com/all/__linux__/
 install.packages(cran)
 
 packages_installed_from_github <- c("dreamRs/shinypop", "Sage-Bionetworks/dccvalidator", "Sage-Bionetworks/synapseforms")
-
 remotes::install_github(packages_installed_from_github)
 
