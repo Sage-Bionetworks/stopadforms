@@ -121,7 +121,7 @@
 <p>The code below shows how to score real submissions to the portal. These submissions are stored in <a href="https://www.synapse.org/#!Team:3403721" class="external-link">Synapse</a>. To run this, you will need to have Python and the <a href="https://python-docs.synapse.org/build/html/index.html" class="external-link">synapseclient</a> Python package installed, as stopadforms uses this package to interact with <a href="https://www.synapse.org" class="external-link">Synapse</a>. You will also need to be part of the STOP-AD_Reviewers team on Synapse (<a href="https://www.synapse.org/#!Team:3403721" class="external-link uri">https://www.synapse.org/#!Team:3403721</a>)</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://rstudio.github.io/reticulate/" class="external-link">"reticulate"</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://tidyverse.tidyverse.org" class="external-link">"tidyverse"</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="http://tidyverse.tidyverse.org" class="external-link">"tidyverse"</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://sage-bionetworks.github.io/stopadforms" class="external-link">"stopadforms"</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Optional: use reticulate::use_python() here to tell R which Python version you</span></span>
@@ -153,7 +153,7 @@
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">## Filter to one submission of interest -- a test submission I created.</span></span>
-<span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">dat_full</span>, <span class="va">form_data_id</span> <span class="op">==</span> <span class="st">"242"</span><span class="op">)</span></span>
+<span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">dat_full</span>, <span class="va">form_data_id</span> <span class="op">==</span> <span class="st">"242"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">## Append clinical modifier used in calculations</span></span>
 <span><span class="va">submission</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/append_clinical_to_submission.html">append_clinical_to_submission</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span></span>
@@ -183,7 +183,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>
