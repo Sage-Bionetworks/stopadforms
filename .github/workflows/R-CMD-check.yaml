@@ -79,11 +79,11 @@ jobs:
       - name: Install dependencies
         run: |
           library(remotes)
-          install.packages("stringi", configure.args="--with-extra-cxxflags='--std=c++11'", version = "1.5.3")
-          install.packages("renv", repos = "https://cloud.r-project.org/")
-          source("renv/activate.R")
-          renv::restore()
-          deps <- readRDS("depends.Rds")
+          # install.packages("stringi", configure.args="--with-extra-cxxflags='--std=c++11'", version = "1.5.3")
+          # install.packages("renv"), repos = "https://cloud.r-project.org/")
+          # source("renv/activate.R")
+          # renv::restore()
+          # deps <- readRDS("depends.Rds")
           deps[["installed"]] <- vapply(deps[["package"]], remotes:::local_sha, character(1))
           update(deps)
           remotes::install_cran("rcmdcheck")
