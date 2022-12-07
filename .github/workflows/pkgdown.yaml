@@ -35,6 +35,8 @@ jobs:
       - name: Install dependencies
         run: |
           install.packages("stringi", configure.args="--with-extra-cxxflags='--std=c++11'", version = "1.5.3")
+          install.packages("renv", repos = "https://cloud.r-project.org/")
+          source("renv/activate.R")
           renv::restore()
           remotes::install_deps(dependencies = TRUE)
           install.packages("pkgdown", type = "binary")
