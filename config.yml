@@ -1,8 +1,0 @@
-default:
-  app_url: https://shinypro.synapse.org/users/nkauer/stopadforms/
-
-testing:
-  app_url: https://shinypro.synapse.org/users/nkauer/stopadforms-test/
-  
-aws-testing:
-  app_url: https://stopadforms.dev.sagebase.org

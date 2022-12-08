@@ -29,7 +29,7 @@ authorization_url <- NULL
     	reticulate::virtualenv_create(envname = venv_folder, python = '/usr/bin/python3')
     	reticulate::virtualenv_install(venv_folder, packages = c('synapseclient', 'pandas'))
      }
- 	reticulate::use_virtualenv(venv_folder, required = T)
+     reticulate::use_virtualenv(venv_folder, required = T)
   }
   
   synapse <<- reticulate::import("synapseclient", delay_load = TRUE)
