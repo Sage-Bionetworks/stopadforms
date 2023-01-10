@@ -36,6 +36,18 @@ Synapse.
 devtools::install_github("Sage-Bionetworks/stopadforms")
 ```
 
+## Deployment to ShinyApps.io
+
+- Enable workflows in the GitHub repository
+- Under [secrets](https://github.com/Sage-Bionetworks/stopadforms/settings/secrets/actions) click 'New repository secret'
+- Enter secrets for `RSCONNECT_USER`, `RSCONNECT_TOKEN`, and `RSCONNECT_SECRET`, the values for which are saved in Sage's LastPass.
+- Trigger the GitHub action.
+- Check out the app here: https://sagebio.shinyapps.io/stopadforms-staging.
+- After verifying correctness, create a Git branch named release*, e.g., `release-1.0`.
+- The app' will become available at https://sagebio.shinyapps.io/stopadforms
+
+
+
 ## Calculating scores for a submission
 
 Below is an example of how to calculate scores for a submission outside of the

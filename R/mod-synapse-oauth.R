@@ -17,10 +17,25 @@ authorization_url <- NULL
 #' @param libname default R .onLoad() parameter
 #' @param pkgname default R .onLoad() parameter
 .onLoad <- function(libname, pkgname) {
+  if (Sys.getenv("R_CONFIG_ACTIVE") == "shinyapps") {
+  	venv_folder<-'./python3_env'
+  	if (!file.exists(venv_folder)) {
+    	# Install Python and the Synapse Python client
+    	# Ideally this would be done prior to deploying the app' to ShinyApps
+    	# but the huge number of installed files causes the deployable artifact
+    	# to exceed the 10,000 file limit.  The effect of doing it here is a slow
+    	# start up the first time the app' is run.
+    	# From https://stackoverflow.com/questions/54651700/use-python-3-in-reticulate-on-shinyapps-io
+    	reticulate::virtualenv_create(envname = venv_folder, python = '/usr/bin/python3')
+    	reticulate::virtualenv_install(venv_folder, packages = c('synapseclient', 'pandas'))
+     }
+     reticulate::use_virtualenv(venv_folder, required = T)
+  }
+  
   synapse <<- reticulate::import("synapseclient", delay_load = TRUE)
   if (!interactive()) {
     setup_global_oauth_vars(
-      app_url = get_golem_config("app_url"),
+      app_url = Sys.getenv("app_url"),
       client_name = Sys.getenv("client_name"),
       client_id = Sys.getenv("client_id"),
       client_secret = Sys.getenv("client_secret")
