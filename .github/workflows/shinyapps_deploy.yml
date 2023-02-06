@@ -1,17 +1,17 @@
 # Workflow derived from https://github.com/r-lib/actions/tree/master/examples
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
+# deploy on pull request approval and merge
 
 name: shiny-apps-deploy
 
 on:
-  push:
-    branches:
-      - master
-      - shinyapps-and-docker
-      - release*
+  pull_request:
+    types:
+      - closed
 
 jobs:
-  shiny-deploy:
+  if_merged:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
  
     steps:
@@ -63,8 +63,6 @@ jobs:
           options(rsconnect.max.bundle.files=100000)
           options(rsconnect.max.bundle.size=3145728000)
           rsconnect::setAccountInfo(rsConnectUser, rsConnectToken, rsConnectSecret)
-
           appFiles<-dir(all.files=TRUE, include.dirs=TRUE)
-
           rsconnect::deployApp(appName = appName, appFiles=appFiles)
         shell: Rscript {0}
