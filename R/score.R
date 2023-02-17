@@ -1,3 +1,5 @@
+library(dplyr)
+
 #' Score an entire submission
 #'
 #' Given a data frame containing a submission and a table of reviews, calculate
