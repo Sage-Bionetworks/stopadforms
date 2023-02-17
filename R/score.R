@@ -1,4 +1,4 @@
-library(dplyr)
+
 
 #' Score an entire submission
 #'
@@ -33,8 +33,8 @@ transformLegacyPivotLonger <- function(clinicals) {
   
   clinicals <- clinicalsT %>%
     as.data.frame() %>%
-    mutate(form_data_id = form_data_ids) %>%
-    rename(clinical = 'V1')
+    dplyr::mutate(form_data_id = form_data_ids) %>%
+    dplyr::rename(clinical = 'V1')
   
   return(clinicals)
 }
