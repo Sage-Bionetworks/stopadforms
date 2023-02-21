@@ -1,3 +1,5 @@
+
+
 #' Score an entire submission
 #'
 #' Given a data frame containing a submission and a table of reviews, calculate
@@ -18,6 +20,27 @@
 #'   [calculate_scores_rowwise()], or [pull_reviews_table()]).
 #' @return The score for the submission
 #' @export
+
+##########################################################################
+
+#additional function to recreate pivot_longer legacy
+
+transformLegacyPivotLonger <- function(clinicals) {
+  clinicalsT <- clinicals %>%
+    t()
+  
+  form_data_ids <- rownames(clinicalsT)
+  
+  clinicals <- clinicalsT %>%
+    as.data.frame() %>%
+    dplyr::mutate(form_data_id = form_data_ids) %>%
+    dplyr::rename(clinical = 'V1')
+  
+  return(clinicals)
+}
+
+##########################################################################
+
 calculate_submission_score <- function(submission, reviews) {
   if (nrow(reviews) == 0) {
     return(0)
@@ -195,11 +218,8 @@ append_clinical_to_submission <- function(submissions) {
     split(submissions, submissions$form_data_id),
     get_clinical
   ) %>%
-    tidyr::pivot_longer(
-      tidyr::everything(),
-      "form_data_id",
-      values_to = "clinical"
-    )
+    transformLegacyPivotLonger
+  
   with_clinical <- submissions %>%
     dplyr::left_join(clinicals, by = "form_data_id")
   with_clinical
