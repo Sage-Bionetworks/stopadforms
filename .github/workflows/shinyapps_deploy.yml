@@ -10,7 +10,7 @@ on:
       - closed
 
 jobs:
-  if_merged:
+  shinyDeploy:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
  
