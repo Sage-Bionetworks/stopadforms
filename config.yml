@@ -1,0 +1,11 @@
+testing:
+  app_url: http://127.0.0.1:8100
+  client_id: "100052"
+  client_secret: "RAMrHyQMWaR2erdvoZNUQtgbn4-OP7lC4ZoMFsDPqUo"
+  client_name: "local"
+
+default:
+  app_url: https://sagebio.shinyapps.io/stopadforms/
+  client_id: "100167"
+  client_secret: "2UEpOkwgWEcBuuRef8PoBgbJjbvUT5KCjbv9HyGMiSc"
+  client_name: "stopadforms"
