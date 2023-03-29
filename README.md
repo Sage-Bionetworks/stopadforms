@@ -23,7 +23,6 @@ Installation
 ------------
 
 ``` r
-
 #install latest dccvalidator
 install.packages("dccvalidator")
 devtools::install_github("Sage-Bionetworks/stopadforms")
@@ -71,19 +70,13 @@ submissions that are stored in Synapse.
 Running the application locally
 -------------------------------
 
-``` r
-library("stopadforms")
-shiny::run_app()
-```
-
-Change code of file "app.r" in main directory to
+Set localDevelopment variable to "TRUE" in "app.R" file of main directory.
 
 ``` r
-if (nchar(Sys.getenv("R_CONFIG_ACTIVE"))==0) {
-  config <- config::get("config.yml")
-  Sys.setenv(R_CONFIG_ACTIVE = "testing") # Replace "default" with your config
-}
+localDevelopment = TRUE
 ```
+
+With the app.R file selected in R Studio, run the shiny app by clicking the button in R Studio.
 
 Scores entered while running the application locally will persist on
 Synapse.
