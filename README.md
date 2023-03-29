@@ -70,10 +70,26 @@ submissions that are stored in Synapse.
 Running the application locally
 -------------------------------
 
-Set localDevelopment variable to "TRUE" in "app.R" file of main directory.
+Set localDevelopment variable to "TRUE" in "app.R" file of main directory.  Populate the config.yml file in the parent directory with secrets from lastpass for the "testing" profile.  Contact IT if you need access.
 
+app.R
 ``` r
 localDevelopment = TRUE
+```
+config.yml
+``` yaml
+testing:
+  app_url: http://127.0.0.1:8100
+  client_id: ***
+  client_secret: ***
+  client_name: "local"
+
+default:
+  app_url: https://sagebio.shinyapps.io/stopadforms/
+  client_id: ***
+  client_secret: ***
+  client_name: "stopadforms"
+
 ```
 
 With the app.R file selected in R Studio, run the shiny app by clicking the button in R Studio.
