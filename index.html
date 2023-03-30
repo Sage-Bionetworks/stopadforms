@@ -83,12 +83,14 @@
 <!-- badges: start -->
 
 <p>stopadforms is an R package and Shiny application to allow reviewers to view and score submissions to the <a href="https://stopadportal.synapse.org/#/" class="external-link">STOP-AD Compound Submission Portal</a>.</p>
-<p>The application is hosted at <a href="https://shinypro.synapse.org/users/kwoo/stopadforms/" class="external-link uri">https://shinypro.synapse.org/users/kwoo/stopadforms/</a>. To use it, you must be a member of the <a href="https://www.synapse.org/#!Team:3403721" class="external-link">STOP-AD_Reviewers Synapse team</a> and be logged in to Synapse. To save reviews, you must be a Certified User on Synapse.</p>
+<p>The application is hosted at <a href="https://sagebio.shinyapps.io/stopadforms/" class="external-link uri">https://sagebio.shinyapps.io/stopadforms/</a>. To use it, you must be a member of the <a href="https://www.synapse.org/#!Team:3403721" class="external-link">STOP-AD_Reviewers Synapse team</a> and be logged in to Synapse. To save reviews, you must be a Certified User on Synapse.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"Sage-Bionetworks/stopadforms"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co">#install latest dccvalidator</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"dccvalidator"</span><span class="op">)</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"Sage-Bionetworks/stopadforms"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="calculating-scores-for-a-submission">Calculating scores for a submission<a class="anchor" aria-label="anchor" href="#calculating-scores-for-a-submission"></a>
@@ -124,11 +126,41 @@
 <div class="section level2">
 <h2 id="running-the-application-locally">Running the application locally<a class="anchor" aria-label="anchor" href="#running-the-application-locally"></a>
 </h2>
+<p>Set localDevelopment variable to “TRUE” in “app.R” file of main directory. Populate the config.yml file in the parent directory with secrets from lastpass for the “testing” profile. Contact IT if you need access.</p>
+<p>app.R</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://sage-bionetworks.github.io/stopadforms" class="external-link">"stopadforms"</a></span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/run_app.html">run_app</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">localDevelopment</span> <span class="op">=</span> <span class="cn">TRUE</span></span></code></pre></div>
+<p>config.yml</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">testing</span><span class="kw">:</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">app_url</span><span class="kw">:</span><span class="at"> http://127.0.0.1:8100</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">client_id</span><span class="kw">:</span><span class="at"> </span><span class="ot">***</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">client_secret</span><span class="kw">:</span><span class="at"> </span><span class="ot">***</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">client_name</span><span class="kw">:</span><span class="at"> </span><span class="st">"local"</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">default</span><span class="kw">:</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">app_url</span><span class="kw">:</span><span class="at"> https://sagebio.shinyapps.io/stopadforms/</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">client_id</span><span class="kw">:</span><span class="at"> </span><span class="ot">***</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">client_secret</span><span class="kw">:</span><span class="at"> </span><span class="ot">***</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">client_name</span><span class="kw">:</span><span class="at"> </span><span class="st">"stopadforms"</span></span></code></pre></div>
+<p>With the app.R file selected in R Studio, run the shiny app by clicking the button in R Studio.</p>
 <p>Scores entered while running the application locally will persist on Synapse.</p>
 <p>See <code><a href="articles/deploying-stopadforms.html">vignette("deploying-stopadforms", package = "stopadforms")</a></code> for information on how we deploy the app on the Sage Bionetworks Shiny Pro server.</p>
+<hr>
+</div>
+<div class="section level2">
+<h2 id="setting-up-github-actions-to-deploy">Setting up github actions to deploy<a class="anchor" aria-label="anchor" href="#setting-up-github-actions-to-deploy"></a>
+</h2>
+<ul>
+<li>Enable workflows in the GitHub repository</li>
+<li>Under <a href="https://github.com/Sage-Bionetworks/stopadforms/settings/secrets/actions" class="external-link">secrets</a> click ‘New repository secret’</li>
+<li>Enter secrets for <code>RSCONNECT_USER</code>, <code>RSCONNECT_TOKEN</code>, and <code>RSCONNECT_SECRET</code>, the values for which are saved in Sage’s LastPass.</li>
+<li>Enter secrets for <code>OAUTH_CLIENT_ID</code>, and <code>OAUTH_CLIENT_SECRET</code> for a Synapse OAuth client configured for this application.</li>
+<li>Trigger the GitHub action.</li>
+<li>Check out the app here: <a href="https://sagebio.shinyapps.io/stopadforms-staging" class="external-link uri">https://sagebio.shinyapps.io/stopadforms-staging</a>.</li>
+<li>After verifying correctness, create a Git branch named release*, e.g., <code>release-1.0</code>.</li>
+<li>The app’ will become available at <a href="https://sagebio.shinyapps.io/stopadforms" class="external-link uri">https://sagebio.shinyapps.io/stopadforms</a>
+</li>
+</ul>
 <hr>
 <p>Please note that the stopadforms project is released with a <a href="CODE_OF_CONDUCT.html">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p>
 </div>
