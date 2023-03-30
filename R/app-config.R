@@ -17,6 +17,7 @@ app_sys <- function(...) {
 #' scan the parent directory for config file.
 #'
 #' @noRd
+
 get_golem_config <- function(value,
                              config = Sys.getenv(
                                "GOLEM_CONFIG_ACTIVE",
