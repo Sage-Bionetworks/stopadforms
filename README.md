@@ -25,6 +25,7 @@ Installation
 ``` r
 #install latest dccvalidator
 install.packages("dccvalidator")
+#install app from package
 devtools::install_github("Sage-Bionetworks/stopadforms")
 
 ```
