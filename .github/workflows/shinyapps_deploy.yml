@@ -13,6 +13,7 @@ jobs:
   shinyDeploy:
     if: github.event.pull_request.merged == true
     runs-on: Ubuntu-20.04
+    container: rocker/rstudio:4.2.3
  
     steps:
  
