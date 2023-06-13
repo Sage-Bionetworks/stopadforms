@@ -14,6 +14,8 @@ jobs:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v3
+      
+      - name: update ubuntu repos
         run: sudo apt update
       - uses: r-lib/actions/setup-pandoc@v2
 
