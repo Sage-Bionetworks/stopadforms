@@ -134,10 +134,15 @@ create_table_from_json_file <- function(filename, data_id, lookup_table,
 #' @param section The section name
 #' @inheritParams process_submissions
 create_section_table <- function(data, section, lookup_table, complete = TRUE) {
-  # If no data, return NULL
-  if (length(data) == 0) {
-    return(NULL)
-  } else if (length(names(data)) == 1 && names(data) %in% c("experiments", "cell_line_efficacy", "cell_line_binding")) { # nolint
+
+    # ALZ-157: remove empty objects from inner lists
+    if (length(names(data)) == 1 && names(data) %in% c("experiments", "cell_line_efficacy", "cell_line_binding")) {
+      data <- remove_empty_objects(data)
+    }
+    # If no data, return NULL
+    if (length(data) == 0) {
+      return(NULL)
+    } else if (length(names(data)) == 1 && names(data) %in% c("experiments", "cell_line_efficacy", "cell_line_binding")) { # nolint
     # If "experiments" is the only element, we need to go deeper to extract the
     # info for each experiment separately. The section name needs to have a
     # number to differentiate.
@@ -298,4 +303,22 @@ combine_route_responses <- function(data) {
     data$route <- paste(data$route, collapse = ", ")
   }
   data
+}
+
+#' ALZ-157: Remove empty objects from inner lists for legacy submissions.
+#'
+#' @param data List containing data
+remove_empty_objects <- function(data_list) {
+  if (is(data_list, "list")) {
+    if (all(lengths(data_list) == 0)) {
+      return(NULL)
+    }
+    data_list <- lapply(data_list, remove_empty_objects)
+    keep <- lengths(data_list) > 0
+    data_list <- data_list[keep]
+    return(data_list)
+  }
+  print("data_list")
+  print(data_list)
+  return(data_list)
 }

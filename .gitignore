@@ -7,3 +7,5 @@ dev/
 inst/doc
 docs
 .project
+./tests/testthat/*.json
+
