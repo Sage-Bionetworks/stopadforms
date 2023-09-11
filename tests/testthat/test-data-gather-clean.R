@@ -1,5 +1,8 @@
 context("data-gather-clean.R")
 
+## Base URL for downloading local json files
+download_path <- paste('file://', getwd(), sep = "")
+
 ## Sample JSON data to test with
 json <- '
 {
@@ -49,13 +52,13 @@ json <- '
 # write to file to allow data-gather-clean.R
 # create_table_from_json_file to operate
 write(json, "test1.json")
-json1 <- "file://test1.json"
+json1_download_path <- paste(download_path, "/test1.json", sep = "")
 
 # create_table_from_json_file() ------------------------------------------------
 
 test_that("create_table_from_json_file creates (at least) one row per row in lookup table", { # nolint
   dat <- create_table_from_json_file(
-    json1,
+    json1_download_path,
     data_id = "1",
     lookup_table = lookup_table,
     complete = TRUE
@@ -65,7 +68,7 @@ test_that("create_table_from_json_file creates (at least) one row per row in loo
 
 test_that("All sections are represented if complete = TRUE", {
   dat <- create_table_from_json_file(
-    json1,
+    json1_download_path,
     data_id = "1",
     lookup_table = lookup_table,
     complete = TRUE
@@ -75,7 +78,7 @@ test_that("All sections are represented if complete = TRUE", {
 
 test_that("create_table_from_json_file creates one row per response if complete = FALSE", { # nolint
   dat <- create_table_from_json_file(
-    json1,
+    json1_download_path,
     data_id = "1",
     lookup_table = lookup_table,
     complete = FALSE
@@ -85,7 +88,7 @@ test_that("create_table_from_json_file creates one row per response if complete 
 
 test_that("Submission is named by user name and compound name", {
   dat <- create_table_from_json_file(
-    json1,
+    json1_download_path,
     data_id = "1",
     lookup_table = lookup_table,
     complete = FALSE
@@ -95,7 +98,7 @@ test_that("Submission is named by user name and compound name", {
 
 test_that("Submission's data ID is added to data", {
   dat <- create_table_from_json_file(
-    json1,
+    json1_download_path,
     data_id = "1",
     lookup_table = lookup_table,
     complete = FALSE
@@ -131,10 +134,10 @@ test_that("create_table_from_json_file gets missing sections added to each exper
 }
 '
   write(json, "test2.json")
-  json2 <- "file://test2.json"
+  json2_download_path <- paste(download_path, "/test2.json", sep = "")
   
   res <- create_table_from_json_file(
-    json2,
+    json2_download_path,
     data_id = "1",
     lookup_table = lookup_table,
     complete = TRUE
@@ -147,7 +150,7 @@ test_that("create_table_from_json_file returns correct columns", {
   correct <- c("section", "variable", "response", "label", "exp_num", "step",
                "form_data_id", "submission")
   res <- create_table_from_json_file(
-    json1,
+    json1_download_path,
     data_id = "1",
     lookup_table = lookup_table,
     complete = TRUE
