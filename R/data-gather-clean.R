@@ -318,7 +318,5 @@ remove_empty_objects <- function(data_list) {
     data_list <- data_list[keep]
     return(data_list)
   }
-  print("data_list")
-  print(data_list)
   return(data_list)
 }
