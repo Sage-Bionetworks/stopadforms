@@ -65,5 +65,5 @@ jobs:
           options(rsconnect.max.bundle.size=3145728000)
           rsconnect::setAccountInfo(rsConnectUser, rsConnectToken, rsConnectSecret)
           appFiles<-dir(all.files=TRUE, include.dirs=TRUE)
-          rsconnect::deployApp(appName = appName, appFiles=appFiles)
+          rsconnect::deployApp(appName = appName, appFiles=appFiles, forceUpdate = TRUE)
         shell: Rscript {0}
