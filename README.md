@@ -71,36 +71,118 @@ submissions that are stored in Synapse.
 Running the application locally
 -------------------------------
 
-Set localDevelopment variable to "TRUE" in "app.R" file of main directory.  Populate the config.yml file in the parent directory with secrets from lastpass for the "testing" profile.  Contact IT if you need access.
+## Prerequisites
 
-app.R
-``` r
+1. You must be a member of the [STOP-AD_Reviewers](https://www.synapse.org/#!Team:3403721) team in Synapse.
+
+2. Your local .synapseConfig file must be populated with a valid Synapse PAT 
+that has both "download" and "update" permissions. If you use the Synapse UI to 
+create your PAT, select the "Download" and "Modify" options.
+
+## Configuring the application to run locally
+
+1. Modify 'app.R'
+Set the `localDevelopment` variable to `TRUE`. 
+```
 localDevelopment = TRUE
 ```
-config.yml
-``` yaml
+
+2. Modify `config.yml`
+Populate the `testing` profile's `client_secret` with the local client password, 
+which is stored in lastpass as "stopadforms synapse client". Contact IT if you 
+need access to the shared secret.
+```
 testing:
   app_url: http://127.0.0.1:8100
-  client_id: ***
-  client_secret: ***
+  client_id: 100167
+  client_secret: ***stored in lastpass***
   client_name: "local"
+  preserve_logs: TRUE
+```
 
-default:
-  app_url: https://sagebio.shinyapps.io/stopadforms/
-  client_id: ***
-  client_secret: ***
-  client_name: "stopadforms"
+3. Install R packages
+Install packages from `renv.lock` by issuing the following command:
+```
+renv::restore()
+```
+
+4. Create Python virtual environment & install required Python packages
+Run the following code (derived from `mod-synapse-oauth.R`) to create the 
+required python3 virtual environment and install the required Python packages. 
+
+```
+venv_folder<-'./python3_env'
+reticulate::virtualenv_create(envname = venv_folder, python = '/usr/bin/python3')
+reticulate::virtualenv_install(venv_folder, packages = c('synapseclient<2.8', 'pandas<1.5'))
+reticulate::use_virtualenv(venv_folder, required = T)
 
 ```
 
-With the app.R file selected in R Studio, run the shiny app by clicking the button in R Studio.
+5. Additional steps for OSX
+If the app will not run locally after the above steps, try the additional 
+steps described in this section.
 
-Scores entered while running the application locally will persist on
-Synapse.
+5.1 Verify required environment variables are set
+Check to ensure that the required environment variables are set with the 
+expected values:
+```
+Sys.getenv("R_CONFIG_ACTIVE")
+Sys.setenv(app_url)  
+Sys.setenv(client_name)
+Sys.setenv(client_id)
+Sys.setenv(client_secret)
+```
 
-See `vignette("deploying-stopadforms", package = "stopadforms")` for
-information on how we deploy the app on the Sage Bionetworks Shiny Pro
-server.
+If they are not, you can manually set them:
+```
+Sys.setenv("R_CONFIG_ACTIVE"= "testing")
+Sys.setenv(app_url = "http://127.0.0.1:8100")  
+Sys.setenv(client_name='local')
+Sys.setenv(client_id='100167')
+Sys.setenv(client_secret='***stored in lastpass***')
+```
+
+5.2 Modify `R/app-server.R'
+You may need to add an additional line of code to `R/app-server.R' that 
+forces the user-specific Synapse client to log in prior to checking whether it's
+logged in:
+
+```
+  ## Synapse client for a specific user
+  syn <- synapse$Synapse()
+  ## Oauth
+  syn <- callModule(
+    mod_synapse_oauth_server,
+    "oauth",
+    syn = syn
+  )
+
+  # TODO don't forget to remove this local development hack!
+  # log into synpase with the user-specific client before the logged_in(syn) check
+  attempt_login(syn) 
+  
+  shiny::req(
+    inherits(syn, "synapseclient.client.Synapse"),
+    logged_in(syn)
+  )
+```
+
+## Running the application
+With the `app.R` file selected in R Studio, run the shiny app by clicking the "Run App" button in R Studio.
+
+Be aware that scores entered while running the application locally *will* be persisted in
+Synapse!!! 
+
+## Running the tests
+To run the all the tests in the `tests/testthat` directory:
+```
+test_dir("tests/testthat/")
+```
+
+To run a specific test file from the `tests/testthat` directory:
+```
+test_file("tests/testthat/<path/to/filename.R>")
+```
 
 ------------------------------------------------------------------------
 

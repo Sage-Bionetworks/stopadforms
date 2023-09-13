@@ -1,8 +1,9 @@
 testing:
   app_url: http://127.0.0.1:8100
-  client_id: *****
-  client_secret: *****
+  client_id: 100167
+  client_secret: ***stored in lastpass***
   client_name: "local"
+  preserve_logs: TRUE
 
 default:
   app_url: https://sagebio.shinyapps.io/stopadforms/
