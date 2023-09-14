@@ -1,5 +1,8 @@
 context("data-gather-clean.R")
 
+## Base URL for downloading local json files
+download_path <- paste('file://', getwd(), sep = "")
+
 ## Sample JSON data to test with
 json <- '
 {
@@ -49,13 +52,13 @@ json <- '
 # write to file to allow data-gather-clean.R
 # create_table_from_json_file to operate
 write(json, "test1.json")
-json1 <- "file://test1.json"
+json1_download_path <- paste(download_path, "/test1.json", sep = "")
 
 # create_table_from_json_file() ------------------------------------------------
 
 test_that("create_table_from_json_file creates (at least) one row per row in lookup table", { # nolint
   dat <- create_table_from_json_file(
-    json1,
+    json1_download_path,
     data_id = "1",
     lookup_table = lookup_table,
     complete = TRUE
@@ -65,7 +68,7 @@ test_that("create_table_from_json_file creates (at least) one row per row in loo
 
 test_that("All sections are represented if complete = TRUE", {
   dat <- create_table_from_json_file(
-    json1,
+    json1_download_path,
     data_id = "1",
     lookup_table = lookup_table,
     complete = TRUE
@@ -75,7 +78,7 @@ test_that("All sections are represented if complete = TRUE", {
 
 test_that("create_table_from_json_file creates one row per response if complete = FALSE", { # nolint
   dat <- create_table_from_json_file(
-    json1,
+    json1_download_path,
     data_id = "1",
     lookup_table = lookup_table,
     complete = FALSE
@@ -85,7 +88,7 @@ test_that("create_table_from_json_file creates one row per response if complete 
 
 test_that("Submission is named by user name and compound name", {
   dat <- create_table_from_json_file(
-    json1,
+    json1_download_path,
     data_id = "1",
     lookup_table = lookup_table,
     complete = FALSE
@@ -95,7 +98,7 @@ test_that("Submission is named by user name and compound name", {
 
 test_that("Submission's data ID is added to data", {
   dat <- create_table_from_json_file(
-    json1,
+    json1_download_path,
     data_id = "1",
     lookup_table = lookup_table,
     complete = FALSE
@@ -131,14 +134,18 @@ test_that("create_table_from_json_file gets missing sections added to each exper
 }
 '
   write(json, "test2.json")
-  json2 <- "file://test2.json"
+  json2_download_path <- paste(download_path, "/test2.json", sep = "")
   
   res <- create_table_from_json_file(
-    json2,
+    json2_download_path,
     data_id = "1",
     lookup_table = lookup_table,
     complete = TRUE
   )
+  
+  ## # clean up test2.json file
+  file.remove("test2.json")
+  
   ## "reference" should appear twice
   expect_equal(sum(res$variable == "reference"), 2)
 })
@@ -147,13 +154,16 @@ test_that("create_table_from_json_file returns correct columns", {
   correct <- c("section", "variable", "response", "label", "exp_num", "step",
                "form_data_id", "submission")
   res <- create_table_from_json_file(
-    json1,
+    json1_download_path,
     data_id = "1",
     lookup_table = lookup_table,
     complete = TRUE
   )
   expect_equal(setdiff(correct, names(res)), character(0))
 })
+
+# clean up test1.json file
+file.remove("test1.json")
 
 # create_section_table() -------------------------------------------------------
 
@@ -234,6 +244,7 @@ test_that("create_section_table finds experiments in binding and efficacy", {
         "binding_affinity": "10",
         "binding_affinity_constant": "Ki"
       },
+      {},
       {
         "name": "binding experiment 2",
         "cell_line": "CHO cells",
@@ -251,7 +262,9 @@ test_that("create_section_table finds experiments in binding and efficacy", {
         "outcome_measures": "none",
         "efficacy_measure": "10",
         "efficacy_measure_type": "EC50"
-      }
+      },
+      {},
+      {}
     ]
   }
 }
@@ -272,6 +285,8 @@ test_that("create_section_table finds experiments in binding and efficacy", {
 })
 
 # create_values_table() --------------------------------------------------------
+
+
 
 test_that("create_values_table turns sub-list into tibble", {
   lookup_table <- tibble::tibble(
@@ -478,4 +493,174 @@ test_that("combine_route_responses combines routes if present", {
 test_that("combine_route_responses returns orig. data if no route present ", {
   dat <- list(not_a_route = list("a", "b"))
   expect_equal(combine_route_responses(dat), list(not_a_route = list("a", "b")))
+})
+
+
+# remove_empty_objects() ----------------------------------------------
+test_that("remove_empty_objects removes all empty inner cell_line_efficacy objects", {
+  json <- '
+{
+  "efficacy": {
+    "cell_line_efficacy": [
+        {},
+        {},
+        {}
+    ]
+  }
+}
+'
+  
+  data_in <- jsonlite::fromJSON(json, simplifyDataFrame = FALSE)
+  data_out <- remove_empty_objects(data_in)
+  
+  expect_equal(length(data_in$efficacy[[1]]), 3)
+  expect_equal(length(data_out$efficacy[[1]]), 0)
+  
+})
+
+test_that("remove_empty_objects removes all empty inner cell_line_binding objects", {
+  json <- '
+{
+   "binding": {
+    "cell_line_binding": [
+      {},
+      {}, 
+      {},
+      {}
+    ]
+   }
+}
+'
+  
+  data_in <- jsonlite::fromJSON(json, simplifyDataFrame = FALSE)
+  data_out <- remove_empty_objects(data_in)
+  
+  expect_equal(length(data_in$binding[[1]]), 4)
+  expect_equal(length(data_out$binding[[1]]), 0)
+})
+
+test_that("remove_empty_objects removes all empty inner age_range objects", {
+  json <- '
+{
+  "pk_in_vivo": {
+    "experiments": [
+      {
+        "age_range": {}
+      },
+      {
+        "age_range": {}
+      },
+      {
+        "age_range": {}
+      },
+      {
+        "age_range": {}
+      },
+      {
+        "age_range": {}
+      }
+    ]
+  }
+}
+'
+  
+  data_in <- jsonlite::fromJSON(json, simplifyDataFrame = FALSE)
+  data_out <- remove_empty_objects(data_in)
+  
+  expect_equal(length(data_in$pk_in_vivo[[1]]), 5)
+  expect_equal(length(data_out$pk_in_vivo[[1]]), 0)
+})
+
+
+
+test_that("remove_empty_objects removes only empty inner cell_line_efficacy objects", {
+  json <- '
+{
+  "efficacy": {
+    "cell_line_efficacy": [
+        {},
+        {
+          "name": "efficacy experiment 1",
+          "cell_line": "iPSC",
+          "outcome_measures": "none",
+          "efficacy_measure": "10",
+          "efficacy_measure_type": "EC50"
+        },
+        {}
+    ]
+  }
+}
+'
+  
+  data_in <- jsonlite::fromJSON(json, simplifyDataFrame = FALSE)
+  data_out <- remove_empty_objects(data_in)
+  
+  expect_equal(length(data_in$efficacy[[1]]), 3)
+  expect_equal(length(data_out$efficacy[[1]]), 1)
+
+})
+
+test_that("remove_empty_objects removes only empty inner cell_line_binding objects", {
+  json <- '
+{
+   "binding": {
+      "cell_line_binding": [
+        {},
+        {
+          "name": "binding experiment 2",
+          "cell_line": "CHO cells",
+          "assay_description": "ligand binding",
+          "binding_affinity": "20",
+          "binding_affinity_constant": "Km"
+        }, 
+        {},
+        {}
+      ]
+   }
+}
+'
+  
+  data_in <- jsonlite::fromJSON(json, simplifyDataFrame = FALSE)
+  data_out <- remove_empty_objects(data_in)
+  
+  expect_equal(length(data_in$binding[[1]]), 4)
+  expect_equal(length(data_out$binding[[1]]), 1)
+})
+
+test_that("remove_empty_objects removes only empty inner age_range objects", {
+  json <- '
+{
+  "pk_in_vivo": {
+    "experiments": [
+      {
+        "age_range": {}
+      },
+      {
+          "age_range":{
+            "age_range_min":6,
+            "age_range_max":24
+        }
+      },
+      {
+        "age_range": {}
+      },
+      {
+        "age_range": {}
+      },
+      {
+          "age_range":{
+            "age_range_min":1,
+            "age_range_max":6
+          }
+      }
+    ]
+  }
+}
+'
+  
+  data_in <- jsonlite::fromJSON(json, simplifyDataFrame = FALSE)
+  data_out <- remove_empty_objects(data_in)
+  
+  expect_equal(length(data_in$pk_in_vivo[[1]]), 5)
+  expect_equal(length(data_out$pk_in_vivo[[1]]), 2)
 })
