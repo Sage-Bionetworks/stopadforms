@@ -42,8 +42,6 @@ jobs:
         with:
           r-version: ${{ matrix.r }}
 
-
-# 
 #       - name: Query dependencies
 #         run: |
 #           install.packages('remotes')
@@ -63,9 +61,9 @@ jobs:
         run: |
           export DEBIAN_FRONTEND=noninteractive
           sudo apt-get -y update
-          sudo add-apt-repository ppa:cran/libgit2
-          sudo apt-get update
-          sudo apt-get install libgit2-dev
+          # sudo add-apt-repository ppa:cran/libgit2
+          # sudo apt-get update
+          # sudo apt-get install libgit2-dev
           sudo apt-get install -y make python3-minimal pandoc pandoc-citeproc git-core libv8-dev libxml2-dev libcurl4-openssl-dev libssl-dev libssh2-1-dev zlib1g-dev
 
       - uses: r-lib/actions/setup-pandoc@v2
