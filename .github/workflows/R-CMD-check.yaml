@@ -69,7 +69,6 @@ jobs:
       - uses: r-lib/actions/setup-pandoc@v2
       - name: Install dependencies
         run: |
-          library(remotes)
           install.packages('remotes')
           remotes::install_cran("rcmdcheck")
           remotes::install_github("Sage-Bionetworks/dccvalidator")
