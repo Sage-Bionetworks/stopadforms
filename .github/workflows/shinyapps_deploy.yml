@@ -5,6 +5,9 @@
 name: shiny-apps-deploy
 
 on:
+  push:
+    branches:
+      - fix-deployment
   pull_request:
     types:
       - closed
