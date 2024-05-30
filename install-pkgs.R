@@ -44,4 +44,3 @@ remotes::install_version("rsconnect", "0.8.29")
 
 packages_installed_from_github <- c("dreamRs/shinypop", "Sage-Bionetworks/dccvalidator", "Sage-Bionetworks/synapseforms")
 remotes::install_github(packages_installed_from_github)
-
