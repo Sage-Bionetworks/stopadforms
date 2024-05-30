@@ -44,7 +44,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          Sys.setenv(GITHUB_PAT="${{ secrets.pat_for_shinyapps_action }}")
+          # Sys.setenv(GITHUB_PAT="${{ secrets.pat_for_shinyapps_action }}")
           install.packages('remotes')
           remotes::install_cran("rcmdcheck")
           remotes::install_cran("httr")
