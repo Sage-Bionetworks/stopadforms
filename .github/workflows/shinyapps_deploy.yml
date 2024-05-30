@@ -49,9 +49,44 @@ jobs:
         run: |
           # Sys.setenv(GITHUB_PAT="${{ secrets.pat_for_shinyapps_action }}")
           install.packages('remotes')
-          remotes::install_cran("rcmdcheck")
-          remotes::install_cran("httr")
-          remotes::install_cran("rsconnect")
+          cran <- c(
+          "remotes",
+          "dplyr",
+          "config",
+          "glue",
+          "golem",
+          "httr",
+          "jsonlite",
+          "magrittr",
+          "purrr",
+          "reactable",
+          "readr",
+          "reticulate",
+          "rlang",
+          "shiny",
+          "shinyjs",
+          "stringr",
+          "tibble",
+          "tidyr",
+          "waiter",
+          "htmlwidgets",
+          "rsconnect", # TODO remove this line if install_version solves the deployment issue
+          "brio",
+          "callr",
+          "diffobj",
+          "praise",
+          "processx",
+          "ps",
+          "rematch2",
+          "rmarkdown",
+          "testthat",
+          "tinytex"
+          )
+          remotes::install_cran(cran)
+
+          # remotes::install_cran("rcmdcheck")
+          # remotes::install_cran("httr")
+          # remotes::install_cran("rsconnect")
           # Downgrade rsconnect to a version that is compatible with shinyapps.io
           # https://community.rstudio.com/t/unable-to-deploy-on-shinyapp-io/170160
           # remotes::install_version("rsconnect", "0.8.29")
@@ -61,7 +96,7 @@ jobs:
 
         shell: Rscript {0}
 
-      - uses: r-lib/actions/setup-renv@v2
+      # - uses: r-lib/actions/setup-renv@v2
 
       - name: Deploy app
         run: |
