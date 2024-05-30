@@ -39,6 +39,7 @@ jobs:
           install.packages("renv")
           renv::upgrade(version = "0.17.3")
           renv::install("rsconnect@0.8.29")
+          renv::install("httr")
         shell: Rscript {0}
 
       # this action activates renv
