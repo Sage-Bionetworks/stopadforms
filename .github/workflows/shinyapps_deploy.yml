@@ -25,8 +25,9 @@ jobs:
         run: |
           sudo apt-get update
           # The rsconnect R package needs cUrl.  This app needs the Java JDK (runtime AND compiler).
-          sudo apt-get install -y libcurl4-openssl-dev default-jdk openssl libssl-dev
- 
+          sudo apt-get install -y libcurl4-openssl-dev default-jdk openssl libssl-dev libv8-dev libxml2-dev libssh2-1-dev zlib1g-dev
+           # sudo apt-get install -y make python3-minimal pandoc pandoc-citeproc git-core libv8-dev libxml2-dev libcurl4-openssl-dev libssl-dev libssh2-1-dev zlib1g-dev
+
       - uses: actions/checkout@v2
         
       # We don't use renv, so we want to skip the "renv::activate()" command in .Rprofile
@@ -35,11 +36,26 @@ jobs:
 
       - uses: r-lib/actions/setup-pandoc@v2
 
-      - name: Install R packages
+      # - name: Install R packages
+      #   run: |
+      #     Sys.setenv(GITHUB_PAT="${{ secrets.pat_for_shinyapps_action }}")
+      #     source("install-pkgs.R")
+      #   shell: sudo Rscript {0}
+
+      - name: Install dependencies
         run: |
           Sys.setenv(GITHUB_PAT="${{ secrets.pat_for_shinyapps_action }}")
-          source("install-pkgs.R")
-        shell: sudo Rscript {0}
+          install.packages('remotes')
+          remotes::install_cran("rcmdcheck")
+          remotes::install_cran("httr")
+          # Downgrade rsconnect to a version that is compatible with shinyapps.io
+          # https://community.rstudio.com/t/unable-to-deploy-on-shinyapp-io/170160
+          remotes::install_version("rsconnect", "0.8.29")
+
+          packages_installed_from_github <- c("dreamRs/shinypop", "Sage-Bionetworks/dccvalidator", "Sage-Bionetworks/synapseforms")
+          remotes::install_github(packages_installed_from_github)
+
+        shell: Rscript {0}
 
       - uses: r-lib/actions/setup-renv@v2
 
