@@ -90,7 +90,7 @@ jobs:
           # Downgrade rsconnect to a version that is compatible with shinyapps.io
           # https://community.rstudio.com/t/unable-to-deploy-on-shinyapp-io/170160
           # remotes::install_version("rsconnect", "0.8.29")
-
+          install.packages("rsconnect")
           packages_installed_from_github <- c("dreamRs/shinypop", "Sage-Bionetworks/dccvalidator", "Sage-Bionetworks/synapseforms")
           remotes::install_github(packages_installed_from_github)
 
