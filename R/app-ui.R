@@ -1,11 +1,6 @@
 #' @import shiny
 app_ui <- function(request) {
-  if (interactive()) {
-    ## Running locally; skip OAuth
-    mod_main_ui("main")
-  } else {
-    mod_synapse_oauth_ui(id = "oauth", request = request)
-  }
+  mod_synapse_oauth_ui(id = "oauth", request = request)
 }
 
 #' @import shiny

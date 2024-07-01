@@ -13,84 +13,82 @@ name: R-CMD-check
 
 jobs:
   R-CMD-check:
-    runs-on: ${{ matrix.config.os }}
+    runs-on: ${{ matrix.os }}
 
-    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+    name: ${{ matrix.os }} (${{ matrix.r }})
 
     strategy:
       fail-fast: false
       matrix:
-        config:
+        os: [ubuntu-22.04, macos-13]
+        # r: [4.1.3, 4.2.3, 4.3.1]
+        r: [4.3.3]
 #          - {os: windows-latest, r: '4.0.3'}
 #          - {os: macOS-latest,   r: 'devel'}
-          - {os: macOS-latest,   r: '4.1.3'}
-          - {os: ubuntu-20.04,   r: '4.2.3', rspm: "https://packagemanager.rstudio.com/cran/__linux__/bionic/latest"}
-          - {os: ubuntu-20.04,   r: '4.1.3', rspm: "https://packagemanager.rstudio.com/cran/__linux__/bionic/latest"}
-          - {os: ubuntu-20.04,   r: '4.0.3', rspm: "https://packagemanager.rstudio.com/cran/__linux__/bionic/latest"}
+          # - {os: macOS-latest,   r: '4.3.3'}
+          # - {os: ubuntu-20.04,   r: '4.3.3'}
+          # - {os: ubuntu-20.04,   r: '4.1.3', rspm: "https://packagemanager.rstudio.com/cran/__linux__/bionic/latest"}
+          # - {os: ubuntu-20.04,   r: '4.0.3', rspm: "https://packagemanager.rstudio.com/cran/__linux__/bionic/latest"}
 
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
-      RSPM: ${{ matrix.config.rspm }}
+      # RSPM: ${{ matrix.config.rspm }}
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: r-lib/actions/setup-r@v2
         with:
-          r-version: ${{ matrix.config.r }}
+          r-version: ${{ matrix.r }}
 
-      - uses: r-lib/actions/setup-pandoc@v2
-
-      - name: Query dependencies
-        run: |
-          install.packages('remotes')
-          saveRDS(remotes::dev_package_deps(dependencies = TRUE), "depends.Rds", version = 2)
-        shell: Rscript {0}
-
-      - name: Cache R packages
-        if: runner.os != 'Windows'
-        uses: actions/cache@v1
-        with:
-          path: ${{ env.R_LIBS_USER }}
-          key: ${{ runner.os }}-r-${{ matrix.config.r }}-${{ hashFiles('depends.Rds') }}
-          restore-keys: ${{ runner.os }}-r-${{ matrix.config.r }}-
+#       - name: Query dependencies
+#         run: |
+#           install.packages('remotes')
+#           saveRDS(remotes::dev_package_deps(dependencies = TRUE), "depends.Rds", version = 2)
+#         shell: Rscript {0}
+# 
+#       - name: Cache R packages
+#         if: runner.os != 'Windows'
+#         uses: actions/cache@v1
+#         with:
+#           path: ${{ env.R_LIBS_USER }}
+#           key: ${{ runner.os }}-r-${{ matrix.config.r }}-${{ hashFiles('depends.Rds') }}
+#           restore-keys: ${{ runner.os }}-r-${{ matrix.config.r }}-
 
       - name: Install system dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
           export DEBIAN_FRONTEND=noninteractive
           sudo apt-get -y update
-          sudo add-apt-repository ppa:cran/libgit2
-          sudo apt-get update
-          sudo apt-get install libgit2-dev
+          # sudo add-apt-repository ppa:cran/libgit2
+          # sudo apt-get update
+          # sudo apt-get install libgit2-dev
           sudo apt-get install -y make python3-minimal pandoc pandoc-citeproc git-core libv8-dev libxml2-dev libcurl4-openssl-dev libssl-dev libssh2-1-dev zlib1g-dev
 
-      - name: Install system dependencies (macOS)
-        if: runner.os == 'macOS' && matrix.config.r == 'devel'
-        run: |
-          brew install V8
-          brew install libgit2
-
-      # TODO: Remove when https://github.com/r-lib/xml2/issues/296 is fixed on CRAN
-      - name: Install dev version of xml2
-        if: runner.os == 'macOS' && matrix.config.r == 'devel'
-        run: |
-          remotes::install_github('r-lib/xml2')
-        shell: Rscript {0}
-
+      - uses: r-lib/actions/setup-pandoc@v2
       - name: Install dependencies
         run: |
-          library(remotes)
-          install.packages("stringi", configure.args="--with-extra-cxxflags='--std=c++11'", version = "1.5.3")
-          install.packages("renv", repos = "https://cloud.r-project.org/")
-          source("renv/activate.R")
-          renv::restore()
-          deps <- readRDS("depends.Rds")
-          deps[["installed"]] <- vapply(deps[["package"]], remotes:::local_sha, character(1))
-          update(deps)
+          install.packages('remotes')
           remotes::install_cran("rcmdcheck")
+          remotes::install_cran("httr")
+          remotes::install_github("Sage-Bionetworks/dccvalidator")
         shell: Rscript {0}
+
+      - uses: r-lib/actions/setup-renv@v2
+#       - name: Install system dependencies (macOS)
+#         if: runner.os == 'macOS' && matrix.config.r == 'devel'
+#         run: |
+#           brew install V8
+#           brew install libgit2
+# 
+#       # TODO: Remove when https://github.com/r-lib/xml2/issues/296 is fixed on CRAN
+#       - name: Install dev version of xml2
+#         if: runner.os == 'macOS' && matrix.config.r == 'devel'
+#         run: |
+#           remotes::install_github('r-lib/xml2')
+#         shell: Rscript {0}
+
 
       - name: Check
         run: rcmdcheck::rcmdcheck(args = "--no-manual", error_on = "warning", check_dir = "check")
@@ -100,5 +98,5 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@master
         with:
-          name: ${{ runner.os }}-r${{ matrix.config.r }}-results
+          name: ${{ runner.os }}-r${{ matrix.r }}-results
           path: check
