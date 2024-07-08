@@ -114,7 +114,7 @@ required python3 virtual environment and install the required Python packages.
 ```
 venv_folder<-'./python3_env'
 reticulate::virtualenv_create(envname = venv_folder, python = '/usr/bin/python3')
-reticulate::virtualenv_install(venv_folder, packages = c('synapseclient[pandas]'))
+reticulate::virtualenv_install(venv_folder, packages = c('synapseclient[pandas]==4.3.0''))
 reticulate::use_virtualenv(venv_folder, required = T)
 
 ```
@@ -187,17 +187,22 @@ test_file("tests/testthat/<path/to/filename.R>")
 
 ------------------------------------------------------------------------
 
-Setting up github actions to deploy
+Deploying via GitHub Actions
 -------------------------------
-
+## Prerequisites
 - Enable workflows in the GitHub repository
 - Under [secrets](https://github.com/Sage-Bionetworks/stopadforms/settings/secrets/actions) click 'New repository secret'
 - Enter secrets for `RSCONNECT_USER`, `RSCONNECT_TOKEN`, and `RSCONNECT_SECRET`, the values for which are saved in Sage's LastPass.
 - Enter secrets for `OAUTH_CLIENT_ID`, and `OAUTH_CLIENT_SECRET` for a Synapse OAuth client configured for this application.
-- Trigger the GitHub action.
-- Check out the app here: https://sagebio.shinyapps.io/stopadforms-staging.
-- After verifying correctness, create a Git branch named release*, e.g., `release-1.0`.
-- The app' will become available at https://sagebio.shinyapps.io/stopadforms
+
+## Deploying
+- Merging a PR to the `master` branch will trigger a deployment to the staging environment
+- Validate the release candidate in the staging environment
+- Create a PR that merges `master` to the `prod` branch
+- Merging the PR to `prod` will trigger a deployment to the production environment
+- Validate the production instance
+
+You can manually trigger a redeployment of an environment's current release using the `workflow_dispatch` event trigger via GitHub's UI on the appropriate branch.
 
 ------------------------------------------------------------------------
 
