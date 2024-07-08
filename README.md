@@ -114,7 +114,7 @@ required python3 virtual environment and install the required Python packages.
 ```
 venv_folder<-'./python3_env'
 reticulate::virtualenv_create(envname = venv_folder, python = '/usr/bin/python3')
-reticulate::virtualenv_install(venv_folder, packages = c('synapseclient[pandas]==4.3.0''))
+reticulate::virtualenv_install(venv_folder, packages = c('synapseclient[pandas]==4.3.0'))
 reticulate::use_virtualenv(venv_folder, required = T)
 
 ```
