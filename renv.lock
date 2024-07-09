@@ -1211,7 +1211,7 @@
     },
     "reticulate": {
       "Package": "reticulate",
-      "Version": "1.36.1",
+      "Version": "1.28",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1225,11 +1225,10 @@
         "methods",
         "png",
         "rappdirs",
-        "rlang",
         "utils",
         "withr"
       ],
-      "Hash": "e037fb5dc364efdaf616eb6bc05aaca2"
+      "Hash": "86c441bf33e1d608db773cb94b848458"
     },
     "rlang": {
       "Package": "rlang",
