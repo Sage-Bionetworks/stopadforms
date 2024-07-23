@@ -297,7 +297,7 @@ geom_mean_score <- function(values) {
   }
 }
 
-#' @title Pull latest review table
+#' Pull latest review table
 #'
 #' Pull latest review table from Synapse and calculate weighted scores based on
 #' the reviewers' scores, clinical/preclinical modifiers, partial beta weights,
