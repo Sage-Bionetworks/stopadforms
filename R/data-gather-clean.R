@@ -64,7 +64,7 @@ process_submissions <- function(submissions, lookup_table, complete = TRUE) {
     all_subs <- purrr::map2_dfr(
       submissions,
       names(submissions), # this is the form data ID
-      ~ stopadforms:::create_table_from_json_file(
+      ~ create_table_from_json_file(
         .x,
         .y,
         lookup_table = lookup_table,

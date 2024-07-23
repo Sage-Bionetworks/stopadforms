@@ -1,5 +1,7 @@
 context("data-gather-clean.R")
 
+library(stopadforms)
+
 ## Base URL for downloading local json files
 download_path <- paste('file://', getwd(), sep = "")
 
