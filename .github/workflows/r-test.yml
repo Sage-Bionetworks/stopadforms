@@ -21,15 +21,21 @@ jobs:
 
       - name: Install dependencies
         run: |
-          install.packages('devtools')
-          devtools::install_deps(dependencies = TRUE)
+          Rscript -e 'install.packages("devtools")'
+          Rscript -e 'devtools::install_deps(dependencies = TRUE)'
 
       - name: Run tests
         run: |
-          install.packages('testthat')
-          testthat::test_dir('tests/testthat/')
+          Rscript -e 'install.packages("testthat")'
+          Rscript -e 'testthat::test_dir("tests/testthat/")'
         continue-on-error: true
         id: run-tests
+
+      - name: Save test results
+        if: failure()
+        run: |
+          echo "Tests failed" > test-results.log
+        id: save-results
 
       - name: Post test results to PR
         if: failure()
@@ -44,7 +50,7 @@ jobs:
             
             const context = github.context;
 
-            const failedTests = execSync('cat results.log').toString();
+            const failedTests = fs.readFileSync('test-results.log', 'utf8');
             const issueComment = github.context.payload.pull_request.number;
 
             if (failedTests) {
@@ -55,11 +61,3 @@ jobs:
                 body: body
               });
             }
-
-      - name: Save test results
-        if: failure()
-        run: |
-          cat results.log > test-results.log
-        continue-on-error: true
-        id: save-results
-
