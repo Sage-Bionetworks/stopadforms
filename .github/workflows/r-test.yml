@@ -35,6 +35,7 @@ jobs:
           remotes::install_cran("rcmdcheck")
           remotes::install_cran("httr")
           remotes::install_github("Sage-Bionetworks/dccvalidator")
+          devtools::install()
         shell: Rscript {0}
 
       - name: Run tests
