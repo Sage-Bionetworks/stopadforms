@@ -36,6 +36,8 @@ calculate_submission_score <- function(submission, reviews) {
 
 #additional function to recreate pivot_longer legacy
 
+#' A legacy pivot_longer function
+#' 
 #' @param clinicals The list of clinicals
 transformLegacyPivotLonger <- function(clinicals) {
   clinicalsT <- clinicals %>%
