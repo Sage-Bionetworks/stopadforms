@@ -27,7 +27,7 @@ jobs:
       - name: Install R dependencies
         run: |
           Rscript -e 'install.packages("devtools")'
-          Rscript -e 'install.packages("Sage-Bionetworks/dccvalidator")'
+          Rscript -e 'devtools::install_github("Sage-Bionetworks/dccvalidator")'
           Rscript -e 'devtools::install_deps(dependencies = TRUE)'
 
       - name: Run tests

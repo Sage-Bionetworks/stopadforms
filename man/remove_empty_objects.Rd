@@ -7,7 +7,7 @@
 remove_empty_objects(data_list)
 }
 \arguments{
-\item{data}{List containing data}
+\item{data_list}{List containing data}
 }
 \description{
 ALZ-157: Remove empty objects from inner lists for legacy submissions.
