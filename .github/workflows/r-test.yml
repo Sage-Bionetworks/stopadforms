@@ -11,6 +11,10 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    
+    env:
+      R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - name: Checkout code
@@ -26,14 +30,18 @@ jobs:
 
       - name: Install R dependencies
         run: |
-          Rscript -e 'install.packages("devtools")'
-          Rscript -e 'devtools::install_github("Sage-Bionetworks/dccvalidator")'
-          Rscript -e 'devtools::install_deps(dependencies = TRUE)'
+          install.packages('remotes')
+          remotes::install_deps(dependencies = TRUE)
+          remotes::install_cran("rcmdcheck")
+          remotes::install_cran("httr")
+          remotes::install_github("Sage-Bionetworks/dccvalidator")
+        shell: Rscript {0}
 
       - name: Run tests
         run: |
-          Rscript -e 'install.packages("testthat")'
-          Rscript -e 'testthat::test_dir("tests/testthat/")'
+          install.packages('testthat')
+          testthat::test_dir('tests/testthat/')
+        shell: Rscript {0}
         continue-on-error: true
         id: run-tests
 
@@ -49,16 +57,11 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const core = require('@actions/core');
-            const github = require('@actions/github');
             const fs = require('fs');
-            const { execSync } = require('child_process');
             
-            const context = github.context;
-
             const failedTests = fs.readFileSync('test-results.log', 'utf8');
-            const issueComment = github.context.payload.pull_request.number;
-
+            const issueComment = context.payload.pull_request.number;
+      
             if (failedTests) {
               const body = `## :x: Test failures detected in this PR\n\n\`\`\`\n${failedTests}\n\`\`\``;
               github.rest.issues.createComment({
