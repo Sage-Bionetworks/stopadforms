@@ -197,7 +197,15 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
       } else {
         stop("Unable to update score: duplicate scores were found for this section from a single reviewer") # nolint
       }
-      syn$store(synapse$Table(reviews_table, new_row))
+      
+      # Create a temporary file path
+      temp_file <- tempfile(fileext = ".csv")
+      
+      # Write the data frame to the temporary CSV file
+      write.csv(new_row, temp_file, row.names = FALSE)
+      
+      syn$store(synapse$Table(reviews_table, temp_file))
+      
       shinyjs::reset("section_score")
       shinyjs::reset("section_species")
       shinyjs::reset("section_comments")
