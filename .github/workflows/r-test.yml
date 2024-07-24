@@ -1,12 +1,15 @@
 name: testthat
 
 on:
-  pull_request:
-    branches:
-      - master
   push:
     branches:
       - master
+      - prod
+  pull_request:
+    branches:
+      - master
+      - prod
+  workflow_dispatch:
 
 jobs:
   test:
