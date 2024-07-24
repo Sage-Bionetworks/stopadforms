@@ -1,15 +1,15 @@
+name: R-CMD-check
+
 on:
   push:
     branches:
       - master
-      - release*
+      - prod
   pull_request:
     branches:
       - master
-      - release*
+      - prod
   workflow_dispatch:
-
-name: R-CMD-check
 
 jobs:
   R-CMD-check:
