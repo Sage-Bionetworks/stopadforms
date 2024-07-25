@@ -68,17 +68,6 @@ mod_main_server <- function(input, output, session, syn) {
             h3(sprintf("Welcome, %s!", syn$getUserProfile()$userName))
           )
         )
-
-        ## Get data
-        sub_data <- get_submissions(
-          syn,
-          group = 9,
-          statuses = "SUBMITTED_WAITING_FOR_REVIEW"
-        )
-        sub_data <- process_submissions(sub_data, lookup_table)
-
-        Sys.sleep(2)
-        waiter::waiter_hide()
       }
     },
     error = function(err) {
@@ -94,39 +83,102 @@ mod_main_server <- function(input, output, session, syn) {
           )
         )
       )
+    })
+  tryCatch(
+    {
+      ## Get data
+      sub_data <- get_submissions(
+        syn,
+        group = 9,
+        statuses = "SUBMITTED_WAITING_FOR_REVIEW"
+      )
+      sub_data <- process_submissions(sub_data, lookup_table)
+
+      Sys.sleep(2)
+      waiter::waiter_hide()
+    },
+    error = function(err) {
+      Sys.sleep(2)
+      waiter::waiter_update(
+        html = tagList(
+          img(src = "www/synapse_logo.png", height = "120px"),
+          h3("Submissions Retrieval error"),
+          span(
+            paste0("There was an error processing submissions: ", err),
+            a("Synapse", href = "https://www.synapse.org/", target = "_blank"),
+            ", then refresh this page. If the problem persists, contact an administrator."
+          )
+        )
+      )
     }
   )
 
   if (inherits(memb, "check_pass")) {
     ## Show submission data
-    callModule(
-      mod_review_section_server,
-      "review_section",
-      synapse = synapse,
-      syn = syn,
-      user = user,
-      submissions = sub_data,
-      reviews_table = "syn22014561"
+    tryCatch(
+      {
+        callModule(
+          mod_review_section_server,
+          "review_section",
+          synapse = synapse,
+          syn = syn,
+          user = user,
+          submissions = sub_data,
+          reviews_table = "syn22014561"
+        )
+      },
+      error = function(err) {
+        Sys.sleep(2)
+        waiter::waiter_update(
+          html = tagList(
+            img(src = "www/synapse_logo.png", height = "120px"),
+            h3("Submission Display error"),
+            span(
+              paste0("There was an error displaying submissions: ", err),
+              a("Synapse", href = "https://www.synapse.org/", target = "_blank"),
+              ", then refresh this page. If the problem persists, contact an administrator."
+            )
+          )
+        )
+      }
     )
 
-    callModule(
-      mod_panel_section_server,
-      "panel_section",
-      synapse = synapse,
-      syn = syn,
-      user = user,
-      submissions = sub_data,
-      reviews_table = "syn22014561",
-      submissions_table = "syn22213241"
-    )
-
-    callModule(
-      mod_view_all_section_server,
-      "view_all_section",
-      synapse = synapse,
-      syn = syn,
-      group = 9,
-      lookup_table = lookup_table
+    tryCatch(
+      {
+        callModule(
+          mod_panel_section_server,
+          "panel_section",
+          synapse = synapse,
+          syn = syn,
+          user = user,
+          submissions = sub_data,
+          reviews_table = "syn22014561",
+          submissions_table = "syn22213241"
+        )
+    
+        callModule(
+          mod_view_all_section_server,
+          "view_all_section",
+          synapse = synapse,
+          syn = syn,
+          group = 9,
+          lookup_table = lookup_table
+        )
+      },
+      error = function(err) {
+        Sys.sleep(2)
+        waiter::waiter_update(
+          html = tagList(
+            img(src = "www/synapse_logo.png", height = "120px"),
+            h3("View Panel error"),
+            span(
+              paste0("There was an error viewing the panel: ", err),
+              a("Synapse", href = "https://www.synapse.org/", target = "_blank"),
+              ", then refresh this page. If the problem persists, contact an administrator."
+            )
+          )
+        )
+      }
     )
   }
 }
