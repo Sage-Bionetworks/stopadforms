@@ -32,7 +32,6 @@ jobs:
       - name: Query dependencies
         run: |
           install.packages('remotes')
-          install.packages('devtools')
           saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
           writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
         shell: Rscript {0}
@@ -49,14 +48,12 @@ jobs:
           install.packages("stringi", configure.args="--with-extra-cxxflags='--std=c++11'", version = "1.5.3")
           install.packages("renv", repos = "https://cloud.r-project.org/")
           install.packages("httr", repos = "https://cloud.r-project.org/")
+          remotes::install_github("Sage-Bionetworks/dccvalidator")
           source("renv/activate.R")
           renv::restore()
           remotes::install_deps(dependencies = TRUE)
           install.packages("pkgdown", type = "binary")
         shell: Rscript {0}
-
-      - name: Install package
-        run: devtools::install()
 
       - name: Deploy package
         run: |
