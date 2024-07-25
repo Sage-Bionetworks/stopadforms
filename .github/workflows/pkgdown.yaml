@@ -24,7 +24,7 @@ jobs:
       - name: update ubuntu repos
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential pkg-config zlib1g-dev libcurl4-openssl-dev libharfbuzz-dev libfribidi-dev libfontconfig1-dev libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev libxml2-dev
+          sudo apt-get install -y build-essential pkg-config git zlib1g-dev libcurl4-openssl-dev libharfbuzz-dev libfribidi-dev libfontconfig1-dev libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev libxml2-dev
           
       - name: setup pandoc
         uses: r-lib/actions/setup-pandoc@v2
