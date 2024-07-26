@@ -35,10 +35,12 @@ jobs:
         run: |
           install.packages('remotes')
           install.packages('devtools')
-          remotes::install_deps(dependencies = TRUE)
-          remotes::install_cran("rcmdcheck")
-          remotes::install_cran("httr")
+          install.packages("renv", repos = "https://cloud.r-project.org/")
+          install.packages("httr", repos = "https://cloud.r-project.org/")
           remotes::install_github("Sage-Bionetworks/dccvalidator")
+          source("renv/activate.R")
+          renv::restore()
+          remotes::install_deps(dependencies = TRUE)
           devtools::install()
         shell: Rscript {0}
 
