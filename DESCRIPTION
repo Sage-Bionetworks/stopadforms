@@ -45,7 +45,7 @@ Imports:
     htmlwidgets
 Remotes:
     Sage-Bionetworks/synapseforms
-RoxygenNote: 7.1.1
+RoxygenNote: 7.3.2
 Suggests: 
     testthat,
     knitr,

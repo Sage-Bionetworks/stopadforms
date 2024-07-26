@@ -1,5 +1,7 @@
 context("data-gather-clean.R")
 
+library(stopadforms)
+
 ## Base URL for downloading local json files
 download_path <- paste('file://', getwd(), sep = "")
 
@@ -171,7 +173,7 @@ file.remove("test1.json")
 dat_list <- jsonlite::fromJSON(json, simplifyDataFrame = FALSE)
 
 test_that("create_section_table creates rows for each response", {
-  res <- create_section_table(
+  res <- stopadforms:::create_section_table(
     dat_list[["pk_in_vitro"]],
     names(dat_list[["pk_in_vitro"]]),
     lookup_table = lookup_table
@@ -181,7 +183,7 @@ test_that("create_section_table creates rows for each response", {
 })
 
 test_that("create_section_table returns NULL if no data", {
-  res <- create_section_table(
+  res <- stopadforms:::create_section_table(
     dat_list[["binding"]],
     names(dat_list[["binding"]]),
     lookup_table = lookup_table
@@ -190,7 +192,7 @@ test_that("create_section_table returns NULL if no data", {
 })
 
 test_that("create_section_table gives experiments a number", {
-  res <- create_section_table(
+  res <- stopadforms:::create_section_table(
     dat_list[["chronic_dosing"]],
     names(dat_list[["chronic_dosing"]]),
     lookup_table = lookup_table
@@ -200,7 +202,7 @@ test_that("create_section_table gives experiments a number", {
 
 
 test_that("create_section_table does not give experiment number if no experiments", {
-  res <- create_section_table(
+  res <- stopadforms:::create_section_table(
     dat_list[["pk_in_vitro"]],
     names(dat_list[["pk_in_vitro"]]),
     lookup_table = lookup_table
@@ -209,7 +211,7 @@ test_that("create_section_table does not give experiment number if no experiment
 })
 
 test_that("create_section_table returns multiple selections from responses", {
-  res <- create_section_table(
+  res <- stopadforms:::create_section_table(
     dat_list[["chronic_dosing"]],
     names(dat_list[["chronic_dosing"]]),
     lookup_table = lookup_table
@@ -270,12 +272,12 @@ test_that("create_section_table finds experiments in binding and efficacy", {
 }
 '
   dat_list <- jsonlite::fromJSON(json, simplifyDataFrame = FALSE)
-  res1 <- create_section_table(
+  res1 <- stopadforms:::create_section_table(
     dat_list[["binding"]],
     names(dat_list[["binding"]]),
     lookup_table = lookup_table
   )
-  res2 <- create_section_table(
+  res2 <- stopadforms:::create_section_table(
     dat_list[["efficacy"]],
     names(dat_list[["efficacy"]]),
     lookup_table = lookup_table
@@ -295,7 +297,7 @@ test_that("create_values_table turns sub-list into tibble", {
     variable = "permeability",
     label = "Permeability"
   )
-  res <- create_values_table(
+  res <- stopadforms:::create_values_table(
     dat_list[[1]],
     section = names(dat_list[1]),
     lookup_table = lookup_table
@@ -316,7 +318,7 @@ test_that("create_values_table doesn't add extra fields if complete = FALSE", {
     variable = c("reference", "duration"),
     label = c("Provide a reference", "Duration")
   )
-  res <- create_values_table(
+  res <- stopadforms:::create_values_table(
     list(duration = 10),
     section = "ld50",
     lookup_table = lookup_table,
@@ -337,7 +339,7 @@ test_that("create_values_table combines routes", {
     variable = c("drug_formulation", "route"),
     label = c("Drug Formulation", "What was the route of administration?")
   )
-  res <- create_values_table(dat, section = "ld50", lookup_table = lookup_table)
+  res <- stopadforms:::create_values_table(dat, section = "ld50", lookup_table = lookup_table)
   expect_true("route" %in% res$variable)
   expect_false("route1" %in% res$variable)
   expect_true("oral, sublingual" %in% res$response)
@@ -354,7 +356,7 @@ test_that("create_values_table doesn't combine other nested things like age rang
     variable = c("drug_formulation", "name"),
     label = c("Drug Formulation", "Experiment Name")
   )
-  res <- create_values_table(dat, section = "ld50", lookup_table = lookup_table)
+  res <- stopadforms:::create_values_table(dat, section = "ld50", lookup_table = lookup_table)
   expect_true("age_range.age_range_max" %in% res$variable)
   expect_true("age_range.age_range_min" %in% res$variable)
   expect_false("age_range" %in% res$variable)
@@ -367,7 +369,7 @@ test_that("change_logical_responses() fixes responses to yes/no", {
     variable = c("is_solution", "is_solution", "is_solution", "is_compound"),
     response = c("0", "1", "TRUE", "FALSE")
   )
-  res <- change_logical_responses(data)
+  res <- stopadforms:::change_logical_responses(data)
   expect_equal(res$response, c("No", "Yes", "Yes", "No"))
 })
 
@@ -376,7 +378,7 @@ test_that("change_logical_responses() changes correct rows", {
     variable = c("name", "species", "is_solution", "is_solution"),
     response = c("foo", "mouse", "0", "1")
   )
-  res <- change_logical_responses(data)
+  res <- stopadforms:::change_logical_responses(data)
   expect_equal(res$response, c("foo", "mouse", "No", "Yes"))
 })
 
@@ -391,7 +393,7 @@ test_that("add_section_variables() adds extra sections", {
     label = c("Provide a reference", "Duration")
   )
   dat <- tibble::tibble(section = "ld50", variable = "duration", response = 10)
-  res <- add_section_variables(dat, lookup_table)
+  res <- stopadforms:::add_section_variables(dat, lookup_table)
   expect_equal(res$variable, c("duration", "reference"))
 })
 
@@ -410,7 +412,7 @@ test_that("map_names() maps correct fields", {
     variable = "permeability",
     response = "super permeable"
   )
-  res <- map_names(dat, lookup_table = lookup_table, complete = TRUE)
+  res <- stopadforms:::map_names(dat, lookup_table = lookup_table, complete = TRUE)
   expect_equal(res$label, c("Permeability", "First Name"))
 })
 
@@ -420,7 +422,7 @@ test_that("map_names() maps only given rows if complete = FALSE", {
     variable = "permeability",
     response = "super permeable"
   )
-  res <- map_names(dat, lookup_table = lookup_table, complete = FALSE)
+  res <- stopadforms:::map_names(dat, lookup_table = lookup_table, complete = FALSE)
   expect_equal(nrow(res), 1)
   expect_equal(res$label, "Permeability")
 })
@@ -432,7 +434,7 @@ test_that("map_names() leaves sections and variables that don't map intact", {
     exp_num = NA,
     response = "baz"
   )
-  res <- map_names(dat, lookup_table, complete = FALSE)
+  res <- stopadforms:::map_names(dat, lookup_table, complete = FALSE)
   expect_equal(res$step, "foo")
   expect_equal(res$label, "bar")
 })
@@ -449,7 +451,7 @@ test_that("Step is added even if variable isn't in lookup table", {
     variable = c("reference", "duration"),
     label = c("Provide a reference", "Duration")
   )
-  res <- map_names(dat, lookup_table, complete = FALSE)
+  res <- stopadforms:::map_names(dat, lookup_table, complete = FALSE)
   expect_equal(res$step, "LD50")
 })
 
@@ -457,7 +459,7 @@ test_that("Step is added even if variable isn't in lookup table", {
 
 test_that("append_exp_nums() adds number to step column", {
   dat <- tibble::tibble(step = c("LD50", "LD50"), exp_num = c(1, 2))
-  res <- append_exp_nums(dat)
+  res <- stopadforms:::append_exp_nums(dat)
   expected <- tibble::tibble(
     step = c("LD50 [1]", "LD50 [2]"),
     exp_num = c(1, 2)
@@ -469,7 +471,7 @@ test_that("append_exp_nums() adds number to step column", {
 
 test_that("therapeutic_approach_response() renames 'both'", {
   dat <- tibble::tibble(variable = "therapeutic_approach", response = "both")
-  res <- therapeutic_approach_response(dat)
+  res <- stopadforms:::therapeutic_approach_response(dat)
   expect_equal(
     res,
     tibble::tibble(
@@ -485,14 +487,14 @@ test_that("combine_route_responses combines routes if present", {
   dat1 <- list(route = "a")
   dat2 <- list(route = list("a"))
   dat3 <- list(route = list("a", "b"))
-  expect_equal(combine_route_responses(dat1), list(route = "a"))
-  expect_equal(combine_route_responses(dat2), list(route = "a"))
-  expect_equal(combine_route_responses(dat3), list(route = "a, b"))
+  expect_equal(stopadforms:::combine_route_responses(dat1), list(route = "a"))
+  expect_equal(stopadforms:::combine_route_responses(dat2), list(route = "a"))
+  expect_equal(stopadforms:::combine_route_responses(dat3), list(route = "a, b"))
 })
 
 test_that("combine_route_responses returns orig. data if no route present ", {
   dat <- list(not_a_route = list("a", "b"))
-  expect_equal(combine_route_responses(dat), list(not_a_route = list("a", "b")))
+  expect_equal(stopadforms:::combine_route_responses(dat), list(not_a_route = list("a", "b")))
 })
 
 
@@ -511,7 +513,7 @@ test_that("remove_empty_objects removes all empty inner cell_line_efficacy objec
 '
   
   data_in <- jsonlite::fromJSON(json, simplifyDataFrame = FALSE)
-  data_out <- remove_empty_objects(data_in)
+  data_out <- stopadforms:::remove_empty_objects(data_in)
   
   expect_equal(length(data_in$efficacy[[1]]), 3)
   expect_equal(length(data_out$efficacy[[1]]), 0)
@@ -533,7 +535,7 @@ test_that("remove_empty_objects removes all empty inner cell_line_binding object
 '
   
   data_in <- jsonlite::fromJSON(json, simplifyDataFrame = FALSE)
-  data_out <- remove_empty_objects(data_in)
+  data_out <- stopadforms:::remove_empty_objects(data_in)
   
   expect_equal(length(data_in$binding[[1]]), 4)
   expect_equal(length(data_out$binding[[1]]), 0)
@@ -565,7 +567,7 @@ test_that("remove_empty_objects removes all empty inner age_range objects", {
 '
   
   data_in <- jsonlite::fromJSON(json, simplifyDataFrame = FALSE)
-  data_out <- remove_empty_objects(data_in)
+  data_out <- stopadforms:::remove_empty_objects(data_in)
   
   expect_equal(length(data_in$pk_in_vivo[[1]]), 5)
   expect_equal(length(data_out$pk_in_vivo[[1]]), 0)
@@ -593,7 +595,7 @@ test_that("remove_empty_objects removes only empty inner cell_line_efficacy obje
 '
   
   data_in <- jsonlite::fromJSON(json, simplifyDataFrame = FALSE)
-  data_out <- remove_empty_objects(data_in)
+  data_out <- stopadforms:::remove_empty_objects(data_in)
   
   expect_equal(length(data_in$efficacy[[1]]), 3)
   expect_equal(length(data_out$efficacy[[1]]), 1)
@@ -618,10 +620,10 @@ test_that("remove_empty_objects removes only empty inner cell_line_binding objec
       ]
    }
 }
-'
+' 
   
   data_in <- jsonlite::fromJSON(json, simplifyDataFrame = FALSE)
-  data_out <- remove_empty_objects(data_in)
+  data_out <- stopadforms:::remove_empty_objects(data_in)
   
   expect_equal(length(data_in$binding[[1]]), 4)
   expect_equal(length(data_out$binding[[1]]), 1)
@@ -659,7 +661,7 @@ test_that("remove_empty_objects removes only empty inner age_range objects", {
 '
   
   data_in <- jsonlite::fromJSON(json, simplifyDataFrame = FALSE)
-  data_out <- remove_empty_objects(data_in)
+  data_out <- stopadforms:::remove_empty_objects(data_in)
   
   expect_equal(length(data_in$pk_in_vivo[[1]]), 5)
   expect_equal(length(data_out$pk_in_vivo[[1]]), 2)

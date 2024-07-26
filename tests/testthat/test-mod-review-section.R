@@ -11,7 +11,7 @@ test_that("reorder_steps puts steps in correct order", {
     "Acute Dosing"
   )
   expect_identical(
-    reorder_steps(test),
+    stopadforms:::reorder_steps(test),
     c(
       "Naming",
       "Measurements",
@@ -27,14 +27,14 @@ test_that("reorder_steps puts steps in correct order", {
 test_that("reorder_steps puts any unexpected sections at the end", {
   test <- c("nope", "LD50", "also no")
   expect_identical(
-    reorder_steps(test),
+    stopadforms:::reorder_steps(test),
     c("LD50", "nope", "also no")
   )
 })
 
 test_that("reorder_steps doesn't fail even if no sections match", {
   expect_identical(
-    reorder_steps(c("a", "b")),
+    stopadforms:::reorder_steps(c("a", "b")),
     c("a", "b")
   )
 })
