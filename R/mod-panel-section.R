@@ -13,6 +13,7 @@
 #' @importFrom rlang .data
 mod_panel_section_ui <- function(id) {
   ns <- NS(id)
+  
   tabPanel(
     "View summarized scores",
     fluidRow(
@@ -49,7 +50,10 @@ mod_panel_section_ui <- function(id) {
         numericInput(
           inputId = ns("overall_score"),
           label = "Overall Score",
-          value = 0
+          value = 0,
+          min = 0,
+          max = 1,
+          step = 0.0001
         ),
         textAreaInput(
           inputId = ns("internal_comments"),
@@ -118,6 +122,15 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
         current_reviews()
       )
     )
+  })
+  
+  observeEvent(input$overall_score, {
+    if (!is.na(input$overall_score)) {
+      if (input$overall_score < 0 || input$overall_score > 1) {
+        runjs("alert('Enter a valid Final Overall Score value ranging from 0 to 1.');")
+        updateNumericInput(session, "overall_score", value = 0)
+      }
+    }
   })
 
   observeEvent(input$refresh_comments, {
