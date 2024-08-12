@@ -121,7 +121,6 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
   })
   
   observeEvent(input$collapse_all, {
-    print("Bye!")
     reactable::updateReactable("averaged_scores", expanded = FALSE, session = getDefaultReactiveDomain())
   })
 
