@@ -227,6 +227,7 @@ show_review_table <- function(input, output, reviews, submission_id) {
       groupBy = "step",
       searchable = TRUE,
       pagination = FALSE,
+      defaultExpanded = TRUE,
       columns = list(
         step = reactable::colDef(name = "Section"),
         score = reactable::colDef(name = "Gamma", aggregate = "unique"),
