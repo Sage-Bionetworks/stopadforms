@@ -35,6 +35,13 @@ mod_panel_section_ui <- function(id) {
         )
       )
     ),
+    # Add buttons to expand/collapse all
+    fluidRow(
+      column(1, offset = 1,
+             actionButton(ns("expand_all"), "Expand All")),
+      column(1,
+             actionButton(ns("collapse_all"), "Collapse All"))
+    ),
     fluidRow(
       column(
         7,
@@ -108,6 +115,15 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
     reviews = reviews,
     submission_id = submission_id
   )
+  
+  observeEvent(input$expand_all, {
+    reactable::updateReactable("averaged_scores", expanded = TRUE, session = getDefaultReactiveDomain())
+  })
+  
+  observeEvent(input$collapse_all, {
+    print("Bye!")
+    reactable::updateReactable("averaged_scores", expanded = FALSE, session = getDefaultReactiveDomain())
+  })
 
   observeEvent(input$submission, {
     updateNumericInput(
