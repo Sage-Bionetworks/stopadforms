@@ -1,6 +1,6 @@
 #' @import shiny
 app_ui <- function(request) {
-  useShinyjs()
+  shinyjs::useShinyjs()
   
   mod_synapse_oauth_ui(id = "oauth", request = request)
 }
