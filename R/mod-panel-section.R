@@ -270,7 +270,11 @@ show_review_table <- function(input, output, reviews, submission_id) {
         .data$weighted_score,
         .data$scorer,
         .data$comments
-      )
+      ) %>%
+      dplyr::mutate(
+        step = factor(.data$step, levels = reorder_steps(.data$step))
+      ) %>%
+      dplyr::arrange(step)
   })
 
   output$averaged_scores <- reactable::renderReactable({
