@@ -151,7 +151,7 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
   
   observeEvent(input$submission, {
     if (!is.null(input$submission) && nchar(input$submission) > 0) {
-      query <- "SELECT * FROM {submissions_table} WHERE scorer = {user$ownerId} AND form_data_id = {submission_id()}"
+      query <- "SELECT * FROM {submissions_table} WHERE form_data_id = {submission_id()}"
       
       result <- readr::read_csv(
         syn$tableQuery(
