@@ -307,7 +307,7 @@ combine_route_responses <- function(data) {
 
 #' ALZ-157: Remove empty objects from inner lists for legacy submissions.
 #'
-#' @param data List containing data
+#' @param data_list List containing data
 remove_empty_objects <- function(data_list) {
   if (is(data_list, "list")) {
     if (all(lengths(data_list) == 0)) {

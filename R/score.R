@@ -23,8 +23,22 @@
 
 ##########################################################################
 
+calculate_submission_score <- function(submission, reviews) {
+  if (nrow(reviews) == 0) {
+    return(0)
+  }
+  section_scores_averaged <- reviews %>%
+    dplyr::group_by(.data$step) %>%
+    dplyr::summarize(weighted_score = geom_mean_score(.data$weighted_score))
+  total <- sum(section_scores_averaged$weighted_score, na.rm = TRUE)
+  total / calculate_denominator(submission)
+}
+
 #additional function to recreate pivot_longer legacy
 
+#' A legacy pivot_longer function
+#' 
+#' @param clinicals The list of clinicals
 transformLegacyPivotLonger <- function(clinicals) {
   clinicalsT <- clinicals %>%
     t()
@@ -37,19 +51,6 @@ transformLegacyPivotLonger <- function(clinicals) {
     dplyr::rename(clinical = 'V1')
   
   return(clinicals)
-}
-
-##########################################################################
-
-calculate_submission_score <- function(submission, reviews) {
-  if (nrow(reviews) == 0) {
-    return(0)
-  }
-  section_scores_averaged <- reviews %>%
-    dplyr::group_by(.data$step) %>%
-    dplyr::summarize(weighted_score = geom_mean_score(.data$weighted_score))
-  total <- sum(section_scores_averaged$weighted_score, na.rm = TRUE)
-  total / calculate_denominator(submission)
 }
 
 #' Calculate the score for a section
@@ -297,7 +298,7 @@ geom_mean_score <- function(values) {
   }
 }
 
-#' @title Pull latest review table
+#' Pull latest review table
 #'
 #' Pull latest review table from Synapse and calculate weighted scores based on
 #' the reviewers' scores, clinical/preclinical modifiers, partial beta weights,
