@@ -78,6 +78,7 @@ process_submissions <- function(submissions, lookup_table, complete = TRUE) {
     ## Fix display of some responses
     change_logical_responses() %>%
     therapeutic_approach_response()
+  
   all_subs
 }
 
@@ -93,6 +94,11 @@ process_submissions <- function(submissions, lookup_table, complete = TRUE) {
 create_table_from_json_file <- function(filename, data_id, lookup_table,
                                         complete = TRUE) {
   
+  # Log the data id
+  print("\n\n===")
+  print(paste0("Form Data ID: ", data_id))
+  print("===\n\n")
+
   # Download file first to avoid parsing error from Amazon tokens
   # ALZ-88
   R_string <- MHmakeRandomString(length = 10)
@@ -134,6 +140,11 @@ create_table_from_json_file <- function(filename, data_id, lookup_table,
 #' @param section The section name
 #' @inheritParams process_submissions
 create_section_table <- function(data, section, lookup_table, complete = TRUE) {
+  
+    # Log the section
+    print("\n\n===")
+    print(paste0("Section: ", section))
+    print("===\n\n")
 
     # ALZ-157: remove empty objects from inner lists
     if (length(names(data)) == 1 && names(data) %in% c("experiments", "cell_line_efficacy", "cell_line_binding")) {
