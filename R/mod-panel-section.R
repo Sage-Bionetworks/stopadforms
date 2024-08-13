@@ -148,6 +148,30 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
     })
   })
   certified <- dccvalidator::check_certified_user(user$ownerId, syn = syn)
+  
+  observeEvent(input$submission, {
+    if (!is.null(input$submission) && nchar(input$submission) > 0) {
+      query <- "SELECT * FROM {submissions_table} WHERE form_data_id = {submission_id()}"
+      
+      result <- readr::read_csv(
+        syn$tableQuery(
+          glue::glue(
+            query
+          )
+        )$filepath
+      )
+
+      if (nrow(result) > 0) {
+        updateTextInput(session, "overall_score", value = result$overall_score[1])
+        updateTextInput(session, "internal_comment", value = result$internal_comment[1])
+        updateTextInput(session, "external_comment", value = result$external_comment[1])
+        
+        updateActionButton(session, "submit", label = "Overwrite")
+      } else {
+        updateActionButton(session, "submit", label = "Submit")
+      }
+    }
+  })
 
   ## Save new row to table
   observeEvent(input$submit, {
