@@ -76,8 +76,7 @@ mod_main_server <- function(input, output, session, syn) {
   tryCatch({
     ## Get data
     sub_data <- get_submissions(syn, group = 9, statuses = "SUBMITTED_WAITING_FOR_REVIEW")
-    sub_data <- process_submissions(sub_data, lookup_table)
-    
+
     Sys.sleep(2)
     waiter::waiter_hide()
   }, error = function(err) {
@@ -88,6 +87,27 @@ mod_main_server <- function(input, output, session, syn) {
         h3("Submission Retrieval Error"),
         span(
           paste0("There was an error retrieving submission data: ", err,
+                 "\n\n Please refresh this page. If the problem persists, contact an administrator."
+          )
+        )
+      )
+    )
+  })
+  
+  tryCatch({
+    ## Get data
+    sub_data <- process_submissions(sub_data, lookup_table)
+    
+    Sys.sleep(2)
+    waiter::waiter_hide()
+  }, error = function(err) {
+    Sys.sleep(2)
+    waiter::waiter_update(
+      html = tagList(
+        img(src = "www/synapse_logo.png", height = "120px"),
+        h3("Submission Processing Error"),
+        span(
+          paste0("There was an error processing submission data: ", err,
                  "\n\n Please refresh this page. If the problem persists, contact an administrator."
           )
         )

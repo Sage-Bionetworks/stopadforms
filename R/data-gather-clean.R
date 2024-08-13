@@ -73,11 +73,22 @@ process_submissions <- function(submissions, lookup_table, complete = TRUE) {
     )
   )
   
+  ## Log the submission id and section for each row
+  sub_log <- dplyr::select(
+    all_subs,
+    submission_id = .data$form_data_id,
+    section = .data$section
+  )
+  
+  # Log it
+  print(sub_log)
+  
   ## Remove metadata section
   all_subs <- dplyr::filter(all_subs, .data$section != "metadata") %>%
     ## Fix display of some responses
     change_logical_responses() %>%
     therapeutic_approach_response()
+  
   all_subs
 }
 
