@@ -71,13 +71,29 @@ mod_view_all_section_server <- function(input, output, session, synapse, syn,
             levels = reorder_steps(unique(.data$step)),
             ordered = TRUE
           )
-        ) %>%
-        ## Arrange by submission and step
-        dplyr::arrange(.data$submission, .data$step)
+        )
 
       if (is.null(submissions)) {
         stop("No submissions found with requested status(es)")
       }
+      
+      ## Get data
+      sub_metadata <- synapseforms:::get_submissions_metadata(
+        syn = syn,
+        group = group
+      ) %>%
+        dplyr::select(
+          form_data_id = formDataId,
+          submitted_on = submissionStatus_submittedOn
+        )
+      
+      submissions <- dplyr::left_join(submissions, sub_metadata) %>%
+        dplyr::mutate(
+          submission = paste0(submitted_on, "_", submission)
+        ) %>%
+        ## Arrange by submission and step
+        dplyr::arrange(.data$submission, .data$step)
+      
       output$submissions <- reactable::renderReactable({
         reactable::reactable(
           submissions,

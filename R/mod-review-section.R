@@ -214,14 +214,21 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
 #'   and values are their form_data_ids.
 get_submission_list <- function(data) {
   sub_ids <- as.list(unique(data$form_data_id))
+  
   sub_names <- purrr::map(
     sub_ids,
     function(x) {
-      data$submission[data$form_data_id == x][1]
+      paste0(data$submitted_on[data$form_data_id == x][1], 
+             "_", 
+             data$submission[data$form_data_id == x][1]
+      )
     }
   )
+
   names(sub_ids) <- sub_names
-  sub_ids
+  
+  sorted_sub_ids <- sub_ids[order(names(sub_ids))]
+  sorted_sub_ids
 }
 
 #' Get submission sections
