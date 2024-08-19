@@ -251,6 +251,14 @@ calculate_scores_rowwise <- function(reviews, submissions) {
     ) %>%
     dplyr::inner_join(submissions, by = c("submission", "step", "form_data_id")) %>%
     dplyr::mutate(step2 = .data$step) %>%
+    dplyr::mutate(
+      section_flag = dplyr::case_when(
+        .data$section %in% c("binding", "efficacy", "in_vivo_data", "pk_in_vivo", 
+                             "acute_dosing", "chronic_dosing", "teratogenicity",
+                             "toxicology") ~ 0,
+        TRUE ~ 1
+      )
+    ) %>%
     tidyr::nest(
       data = c(
         .data$section,
@@ -270,13 +278,13 @@ calculate_scores_rowwise <- function(reviews, submissions) {
         species = switch(.data$species,
           within = 0.67,
           across = 0.33,
-          1
+          section_flag
         ),
         clinical = .data$clinical
       )
     ) %>%
     dplyr::rename(step = .data$step2) %>%
-    dplyr::select(-.data$data)
+    dplyr::select(-.data$data, -.data$section_flag)
 }
 
 #' Calculate geometric mean of non-zero scores
