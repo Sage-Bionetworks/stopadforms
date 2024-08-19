@@ -67,7 +67,7 @@ mod_review_section_ui <- function(id) {
           inputId = ns("section_species"),
           label = "Species",
           choices = c(
-            "Not applicable" = "",
+            "Not applicable" = NA,
             "Within species" =  "within",
             "Across species" =  "across"
           )
@@ -183,7 +183,7 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
       updateActionButton(session, "submit", label = "Overwrite")
     } else {
       updateSelectInput(session, "section_score", selected = -1)
-      updateSelectInput(session, "section_species", selected = "")
+      updateSelectInput(session, "section_species", selected = NA)
       updateTextAreaInput(session, "section_comments", value = "")
       updateActionButton(session, "submit", label = "Submit")
     }
