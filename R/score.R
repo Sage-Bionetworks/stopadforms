@@ -270,7 +270,7 @@ calculate_scores_rowwise <- function(reviews, submissions) {
         species = switch(.data$species,
           within = 0.67,
           across = 0.33,
-          1
+          0
         ),
         clinical = .data$clinical
       )
