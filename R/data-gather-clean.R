@@ -26,7 +26,7 @@ get_submissions <- function(syn, group, statuses) {
       )
     })
   )
-  
+
   if (all(is.null(unlist(json_file_paths)))) {
     return(NULL)
   } else {
@@ -104,7 +104,7 @@ create_table_from_json_file <- function(filename, data_id, lookup_table,
   newFilename <- paste0(R_string, ".json")
   
   utils::download.file(filename, newFilename)
-  
+
   ## Load JSON
   data <- jsonlite::fromJSON(newFilename, simplifyVector = FALSE)
   file.remove(newFilename)
