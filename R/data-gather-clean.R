@@ -95,6 +95,7 @@ create_table_from_json_file <- function(filename, data_id, lookup_table,
                                         complete = TRUE) {
   
   # Log the data id
+  cat("\n")  # Handles newlines properly
   print(paste0("Form Data ID: ", data_id))
 
   # Download file first to avoid parsing error from Amazon tokens
@@ -140,9 +141,7 @@ create_table_from_json_file <- function(filename, data_id, lookup_table,
 create_section_table <- function(data, section, lookup_table, complete = TRUE) {
   
     # Log the section
-    print("\n\n===")
     print(paste0("Section: ", section))
-    print("===\n\n")
 
     # ALZ-157: remove empty objects from inner lists
     if (length(names(data)) == 1 && names(data) %in% c("experiments", "cell_line_efficacy", "cell_line_binding")) {

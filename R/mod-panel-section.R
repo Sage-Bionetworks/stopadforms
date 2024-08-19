@@ -54,9 +54,17 @@ mod_panel_section_ui <- function(id) {
       column(
         4,
         offset = 5,
+        shinyjs::disabled(numericInput(
+          inputId = ns("calculated_overall_score"),
+          label = "Calculated Overall Score",
+          value = 0,
+          min = 0,
+          max = 1,
+          step = 0.0001
+        )),
         numericInput(
-          inputId = ns("overall_score"),
-          label = "Overall Score",
+          inputId = ns("reviewed_overall_score"),
+          label = "Reviewed Overall Score",
           value = 0,
           min = 0,
           max = 1,
@@ -131,7 +139,7 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
   observeEvent(input$submission, {
     updateNumericInput(
       session = getDefaultReactiveDomain(),
-      inputId = "overall_score",
+      inputId = "calculated_overall_score",
       value = calculate_submission_score(
         current_submission(),
         current_reviews()
@@ -139,11 +147,11 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
     )
   })
   
-  observeEvent(input$overall_score, {
-    if (!is.na(input$overall_score)) {
-      if (input$overall_score < 0 || input$overall_score > 1) {
+  observeEvent(input$reviewed_overall_score, {
+    if (!is.na(input$reviewed_overall_score)) {
+      if (input$reviewed_overall_score < 0 || input$reviewed_overall_score > 1) {
         runjs("alert('Enter a valid Final Overall Score value ranging from 0 to 1.');")
-        updateNumericInput(session, "overall_score", value = 0)
+        updateNumericInput(session, "reviewed_overall_score", value = 0)
       }
     }
   })
@@ -167,7 +175,7 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
 
       updateNumericInput(
         session = getDefaultReactiveDomain(),
-        inputId = "overall_score",
+        inputId = "calculated_overall_score",
         value = calculate_submission_score(
           current_submission(),
           current_reviews()
@@ -190,12 +198,16 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
       )
 
       if (nrow(result) > 0) {
-        updateTextInput(session, "overall_score", value = result$overall_score[1])
+        updateNumericInput(session, "reviewed_overall_score", value = result$overall_score[1])
         updateTextInput(session, "internal_comment", value = result$internal_comment[1])
         updateTextInput(session, "external_comment", value = result$external_comment[1])
         
         updateActionButton(session, "submit", label = "Overwrite")
       } else {
+        updateNumericInput(session, "reviewed_overall_score", value = 0)
+        updateTextInput(session, "internal_comment", value = "")
+        updateTextInput(session, "external_comment", value = "")
+        
         updateActionButton(session, "submit", label = "Submit")
       }
     }
@@ -228,14 +240,14 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
           form_data_id = submission_id(),
           submission = submission_name(),
           scorer = syn$getUserProfile()$ownerId,
-          overall_score = input$overall_score,
+          overall_score = input$reviewed_overall_score,
           internal_comment = input$internal_comments,
           external_comment = input$external_comments,
           stringsAsFactors = FALSE
         )
       } else if (nrow(result) == 1) {
         new_row <- result
-        new_row$overall_score <- input$overall_score
+        new_row$overall_score <- input$reviewed_overall_score
         new_row$internal_comment <- input$internal_comments
         new_row$external_comment <- input$external_comments
       } else {
