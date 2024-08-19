@@ -105,7 +105,10 @@ calculate_section_score <- function(data, lookup, score = 1, species = 1,
   }
   ## Some fields are scored based on the values the submitter provided
   if (section_name == "basic") {
-    ap <- data[data$variable == "therapeutic_approach", "response", drop = TRUE]
+    data <- data %>%
+      dplyr::filter(variable == "therapeutic_approach")
+
+    ap <- data$response[1]
     lookup <- dplyr::mutate(
       lookup,
       partial_beta = dplyr::case_when(
@@ -126,6 +129,7 @@ calculate_section_score <- function(data, lookup, score = 1, species = 1,
   }
   section_multiplier <- section * clinical * species * score
   partial_betas <- dplyr::inner_join(data, lookup, by = c("section", "variable"))
+
   sum(section_multiplier * partial_betas$partial_beta, na.rm = TRUE)
 }
 
