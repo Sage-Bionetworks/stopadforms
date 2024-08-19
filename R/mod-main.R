@@ -185,7 +185,8 @@ mod_main_server <- function(input, output, session, syn) {
   
   tryCatch({
     callModule(mod_view_all_section_server, "view_all_section",
-               synapse = synapse, syn = syn, group = 9, lookup_table = lookup_table)
+               synapse = synapse, syn = syn, group = 9, lookup_table = lookup_table,
+               sub_metadata = sub_metadata)
   }, error = function(err) {
     Sys.sleep(2)
     waiter::waiter_update(

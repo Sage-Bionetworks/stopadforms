@@ -55,7 +55,7 @@ mod_view_all_section_ui <- function(id) {
 #' @rdname mod_view_all_section
 #' @keywords internal
 mod_view_all_section_server <- function(input, output, session, synapse, syn,
-                                        group, lookup_table) {
+                                        group, lookup_table, sub_metadata) {
   observeEvent(input$select_status, {
     dccvalidator::with_busy_indicator_server("select_status", {
       submissions <- get_submissions(
@@ -76,16 +76,6 @@ mod_view_all_section_server <- function(input, output, session, synapse, syn,
       if (is.null(submissions)) {
         stop("No submissions found with requested status(es)")
       }
-      
-      ## Get data
-      sub_metadata <- synapseforms:::get_submissions_metadata(
-        syn = syn,
-        group = group
-      ) %>%
-        dplyr::select(
-          form_data_id = formDataId,
-          submitted_on = submissionStatus_submittedOn
-        )
       
       submissions <- dplyr::left_join(submissions, sub_metadata) %>%
         dplyr::mutate(
