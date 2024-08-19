@@ -146,6 +146,48 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
     )
   })
   certified <- dccvalidator::check_certified_user(user$ownerId, syn = syn)
+  
+  existing_submission <- reactive({
+    req(input$submission)
+    req(input$section)
+    
+    result <- readr::read_csv(
+      syn$tableQuery(
+        glue::glue(
+          "SELECT * FROM {reviews_table} WHERE (scorer = {syn$getUserProfile()$ownerId} AND form_data_id = {submission_id()} AND step = '{input$section}')" # nolint
+        )
+      )$filepath,
+      col_types = readr::cols(
+        ROW_ID = readr::col_double(),
+        ROW_VERSION = readr::col_double(),
+        form_data_id = readr::col_double(),
+        submission = readr::col_character(),
+        step = readr::col_character(),
+        scorer = readr::col_double(),
+        score = readr::col_double(),
+        comments = readr::col_character(),
+        species = readr::col_character()
+      )
+    )
+
+    return(result)
+  })
+  
+  observe({
+    result <- existing_submission()
+    
+    if (nrow(result) > 0) {
+      updateSelectInput(session, "section_score", selected = result$score[1])
+      updateSelectInput(session, "section_species", selected = result$species[1])
+      updateTextAreaInput(session, "section_comments", value = result$comments[1])
+      updateActionButton(session, "submit", label = "Overwrite")
+    } else {
+      updateSelectInput(session, "section_score", selected = -1)
+      updateSelectInput(session, "section_species", selected = NA)
+      updateTextAreaInput(session, "section_comments", value = "")
+      updateActionButton(session, "submit", label = "Submit")
+    }
+  })
 
   ## Save new row to table
   observeEvent(input$submit, {
@@ -159,24 +201,8 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
       if (input$submission == "" || input$section == "") {
         stop("Please select a submission and section")
       }
-      result <- readr::read_csv(
-        syn$tableQuery(
-          glue::glue(
-            "SELECT * FROM {reviews_table} WHERE (scorer = {syn$getUserProfile()$ownerId} AND form_data_id = {submission_id()} AND step = '{input$section}')" # nolint
-          )
-        )$filepath,
-        col_types = readr::cols(
-          ROW_ID = readr::col_double(),
-          ROW_VERSION = readr::col_double(),
-          form_data_id = readr::col_double(),
-          submission = readr::col_character(),
-          step = readr::col_character(),
-          scorer = readr::col_double(),
-          score = readr::col_double(),
-          comments = readr::col_character(),
-          species = readr::col_character()
-        )
-      )
+      
+      result <- existing_submission()
 
       if (nrow(result) == 0) {
         new_row <- data.frame(
@@ -197,10 +223,9 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
       } else {
         stop("Unable to update score: duplicate scores were found for this section from a single reviewer") # nolint
       }
+      
+      ## Show submission data
       syn$store(synapse$Table(reviews_table, new_row))
-      shinyjs::reset("section_score")
-      shinyjs::reset("section_species")
-      shinyjs::reset("section_comments")
     })
   })
 }
