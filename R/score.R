@@ -263,6 +263,13 @@ calculate_scores_rowwise <- function(reviews, submissions) {
     ) %>%
     dplyr::rowwise() %>%
     dplyr::mutate(
+      section_flag = dplyr::case_when(
+        section %in% c("binding", "efficacy", "in_vivo_data", "pk_in_vivo", 
+                       "acute_dosing", "chronic_dosing", "teratogenicity") ~ 0,
+        TRUE ~ 1
+      )
+    ) %>%
+    dplyr::mutate(
       weighted_score = calculate_section_score(
         data = .data$data,
         lookup = partial_betas,
@@ -270,7 +277,7 @@ calculate_scores_rowwise <- function(reviews, submissions) {
         species = switch(.data$species,
           within = 0.67,
           across = 0.33,
-          0
+          section_flag
         ),
         clinical = .data$clinical
       )
