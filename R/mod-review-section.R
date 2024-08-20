@@ -67,7 +67,7 @@ mod_review_section_ui <- function(id) {
           inputId = ns("section_species"),
           label = "Species",
           choices = c(
-            "Not applicable" = NA,
+            "Not applicable" = "NA",
             "Within species" =  "within",
             "Across species" =  "across"
           )
@@ -132,6 +132,7 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
       submissions,
       .data$form_data_id == submission_id() & .data$step == section()
     )
+
     sub_section[c("label", "response")]
   })
 
@@ -176,14 +177,30 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
   observe({
     result <- existing_submission()
     
+    selected_species <- result$species[1]
+    if (is.na(selected_species)) selected_species <- "NA"
+    
     if (nrow(result) > 0) {
       updateSelectInput(session, "section_score", selected = result$score[1])
-      updateSelectInput(session, "section_species", selected = result$species[1])
+      updateSelectInput(session, "section_species", selected = selected_species)
       updateTextAreaInput(session, "section_comments", value = result$comments[1])
       updateActionButton(session, "submit", label = "Overwrite")
     } else {
+      # Handle automatic default for Species dropdown
+      default_species <- "NA"
+      label_ind <- grep("What cell line|Species", to_show()$label)
+
+      # If there is a field for cell line or species, parse it
+      if (length(label_ind) > 0 && !is.na(to_show()$response[label_ind[1]])) {
+        default_species <- "across"
+        if (grepl("mouse", to_show()$response[label_ind[1]])) {
+          default_species <- "within"
+        }
+      }
+      
+      # Update all the dropdowns
       updateSelectInput(session, "section_score", selected = -1)
-      updateSelectInput(session, "section_species", selected = NA)
+      updateSelectInput(session, "section_species", selected = default_species)
       updateTextAreaInput(session, "section_comments", value = "")
       updateActionButton(session, "submit", label = "Submit")
     }
@@ -223,9 +240,12 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
       } else {
         stop("Unable to update score: duplicate scores were found for this section from a single reviewer") # nolint
       }
-      
+
       ## Show submission data
       syn$store(synapse$Table(reviews_table, new_row))
+      
+      ## Update the label of the button now
+      updateActionButton(session, "submit", label = "Overwrite")
     })
   })
 }
