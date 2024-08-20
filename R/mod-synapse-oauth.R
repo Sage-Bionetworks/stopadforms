@@ -69,7 +69,6 @@ authorization_url <- NULL
 #' to "main".
 #' @examples
 #' \dontrun{
-#' library("dccvalidator")
 #' app_ui <- function(request) {
 #'   mod_synapse_oauth_ui(id = "oauth", request = request)
 #' }

@@ -72,7 +72,6 @@ jobs:
           install.packages('remotes')
           remotes::install_cran("rcmdcheck")
           remotes::install_cran("httr")
-          remotes::install_github("Sage-Bionetworks/dccvalidator")
         shell: Rscript {0}
 
       - uses: r-lib/actions/setup-renv@v2

@@ -38,7 +38,7 @@ mod_main_server <- function(input, output, session, syn) {
     ## Check if user is in STOP-AD_Reviewers team
     team <- "3403721"
     user <- syn$getUserProfile()
-    memb <- dccvalidator::check_team_membership(teams = team, user = user, syn = syn)
+    memb <- check_team_membership(teams = team, user = user, syn = syn)
     
     if (inherits(memb, "check_fail")) {
       waiter::waiter_update(
@@ -117,7 +117,7 @@ mod_main_server <- function(input, output, session, syn) {
   
   tryCatch({
     ## Get data
-    sub_metadata <- synapseforms:::get_submissions_metadata(
+    sub_metadata <- synapseforms::get_submissions_metadata(
       syn = syn,
       group = 9
     ) %>%
