@@ -235,6 +235,8 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
 #' Get list of submissions with their form_data_id.
 #'
 #' @inheritParams get_sections
+#' 
+#' @importFrom lubridate ymd_hms with_tz
 #' @return named list where names are the submission names
 #'   and values are their form_data_ids.
 get_submission_list <- function(data) {
