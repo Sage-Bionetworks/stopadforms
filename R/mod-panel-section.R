@@ -150,7 +150,7 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
   observeEvent(input$reviewed_overall_score, {
     if (!is.na(input$reviewed_overall_score)) {
       if (input$reviewed_overall_score < 0 || input$reviewed_overall_score > 1) {
-        runjs("alert('Enter a valid Final Overall Score value ranging from 0 to 1.');")
+        shinyjs::runjs("alert('Enter a valid Final Overall Score value ranging from 0 to 1.');")
         updateNumericInput(session, "reviewed_overall_score", value = 0)
       }
     }
