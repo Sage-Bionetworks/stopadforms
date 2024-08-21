@@ -28,6 +28,7 @@ Imports:
     golem,
     httr,
     jsonlite,
+    lubridate,
     magrittr,
     purrr,
     reactable,
