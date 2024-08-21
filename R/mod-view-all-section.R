@@ -34,7 +34,7 @@ mod_view_all_section_ui <- function(id) {
       column(
         4,
         offset = 1,
-        dccvalidator::with_busy_indicator_ui(
+        with_busy_indicator_ui(
           actionButton(
             ns("select_status"),
             "Submit Selection"
@@ -57,7 +57,7 @@ mod_view_all_section_ui <- function(id) {
 mod_view_all_section_server <- function(input, output, session, synapse, syn,
                                         group, lookup_table, sub_metadata) {
   observeEvent(input$select_status, {
-    dccvalidator::with_busy_indicator_server("select_status", {
+    with_busy_indicator_server("select_status", {
       submissions <- get_submissions(
         syn,
         group,

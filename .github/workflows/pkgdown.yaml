@@ -48,7 +48,6 @@ jobs:
           install.packages("stringi", configure.args="--with-extra-cxxflags='--std=c++11'", version = "1.5.3")
           install.packages("renv", repos = "https://cloud.r-project.org/")
           install.packages("httr", repos = "https://cloud.r-project.org/")
-          remotes::install_github("Sage-Bionetworks/dccvalidator")
           source("renv/activate.R")
           renv::restore()
           remotes::install_deps(dependencies = TRUE)

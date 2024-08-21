@@ -76,7 +76,7 @@ mod_review_section_ui <- function(id) {
           inputId = ns("section_comments"),
           label = "Comments"
         ),
-        dccvalidator::with_busy_indicator_ui(
+        with_busy_indicator_ui(
           actionButton(
             inputId = ns("submit"),
             label = "Submit"
@@ -145,7 +145,7 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
       )
     )
   })
-  certified <- dccvalidator::check_certified_user(user$ownerId, syn = syn)
+  certified <- check_certified_user(user$ownerId, syn = syn)
   
   existing_submission <- reactive({
     req(input$submission)
@@ -191,7 +191,7 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
 
   ## Save new row to table
   observeEvent(input$submit, {
-    dccvalidator::with_busy_indicator_server("submit", {
+    with_busy_indicator_server("submit", {
       validate(
         need(
           inherits(certified, "check_pass"),

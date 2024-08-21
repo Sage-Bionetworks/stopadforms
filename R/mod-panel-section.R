@@ -28,7 +28,7 @@ mod_panel_section_ui <- function(id) {
       ),
       column(
         4,
-        dccvalidator::with_busy_indicator_ui(
+        with_busy_indicator_ui(
           actionButton(
             ns("refresh_comments"),
             "Refresh Comments"
@@ -78,7 +78,7 @@ mod_panel_section_ui <- function(id) {
           inputId = ns("external_comments"),
           label = "External Comments (500 character limit)"
         ),
-        dccvalidator::with_busy_indicator_ui(
+        with_busy_indicator_ui(
           actionButton(
             inputId = ns("submit"),
             label = "Submit"
@@ -157,7 +157,7 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
   })
 
   observeEvent(input$refresh_comments, {
-    dccvalidator::with_busy_indicator_server("refresh_comments", {
+    with_busy_indicator_server("refresh_comments", {
       reviews <<- pull_reviews_table(syn, reviews_table, submissions)
       updateSelectInput(
         session = getDefaultReactiveDomain(),
@@ -183,7 +183,7 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
       )
     })
   })
-  certified <- dccvalidator::check_certified_user(user$ownerId, syn = syn)
+  certified <- check_certified_user(user$ownerId, syn = syn)
   
   observeEvent(input$submission, {
     if (!is.null(input$submission) && nchar(input$submission) > 0) {
@@ -215,7 +215,7 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
 
   ## Save new row to table
   observeEvent(input$submit, {
-    dccvalidator::with_busy_indicator_server("submit", {
+    with_busy_indicator_server("submit", {
       validate(
         need(
           inherits(certified, "check_pass"),
