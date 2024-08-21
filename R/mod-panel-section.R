@@ -71,11 +71,11 @@ mod_panel_section_ui <- function(id) {
           step = 0.0001
         ),
         textAreaInput(
-          inputId = ns("internal_comments"),
+          inputId = ns("internal_comment"),
           label = "Internal Comments (500 character limit)"
         ),
         textAreaInput(
-          inputId = ns("external_comments"),
+          inputId = ns("external_comment"),
           label = "External Comments (500 character limit)"
         ),
         with_busy_indicator_ui(
@@ -222,7 +222,7 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
           HTML("You must be a Synapse Certified User to save reviews. <a href=\"https://docs.synapse.org/articles/accounts_certified_users_and_profile_validation.html\">Learn more</a>")
         )
       )
-      if (nchar(input$internal_comments) > 500 || nchar(input$external_comments) > 500) { # nolint
+      if (nchar(input$internal_comment) > 500 || nchar(input$external_comment) > 500) { # nolint
         stop("Please limit comments to 500 characters")
       }
       if (input$submission == "") {
@@ -241,21 +241,21 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
           submission = submission_name(),
           scorer = syn$getUserProfile()$ownerId,
           overall_score = input$reviewed_overall_score,
-          internal_comment = input$internal_comments,
-          external_comment = input$external_comments,
+          internal_comment = input$internal_comment,
+          external_comment = input$external_comment,
           stringsAsFactors = FALSE
         )
       } else if (nrow(result) == 1) {
         new_row <- result
         new_row$overall_score <- input$reviewed_overall_score
-        new_row$internal_comment <- input$internal_comments
-        new_row$external_comment <- input$external_comments
+        new_row$internal_comment <- input$internal_comment
+        new_row$external_comment <- input$external_comment
       } else {
         stop("Unable to update score: duplicate scores were found for this section from a single reviewer") # nolint
       }
       syn$store(synapse$Table(submissions_table, new_row))
-      shinyjs::reset("internal_comments")
-      shinyjs::reset("external_comments")
+      shinyjs::reset("internal_comment")
+      shinyjs::reset("external_comment")
     })
   })
 }
