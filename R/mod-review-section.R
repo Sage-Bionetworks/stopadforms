@@ -243,16 +243,24 @@ get_submission_list <- function(data) {
   sub_names <- purrr::map(
     sub_ids,
     function(x) {
-      paste0(data$submitted_on[data$form_data_id == x][1], 
-             "_", 
-             data$submission[data$form_data_id == x][1]
-      )
+      # Date string
+      date_string <- data$submitted_on[data$form_data_id == x][1]
+
+      # Step 1: Parse the string to a datetime object and convert to Eastern Time
+      datetime_utc <- lubridate::ymd_hms(date_string, tz = "UTC")  # Parse as UTC
+      datetime_et <- lubridate::with_tz(datetime_utc, tzone = "America/New_York")  # Convert to Eastern Time
+      
+      # Step 2: Extract just the date in the desired format (YYYY-MM-DD)
+      formatted_date <- format(datetime_et, "%Y-%m-%d")
+
+      # Build the submission list
+      return(paste0(formatted_date, ": ", data$submission[data$form_data_id == x][1]))
     }
   )
 
   names(sub_ids) <- sub_names
   
-  sorted_sub_ids <- sub_ids[order(names(sub_ids))]
+  sorted_sub_ids <- sub_ids[order(names(sub_ids), decreasing = TRUE)]
   sorted_sub_ids
 }
 
