@@ -193,7 +193,7 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
       # If there is a field for cell line or species, parse it
       if (length(label_ind) > 0 && !is.na(to_show()$response[label_ind[1]])) {
         default_species <- "across"
-        if (grepl("mouse", to_show()$response[label_ind[1]])) {
+        if (grepl("mouse", to_show()$response[label_ind[1]], ignore.case = TRUE)) {
           default_species <- "within"
         }
       }
