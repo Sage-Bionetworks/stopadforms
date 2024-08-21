@@ -199,14 +199,14 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
 
       if (nrow(result) > 0) {
         updateNumericInput(session, "reviewed_overall_score", value = result$overall_score[1])
-        updateTextInput(session, "internal_comment", value = result$internal_comment[1])
-        updateTextInput(session, "external_comment", value = result$external_comment[1])
+        updateTextAreaInput(session, "internal_comment", value = result$internal_comment[1])
+        updateTextAreaInput(session, "external_comment", value = result$external_comment[1])
         
         updateActionButton(session, "submit", label = "Overwrite")
       } else {
         updateNumericInput(session, "reviewed_overall_score", value = 0)
-        updateTextInput(session, "internal_comment", value = "")
-        updateTextInput(session, "external_comment", value = "")
+        updateTextAreaInput(session, "internal_comment", value = "")
+        updateTextAreaInput(session, "external_comment", value = "")
         
         updateActionButton(session, "submit", label = "Submit")
       }
