@@ -28,8 +28,7 @@ authorization_url <- NULL
     	# From https://stackoverflow.com/questions/54651700/use-python-3-in-reticulate-on-shinyapps-io
     	reticulate::virtualenv_create(envname = venv_folder, python = '/usr/bin/python3')
       reticulate::virtualenv_install(venv_folder, packages = c(
-          'synapseclient[pandas]==4.4.1',
-          'pandas==1.5.3'
+          'synapseclient[pandas]==4.4.1'
       ))
      }
      reticulate::use_virtualenv(venv_folder, required = T)

@@ -240,9 +240,19 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
       } else {
         stop("Unable to update score: duplicate scores were found for this section from a single reviewer") # nolint
       }
-
-      ## Show submission data
-      syn$store(synapse$Table(reviews_table, new_row))
+      
+      ## TODO: Re-examine this workaround
+      # Package dependencies on shinyapps.io are causing issues with dataframe storing
+      # Investigate Python version and environment on server
+      
+      # Create a temporary file path
+      temp_file <- tempfile(fileext = ".csv")
+      
+      # Write the data frame to the temporary CSV file
+      write.csv(new_row, temp_file, row.names = FALSE)
+      
+      # Store into the synapse table
+      syn$store(synapse$Table(reviews_table, temp_file))
       
       ## Update the label of the button now
       updateActionButton(session, "submit", label = "Overwrite")
