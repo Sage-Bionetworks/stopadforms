@@ -22,13 +22,13 @@ LazyData: true
 URL: https://sage-bionetworks.github.io/stopadforms, https://github.com/Sage-Bionetworks/stopadforms
 Depends: R (>= 3.4.0)
 Imports:
-    dccvalidator (>= 0.1.0),
     dplyr (>= 0.8.99),
     config,
     glue,
     golem,
     httr,
     jsonlite,
+    lubridate,
     magrittr,
     purrr,
     reactable,
@@ -45,7 +45,7 @@ Imports:
     htmlwidgets
 Remotes:
     Sage-Bionetworks/synapseforms
-RoxygenNote: 7.1.1
+RoxygenNote: 7.3.2
 Suggests: 
     testthat,
     knitr,

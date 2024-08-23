@@ -14,7 +14,8 @@ mod_view_all_section_server(
   synapse,
   syn,
   group,
-  lookup_table
+  lookup_table,
+  sub_metadata
 )
 }
 \arguments{

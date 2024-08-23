@@ -67,7 +67,7 @@ mod_review_section_ui <- function(id) {
           inputId = ns("section_species"),
           label = "Species",
           choices = c(
-            "Not applicable" = NA,
+            "Not applicable" = "NA",
             "Within species" =  "within",
             "Across species" =  "across"
           )
@@ -76,7 +76,7 @@ mod_review_section_ui <- function(id) {
           inputId = ns("section_comments"),
           label = "Comments"
         ),
-        dccvalidator::with_busy_indicator_ui(
+        with_busy_indicator_ui(
           actionButton(
             inputId = ns("submit"),
             label = "Submit"
@@ -132,6 +132,7 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
       submissions,
       .data$form_data_id == submission_id() & .data$step == section()
     )
+
     sub_section[c("label", "response")]
   })
 
@@ -145,11 +146,69 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
       )
     )
   })
-  certified <- dccvalidator::check_certified_user(user$ownerId, syn = syn)
+  certified <- check_certified_user(user$ownerId, syn = syn)
+  
+  existing_submission <- reactive({
+    req(input$submission)
+    req(input$section)
+    
+    result <- readr::read_csv(
+      syn$tableQuery(
+        glue::glue(
+          "SELECT * FROM {reviews_table} WHERE (scorer = {syn$getUserProfile()$ownerId} AND form_data_id = {submission_id()} AND step = '{input$section}')" # nolint
+        )
+      )$filepath,
+      col_types = readr::cols(
+        ROW_ID = readr::col_double(),
+        ROW_VERSION = readr::col_double(),
+        form_data_id = readr::col_double(),
+        submission = readr::col_character(),
+        step = readr::col_character(),
+        scorer = readr::col_double(),
+        score = readr::col_double(),
+        comments = readr::col_character(),
+        species = readr::col_character()
+      )
+    )
+
+    return(result)
+  })
+  
+  observe({
+    result <- existing_submission()
+    
+    selected_species <- result$species[1]
+    if (is.na(selected_species)) selected_species <- "NA"
+    
+    if (nrow(result) > 0) {
+      updateSelectInput(session, "section_score", selected = result$score[1])
+      updateSelectInput(session, "section_species", selected = selected_species)
+      updateTextAreaInput(session, "section_comments", value = result$comments[1])
+      updateActionButton(session, "submit", label = "Overwrite")
+    } else {
+      # Handle automatic default for Species dropdown
+      default_species <- "NA"
+      label_ind <- grep("What cell line|Species", to_show()$label)
+
+      # If there is a field for cell line or species, parse it
+      if (length(label_ind) > 0 && !is.na(to_show()$response[label_ind[1]])) {
+        default_species <- "across"
+        if (grepl("mouse", to_show()$response[label_ind[1]], ignore.case = TRUE)) {
+          default_species <- "within"
+        }
+      }
+      
+      # Update all the dropdowns
+      updateSelectInput(session, "section_score", selected = -1)
+      updateSelectInput(session, "section_species", selected = default_species)
+      updateTextAreaInput(session, "section_comments", value = "")
+      updateActionButton(session, "submit", label = "Submit")
+    }
+  })
 
   ## Save new row to table
   observeEvent(input$submit, {
-    dccvalidator::with_busy_indicator_server("submit", {
+    with_busy_indicator_server("submit", {
       validate(
         need(
           inherits(certified, "check_pass"),
@@ -159,24 +218,8 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
       if (input$submission == "" || input$section == "") {
         stop("Please select a submission and section")
       }
-      result <- readr::read_csv(
-        syn$tableQuery(
-          glue::glue(
-            "SELECT * FROM {reviews_table} WHERE (scorer = {syn$getUserProfile()$ownerId} AND form_data_id = {submission_id()} AND step = '{input$section}')" # nolint
-          )
-        )$filepath,
-        col_types = readr::cols(
-          ROW_ID = readr::col_double(),
-          ROW_VERSION = readr::col_double(),
-          form_data_id = readr::col_double(),
-          submission = readr::col_character(),
-          step = readr::col_character(),
-          scorer = readr::col_double(),
-          score = readr::col_double(),
-          comments = readr::col_character(),
-          species = readr::col_character()
-        )
-      )
+      
+      result <- existing_submission()
 
       if (nrow(result) == 0) {
         new_row <- data.frame(
@@ -204,11 +247,11 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
       # Write the data frame to the temporary CSV file
       write.csv(new_row, temp_file, row.names = FALSE)
       
+      # Store into the synapse table
       syn$store(synapse$Table(reviews_table, temp_file))
       
-      shinyjs::reset("section_score")
-      shinyjs::reset("section_species")
-      shinyjs::reset("section_comments")
+      ## Update the label of the button now
+      updateActionButton(session, "submit", label = "Overwrite")
     })
   })
 }
@@ -218,18 +261,35 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
 #' Get list of submissions with their form_data_id.
 #'
 #' @inheritParams get_sections
+#' 
+#' @importFrom lubridate ymd_hms with_tz
 #' @return named list where names are the submission names
 #'   and values are their form_data_ids.
 get_submission_list <- function(data) {
   sub_ids <- as.list(unique(data$form_data_id))
+  
   sub_names <- purrr::map(
     sub_ids,
     function(x) {
-      data$submission[data$form_data_id == x][1]
+      # Date string
+      date_string <- data$submitted_on[data$form_data_id == x][1]
+
+      # Step 1: Parse the string to a datetime object and convert to Eastern Time
+      datetime_utc <- lubridate::ymd_hms(date_string, tz = "UTC")  # Parse as UTC
+      datetime_et <- lubridate::with_tz(datetime_utc, tzone = "America/New_York")  # Convert to Eastern Time
+      
+      # Step 2: Extract just the date in the desired format (YYYY-MM-DD)
+      formatted_date <- format(datetime_et, "%Y-%m-%d")
+
+      # Build the submission list
+      return(paste0(formatted_date, ": ", data$submission[data$form_data_id == x][1]))
     }
   )
+
   names(sub_ids) <- sub_names
-  sub_ids
+  
+  sorted_sub_ids <- sub_ids[order(names(sub_ids), decreasing = TRUE)]
+  sorted_sub_ids
 }
 
 #' Get submission sections

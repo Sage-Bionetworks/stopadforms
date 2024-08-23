@@ -26,7 +26,7 @@ get_submissions <- function(syn, group, statuses) {
       )
     })
   )
-  
+
   if (all(is.null(unlist(json_file_paths)))) {
     return(NULL)
   } else {
@@ -78,6 +78,7 @@ process_submissions <- function(submissions, lookup_table, complete = TRUE) {
     ## Fix display of some responses
     change_logical_responses() %>%
     therapeutic_approach_response()
+  
   all_subs
 }
 
@@ -93,13 +94,17 @@ process_submissions <- function(submissions, lookup_table, complete = TRUE) {
 create_table_from_json_file <- function(filename, data_id, lookup_table,
                                         complete = TRUE) {
   
+  # Log the data id
+  cat("\n")  # Handles newlines properly
+  print(paste0("Form Data ID: ", data_id))
+
   # Download file first to avoid parsing error from Amazon tokens
   # ALZ-88
   R_string <- MHmakeRandomString(length = 10)
   newFilename <- paste0(R_string, ".json")
   
   utils::download.file(filename, newFilename)
-  
+
   ## Load JSON
   data <- jsonlite::fromJSON(newFilename, simplifyVector = FALSE)
   file.remove(newFilename)
@@ -134,6 +139,9 @@ create_table_from_json_file <- function(filename, data_id, lookup_table,
 #' @param section The section name
 #' @inheritParams process_submissions
 create_section_table <- function(data, section, lookup_table, complete = TRUE) {
+  
+    # Log the section
+    print(paste0("Section: ", section))
 
     # ALZ-157: remove empty objects from inner lists
     if (length(names(data)) == 1 && names(data) %in% c("experiments", "cell_line_efficacy", "cell_line_binding")) {
@@ -307,7 +315,7 @@ combine_route_responses <- function(data) {
 
 #' ALZ-157: Remove empty objects from inner lists for legacy submissions.
 #'
-#' @param data List containing data
+#' @param data_list List containing data
 remove_empty_objects <- function(data_list) {
   if (is(data_list, "list")) {
     if (all(lengths(data_list) == 0)) {

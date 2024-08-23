@@ -1,15 +1,15 @@
+name: R-CMD-check
+
 on:
   push:
     branches:
       - master
-      - release*
+      - prod
   pull_request:
     branches:
       - master
-      - release*
+      - prod
   workflow_dispatch:
-
-name: R-CMD-check
 
 jobs:
   R-CMD-check:
@@ -72,7 +72,6 @@ jobs:
           install.packages('remotes')
           remotes::install_cran("rcmdcheck")
           remotes::install_cran("httr")
-          remotes::install_github("Sage-Bionetworks/dccvalidator")
         shell: Rscript {0}
 
       - uses: r-lib/actions/setup-renv@v2

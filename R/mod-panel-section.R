@@ -13,6 +13,7 @@
 #' @importFrom rlang .data
 mod_panel_section_ui <- function(id) {
   ns <- NS(id)
+  
   tabPanel(
     "View summarized scores",
     fluidRow(
@@ -27,13 +28,20 @@ mod_panel_section_ui <- function(id) {
       ),
       column(
         4,
-        dccvalidator::with_busy_indicator_ui(
+        with_busy_indicator_ui(
           actionButton(
             ns("refresh_comments"),
             "Refresh Comments"
           )
         )
       )
+    ),
+    # Add buttons to expand/collapse all
+    fluidRow(
+      column(1, offset = 1,
+             actionButton(ns("expand_all"), "Expand All")),
+      column(1,
+             actionButton(ns("collapse_all"), "Collapse All"))
     ),
     fluidRow(
       column(
@@ -46,20 +54,31 @@ mod_panel_section_ui <- function(id) {
       column(
         4,
         offset = 5,
+        shinyjs::disabled(numericInput(
+          inputId = ns("calculated_overall_score"),
+          label = "Calculated Overall Score",
+          value = 0,
+          min = 0,
+          max = 1,
+          step = 0.0001
+        )),
         numericInput(
-          inputId = ns("overall_score"),
-          label = "Overall Score",
-          value = 0
+          inputId = ns("reviewed_overall_score"),
+          label = "Reviewed Overall Score",
+          value = 0,
+          min = 0,
+          max = 1,
+          step = 0.0001
         ),
         textAreaInput(
-          inputId = ns("internal_comments"),
+          inputId = ns("internal_comment"),
           label = "Internal Comments (500 character limit)"
         ),
         textAreaInput(
-          inputId = ns("external_comments"),
+          inputId = ns("external_comment"),
           label = "External Comments (500 character limit)"
         ),
-        dccvalidator::with_busy_indicator_ui(
+        with_busy_indicator_ui(
           actionButton(
             inputId = ns("submit"),
             label = "Submit"
@@ -108,20 +127,37 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
     reviews = reviews,
     submission_id = submission_id
   )
+  
+  observeEvent(input$expand_all, {
+    reactable::updateReactable("averaged_scores", expanded = TRUE, session = getDefaultReactiveDomain())
+  })
+  
+  observeEvent(input$collapse_all, {
+    reactable::updateReactable("averaged_scores", expanded = FALSE, session = getDefaultReactiveDomain())
+  })
 
   observeEvent(input$submission, {
     updateNumericInput(
       session = getDefaultReactiveDomain(),
-      inputId = "overall_score",
+      inputId = "calculated_overall_score",
       value = calculate_submission_score(
         current_submission(),
         current_reviews()
       )
     )
   })
+  
+  observeEvent(input$reviewed_overall_score, {
+    if (!is.na(input$reviewed_overall_score)) {
+      if (input$reviewed_overall_score < 0 || input$reviewed_overall_score > 1) {
+        shinyjs::runjs("alert('Enter a valid Final Overall Score value ranging from 0 to 1.');")
+        updateNumericInput(session, "reviewed_overall_score", value = 0)
+      }
+    }
+  })
 
   observeEvent(input$refresh_comments, {
-    dccvalidator::with_busy_indicator_server("refresh_comments", {
+    with_busy_indicator_server("refresh_comments", {
       reviews <<- pull_reviews_table(syn, reviews_table, submissions)
       updateSelectInput(
         session = getDefaultReactiveDomain(),
@@ -139,7 +175,7 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
 
       updateNumericInput(
         session = getDefaultReactiveDomain(),
-        inputId = "overall_score",
+        inputId = "calculated_overall_score",
         value = calculate_submission_score(
           current_submission(),
           current_reviews()
@@ -147,18 +183,46 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
       )
     })
   })
-  certified <- dccvalidator::check_certified_user(user$ownerId, syn = syn)
+  certified <- check_certified_user(user$ownerId, syn = syn)
+  
+  observeEvent(input$submission, {
+    if (!is.null(input$submission) && nchar(input$submission) > 0) {
+      query <- "SELECT * FROM {submissions_table} WHERE form_data_id = {submission_id()}"
+      
+      result <- readr::read_csv(
+        syn$tableQuery(
+          glue::glue(
+            query
+          )
+        )$filepath
+      )
+
+      if (nrow(result) > 0) {
+        updateNumericInput(session, "reviewed_overall_score", value = result$overall_score[1])
+        updateTextAreaInput(session, "internal_comment", value = result$internal_comment[1])
+        updateTextAreaInput(session, "external_comment", value = result$external_comment[1])
+        
+        updateActionButton(session, "submit", label = "Overwrite")
+      } else {
+        updateNumericInput(session, "reviewed_overall_score", value = 0)
+        updateTextAreaInput(session, "internal_comment", value = "")
+        updateTextAreaInput(session, "external_comment", value = "")
+        
+        updateActionButton(session, "submit", label = "Submit")
+      }
+    }
+  })
 
   ## Save new row to table
   observeEvent(input$submit, {
-    dccvalidator::with_busy_indicator_server("submit", {
+    with_busy_indicator_server("submit", {
       validate(
         need(
           inherits(certified, "check_pass"),
           HTML("You must be a Synapse Certified User to save reviews. <a href=\"https://docs.synapse.org/articles/accounts_certified_users_and_profile_validation.html\">Learn more</a>")
         )
       )
-      if (nchar(input$internal_comments) > 500 || nchar(input$external_comments) > 500) { # nolint
+      if (nchar(input$internal_comment) > 500 || nchar(input$external_comment) > 500) { # nolint
         stop("Please limit comments to 500 characters")
       }
       if (input$submission == "") {
@@ -176,22 +240,22 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
           form_data_id = submission_id(),
           submission = submission_name(),
           scorer = syn$getUserProfile()$ownerId,
-          overall_score = input$overall_score,
-          internal_comment = input$internal_comments,
-          external_comment = input$external_comments,
+          overall_score = input$reviewed_overall_score,
+          internal_comment = input$internal_comment,
+          external_comment = input$external_comment,
           stringsAsFactors = FALSE
         )
       } else if (nrow(result) == 1) {
         new_row <- result
-        new_row$overall_score <- input$overall_score
-        new_row$internal_comment <- input$internal_comments
-        new_row$external_comment <- input$external_comments
+        new_row$overall_score <- input$reviewed_overall_score
+        new_row$internal_comment <- input$internal_comment
+        new_row$external_comment <- input$external_comment
       } else {
         stop("Unable to update score: duplicate scores were found for this section from a single reviewer") # nolint
       }
       syn$store(synapse$Table(submissions_table, new_row))
-      shinyjs::reset("internal_comments")
-      shinyjs::reset("external_comments")
+      shinyjs::reset("internal_comment")
+      shinyjs::reset("external_comment")
     })
   })
 }
@@ -218,7 +282,11 @@ show_review_table <- function(input, output, reviews, submission_id) {
         .data$weighted_score,
         .data$scorer,
         .data$comments
-      )
+      ) %>%
+      dplyr::mutate(
+        step = factor(.data$step, levels = reorder_steps(.data$step))
+      ) %>%
+      dplyr::arrange(step)
   })
 
   output$averaged_scores <- reactable::renderReactable({
@@ -227,6 +295,7 @@ show_review_table <- function(input, output, reviews, submission_id) {
       groupBy = "step",
       searchable = TRUE,
       pagination = FALSE,
+      defaultExpanded = TRUE,
       columns = list(
         step = reactable::colDef(name = "Section"),
         score = reactable::colDef(name = "Gamma", aggregate = "unique"),
