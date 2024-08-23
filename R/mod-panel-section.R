@@ -23,7 +23,8 @@ mod_panel_section_ui <- function(id) {
         selectInput(
           ns("submission"),
           "Select submission",
-          choices = ""
+          choices = "",
+          width = "428px"
         )
       )
     ),
@@ -42,8 +43,8 @@ mod_panel_section_ui <- function(id) {
       column(2, offset = 3,
              with_busy_indicator_ui(
                actionButton(
-                 ns("refresh_comments"),
-                 "Refresh Comments",
+                 ns("refresh_data"),
+                 "Refresh Data",
                  style = "width: 167px;"
                )
              )
@@ -162,8 +163,8 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
     }
   })
 
-  observeEvent(input$refresh_comments, {
-    with_busy_indicator_server("refresh_comments", {
+  observeEvent(input$refresh_data, {
+    with_busy_indicator_server("refresh_data", {
       reviews <<- pull_reviews_table(syn, reviews_table, submissions)
       updateSelectInput(
         session = getDefaultReactiveDomain(),
