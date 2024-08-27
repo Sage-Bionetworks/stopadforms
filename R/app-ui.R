@@ -18,6 +18,13 @@ golem_add_external_resources <- function() {
     tags$script(src = "www/readCookie.js"),
     tags$script(htmlwidgets::JS("setTimeout(function(){history.pushState({}, 'STOP-AD submission reviewer', window.location.pathname);},2000);")),
     
+    tags$style(HTML("
+      .rt-search {
+        align-self: flex-start;
+        margin-top: -33px;
+      }
+    ")),
+    
     # Ensure that the user cannot type the letter 'e' in the overall score input
     tags$script(HTML("
       $(document).on('keydown', '#main-panel_section-overall_score', function (e) {

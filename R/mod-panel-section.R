@@ -23,25 +23,32 @@ mod_panel_section_ui <- function(id) {
         selectInput(
           ns("submission"),
           "Select submission",
-          choices = ""
-        )
-      ),
-      column(
-        4,
-        with_busy_indicator_ui(
-          actionButton(
-            ns("refresh_comments"),
-            "Refresh Comments"
-          )
+          choices = "",
+          width = "428px"
         )
       )
     ),
     # Add buttons to expand/collapse all
     fluidRow(
       column(1, offset = 1,
-             actionButton(ns("expand_all"), "Expand All")),
+             actionButton(ns("expand_all"), "Expand All", style = "width: 167px;")
+      ),
+      column(1),
       column(1,
-             actionButton(ns("collapse_all"), "Collapse All"))
+             actionButton(ns("collapse_all"), "Collapse All", style = "width: 167px;")
+      )
+    ),
+    br(),
+    fluidRow(
+      column(2, offset = 3,
+             with_busy_indicator_ui(
+               actionButton(
+                 ns("refresh_data"),
+                 "Refresh Data",
+                 style = "width: 167px;"
+               )
+             )
+      )
     ),
     fluidRow(
       column(
@@ -156,8 +163,8 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
     }
   })
 
-  observeEvent(input$refresh_comments, {
-    with_busy_indicator_server("refresh_comments", {
+  observeEvent(input$refresh_data, {
+    with_busy_indicator_server("refresh_data", {
       reviews <<- pull_reviews_table(syn, reviews_table, submissions)
       updateSelectInput(
         session = getDefaultReactiveDomain(),
