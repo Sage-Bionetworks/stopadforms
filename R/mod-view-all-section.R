@@ -37,10 +37,19 @@ mod_view_all_section_ui <- function(id) {
         with_busy_indicator_ui(
           actionButton(
             ns("select_status"),
-            "Submit Selection"
+            "Submit Selection",
+            width = "230px"
           )
         )
       )
+    ),
+    br(),
+    # Add buttons to expand/collapse all
+    fluidRow(
+      column(1, offset = 1,
+             actionButton(ns("expand_all"), "Expand All")),
+      column(1,
+             actionButton(ns("collapse_all"), "Collapse All"))
     ),
     fluidRow(
       column(
@@ -56,6 +65,15 @@ mod_view_all_section_ui <- function(id) {
 #' @keywords internal
 mod_view_all_section_server <- function(input, output, session, synapse, syn,
                                         group, lookup_table, sub_metadata) {
+  
+  observeEvent(input$expand_all, {
+    reactable::updateReactable("submissions", expanded = TRUE, session = getDefaultReactiveDomain())
+  })
+  
+  observeEvent(input$collapse_all, {
+    reactable::updateReactable("submissions", expanded = FALSE, session = getDefaultReactiveDomain())
+  })
+  
   observeEvent(input$select_status, {
     with_busy_indicator_server("select_status", {
       submissions <- get_submissions(
