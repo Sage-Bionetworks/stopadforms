@@ -148,16 +148,27 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
   })
   certified <- check_certified_user(user$ownerId, syn = syn)
   
+  query_trigger <- reactiveVal(0)
+  
+  existing_syn_submission <- reactive({
+    req(input$submission)
+    req(input$section)
+    
+    query_trigger() # If triggered, will automatically re-run the query
+    
+    syn$tableQuery(
+      glue::glue(
+        "SELECT * FROM {reviews_table} WHERE (scorer = {syn$getUserProfile()$ownerId} AND form_data_id = {submission_id()} AND step = '{input$section}')" # nolint
+      )
+    )
+  })
+  
   existing_submission <- reactive({
     req(input$submission)
     req(input$section)
     
     result <- readr::read_csv(
-      syn$tableQuery(
-        glue::glue(
-          "SELECT * FROM {reviews_table} WHERE (scorer = {syn$getUserProfile()$ownerId} AND form_data_id = {submission_id()} AND step = '{input$section}')" # nolint
-        )
-      )$filepath,
+      existing_syn_submission()$filepath,
       col_types = readr::cols(
         ROW_ID = readr::col_double(),
         ROW_VERSION = readr::col_double(),
@@ -218,7 +229,8 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
       if (input$submission == "" || input$section == "") {
         stop("Please select a submission and section")
       }
-      
+
+      syn_result <- existing_syn_submission()
       result <- existing_submission()
 
       if (nrow(result) == 0) {
@@ -232,11 +244,15 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
           species = input$section_species,
           stringsAsFactors = FALSE
         )
+        
+        etag <- NULL
       } else if (nrow(result) == 1) {
         new_row <- result
         new_row$score <- input$section_score
         new_row$comments <- input$section_comments
         new_row$species <- input$section_species
+        
+        etag <- syn_result$etag
       } else {
         stop("Unable to update score: duplicate scores were found for this section from a single reviewer") # nolint
       }
@@ -252,7 +268,10 @@ mod_review_section_server <- function(input, output, session, synapse, syn,
       write.csv(new_row, temp_file, row.names = FALSE)
       
       # Store into the synapse table
-      syn$store(synapse$Table(reviews_table, temp_file))
+      syn$store(synapse$Table(reviews_table, temp_file, etag=etag))
+      
+      # Refresh the query now that data has been modified
+      query_trigger(query_trigger() + 1)
       
       ## Update the label of the button now
       updateActionButton(session, "submit", label = "Overwrite")
