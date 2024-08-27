@@ -271,7 +271,7 @@ calculate_scores_rowwise <- function(reviews, submissions) {
       section_flag = dplyr::case_when(
         .data$section %in% c("binding", "efficacy", "in_vivo_data", "pk_in_vivo", 
                              "acute_dosing", "chronic_dosing", "teratogenicity",
-                             "toxicology") ~ 0,
+                             "ld50") ~ 0,
         TRUE ~ 1
       )
     ) %>%
