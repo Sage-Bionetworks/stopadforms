@@ -282,9 +282,13 @@ show_review_table <- function(input, output, reviews, submission_id) {
   # separate
 
   to_show <- reactive({
+    rollup_scores <- calculate_section_rollup_score(submission_id(), reviews)
+
     dplyr::filter(reviews, .data$form_data_id == submission_id()) %>%
+      dplyr::left_join(rollup_scores) %>%
       dplyr::select(
         .data$step,
+        .data$rollup_score,
         .data$score,
         .data$weighted_score,
         .data$scorer,
@@ -305,6 +309,7 @@ show_review_table <- function(input, output, reviews, submission_id) {
       defaultExpanded = TRUE,
       columns = list(
         step = reactable::colDef(name = "Section"),
+        rollup_score = reactable::colDef(name = "Rollup Score", aggregate = "unique"),
         score = reactable::colDef(name = "Gamma", aggregate = "unique"),
         weighted_score = reactable::colDef(name = "Score", aggregate = "unique"),
         scorer = reactable::colDef(name = "Scorer(s)", aggregate = "unique"),
