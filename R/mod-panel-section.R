@@ -197,11 +197,7 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
       query <- "SELECT * FROM {submissions_table} WHERE form_data_id = {submission_id()}"
       
       result <- readr::read_csv(
-        syn$tableQuery(
-          glue::glue(
-            query
-          )
-        )$filepath
+        existing_syn_submission()$filepath
       )
 
       if (nrow(result) > 0) {
@@ -219,6 +215,18 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
       }
     }
   })
+  
+  query_trigger <- reactiveVal(0)
+  
+  existing_syn_submission <- reactive({
+    query_trigger() # If triggered, will automatically re-run the query
+    
+    syn$tableQuery(
+      glue::glue(
+        "SELECT * FROM {submissions_table} WHERE form_data_id = {submission_id()}" # nolint
+      )
+    )
+  })
 
   ## Save new row to table
   observeEvent(input$submit, {
@@ -235,13 +243,12 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
       if (input$submission == "") {
         stop("Please select a submission")
       }
+      
+      syn_result <- existing_syn_submission()
       result <- readr::read_csv(
-        syn$tableQuery(
-          glue::glue(
-            "SELECT * FROM {submissions_table} WHERE form_data_id = {submission_id()}" # nolint
-          )
-        )$filepath
+        syn_result$filepath
       )
+      
       if (nrow(result) == 0) {
         new_row <- data.frame(
           form_data_id = submission_id(),
@@ -252,17 +259,30 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
           external_comment = input$external_comment,
           stringsAsFactors = FALSE
         )
+        
+        etag <- NULL
       } else if (nrow(result) == 1) {
         new_row <- result
         new_row$overall_score <- input$reviewed_overall_score
         new_row$internal_comment <- input$internal_comment
         new_row$external_comment <- input$external_comment
+        
+        etag <- syn_result$etag
       } else {
         stop("Unable to update score: duplicate scores were found for this section from a single reviewer") # nolint
       }
-      syn$store(synapse$Table(submissions_table, new_row))
-      shinyjs::reset("internal_comment")
-      shinyjs::reset("external_comment")
+      
+      # Create a temporary file path
+      temp_file <- tempfile(fileext = ".csv")
+      
+      # Write the data frame to the temporary CSV file
+      write.csv(new_row, temp_file, row.names = FALSE)
+      
+      # Store into the synapse table
+      syn$store(synapse$Table(submissions_table, temp_file, etag=etag))
+      
+      # Refresh the query now that data has been modified
+      query_trigger(query_trigger() + 1)
     })
   })
 }
