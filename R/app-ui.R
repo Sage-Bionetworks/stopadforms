@@ -27,7 +27,7 @@ golem_add_external_resources <- function() {
     
     # Ensure that the user cannot type the letter 'e' in the overall score input
     tags$script(HTML("
-      $(document).on('keydown', '#main-panel_section-overall_score', function (e) {
+      $(document).on('keydown', '#main-panel_section-reviewed_overall_score', function (e) {
         if (e.key === 'e' || e.key === 'E') {
           e.preventDefault();
         }
