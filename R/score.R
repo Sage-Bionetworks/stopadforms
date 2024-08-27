@@ -23,13 +23,29 @@
 
 ##########################################################################
 
+calculate_section_rollup_score <- function(submission, reviews) {
+  if (nrow(reviews) == 0) {
+    return(0)
+  }
+
+  sub_reviews <- reviews[reviews$form_data_id == submission, ]
+  
+  rollup_scores <- sub_reviews %>%
+    dplyr::group_by(.data$step) %>%
+    dplyr::summarize(rollup_score = geom_mean_score(.data$weighted_score))
+  
+  return(rollup_scores)
+}
+
 calculate_submission_score <- function(submission, reviews) {
   if (nrow(reviews) == 0) {
     return(0)
   }
+  
   section_scores_averaged <- reviews %>%
     dplyr::group_by(.data$step) %>%
     dplyr::summarize(weighted_score = geom_mean_score(.data$weighted_score))
+  
   total <- sum(section_scores_averaged$weighted_score, na.rm = TRUE)
   total / calculate_denominator(submission)
 }
