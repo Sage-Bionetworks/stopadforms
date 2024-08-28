@@ -40,6 +40,7 @@ mod_review_section_ui <- function(id) {
         )
       )
     ),
+    br(), br(),
     fluidRow(
       column(
         7,
@@ -47,6 +48,7 @@ mod_review_section_ui <- function(id) {
         reactable::reactableOutput(ns("data_section_subset"))
       )
     ),
+    br(), br(),
     fluidRow(
       column(
         4,

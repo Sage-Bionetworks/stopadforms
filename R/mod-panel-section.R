@@ -50,6 +50,7 @@ mod_panel_section_ui <- function(id) {
              )
       )
     ),
+    br(), br(),
     fluidRow(
       column(
         7,
@@ -57,6 +58,7 @@ mod_panel_section_ui <- function(id) {
         reactable::reactableOutput(ns("averaged_scores"))
       )
     ),
+    br(), br(),
     fluidRow(
       column(
         4,
