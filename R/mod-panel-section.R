@@ -305,13 +305,9 @@ show_review_table <- function(input, output, reviews, submission_id) {
   # separate
 
   to_show <- reactive({
-    rollup_scores <- calculate_section_rollup_score(submission_id(), reviews)
-
     dplyr::filter(reviews, .data$form_data_id == submission_id()) %>%
-      dplyr::left_join(rollup_scores) %>%
       dplyr::select(
         .data$step,
-        .data$rollup_score,
         .data$score,
         .data$weighted_score,
         .data$scorer,
@@ -339,9 +335,27 @@ show_review_table <- function(input, output, reviews, submission_id) {
       defaultExpanded = TRUE,
       columns = list(
         step = reactable::colDef(name = "Section"),
-        rollup_score = reactable::colDef(name = "Rollup Score", aggregate = "unique"),
         score = reactable::colDef(name = "Gamma", aggregate = "unique"),
-        weighted_score = reactable::colDef(name = "Score", aggregate = "unique"),
+        weighted_score = reactable::colDef(
+          name = "Score",
+          aggregate = reactable::JS("
+            function(values) {
+              // Filter out zero or negative values
+              const filteredValues = values.filter(val => val > 0);
+              
+              // Check if there are any values left after filtering
+              if (filteredValues.length === 0) {
+                return 0; // Return 0 if no values > 0
+              }
+
+              // Calculate the product of the remaining values
+              const product = filteredValues.reduce((acc, val) => acc * val, 1);
+
+              // Return the geometric mean
+              return Math.pow(product, 1 / filteredValues.length);
+            }
+          ")
+        ),
         scorer = reactable::colDef(name = "Scorer(s)", aggregate = "unique"),
         comments = reactable::colDef(
           name = "Comments",
