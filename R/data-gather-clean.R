@@ -328,3 +328,14 @@ remove_empty_objects <- function(data_list) {
   }
   return(data_list)
 }
+
+clean_date_strings <- function(date_string) {
+  # Step 1: Parse the string to a datetime object and convert to Eastern Time
+  datetime_utc <- lubridate::ymd_hms(date_string, tz = "UTC")  # Parse as UTC
+  datetime_et <- lubridate::with_tz(datetime_utc, tzone = "America/New_York")  # Convert to Eastern Time
+  
+  # Step 2: Extract just the date in the desired format (YYYY-MM-DD)
+  formatted_date <- format(datetime_et, "%Y-%m-%d")
+  
+  return(formatted_date)
+}

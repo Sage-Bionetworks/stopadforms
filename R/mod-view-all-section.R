@@ -51,6 +51,7 @@ mod_view_all_section_ui <- function(id) {
       column(1,
              actionButton(ns("collapse_all"), "Collapse All"))
     ),
+    br(), br(), br(),
     fluidRow(
       column(
         10,
@@ -95,9 +96,11 @@ mod_view_all_section_server <- function(input, output, session, synapse, syn,
         stop("No submissions found with requested status(es)")
       }
       
+      sub_metadata$submitted_on <- clean_date_strings(sub_metadata$submitted_on)
+      
       submissions <- dplyr::left_join(submissions, sub_metadata) %>%
         dplyr::mutate(
-          submission = paste0(submitted_on, "_", submission)
+          submission = paste0(submitted_on, ": ", submission)
         ) %>%
         ## Arrange by submission and step
         dplyr::arrange(.data$submission, .data$step)
