@@ -38,7 +38,7 @@ mod_view_all_section_ui <- function(id) {
           actionButton(
             ns("select_status"),
             "Submit Selection",
-            width = "230px"
+            width = "243px"
           )
         )
       )
