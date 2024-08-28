@@ -283,6 +283,9 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
       
       # Refresh the query now that data has been modified
       query_trigger(query_trigger() + 1)
+      
+      ## Update the label of the button now
+      updateActionButton(session, "submit", label = "Overwrite")
     })
   })
 }
