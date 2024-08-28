@@ -26,30 +26,31 @@ mod_view_all_section_ui <- function(id) {
             "Rejected" = "REJECTED"
           ),
           selected = "SUBMITTED_WAITING_FOR_REVIEW",
-          inline = TRUE
         )
       )
     ),
     fluidRow(
       column(
-        4,
+        2,
         offset = 1,
-        with_busy_indicator_ui(
+        div(
+          style = "display: flex;",
           actionButton(
             ns("select_status"),
-            "Submit Selection",
-            width = "243px"
+            "Get Submissions",
+            style = "flex-grow: 1;"
           )
         )
       )
     ),
     br(),
-    # Add buttons to expand/collapse all
     fluidRow(
-      column(1, offset = 1,
-             actionButton(ns("expand_all"), "Expand All")),
-      column(1,
-             actionButton(ns("collapse_all"), "Collapse All"))
+      column(2, offset = 1,
+             div(
+               actionButton(ns("expand_all"), "Expand All"),
+               actionButton(ns("collapse_all"), "Collapse All")
+             )
+      )
     ),
     br(), br(), br(),
     fluidRow(

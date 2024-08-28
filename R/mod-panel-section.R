@@ -18,39 +18,31 @@ mod_panel_section_ui <- function(id) {
     "View summarized scores",
     fluidRow(
       column(
-        4,
-        offset = 1,
+        4, offset = 1,
         selectInput(
           ns("submission"),
           "Select submission",
           choices = "",
-          width = "455px"
+          width = "100%"
         )
       )
     ),
-    # Add buttons to expand/collapse all
     fluidRow(
-      column(1, offset = 1,
-             actionButton(ns("expand_all"), "Expand All", style = "width: 167px;")
-      ),
-      column(1),
-      column(1,
-             actionButton(ns("collapse_all"), "Collapse All", style = "width: 167px;")
-      )
-    ),
-    br(),
-    fluidRow(
-      column(2, offset = 3,
-             with_busy_indicator_ui(
+      column(4, offset = 1,
+             div(
+               style = "display: flex; justify-content: space-between;",
+               div(
+                 actionButton(ns("expand_all"), "Expand All"),
+                 actionButton(ns("collapse_all"), "Collapse All")
+               ),
                actionButton(
                  ns("refresh_data"),
-                 "Refresh Data",
-                 style = "width: 167px;"
+                 "Refresh Data"
                )
              )
       )
     ),
-    br(), br(),
+    br(), br(), br(),
     fluidRow(
       column(
         7,
