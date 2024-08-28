@@ -24,7 +24,7 @@ mod_panel_section_ui <- function(id) {
           ns("submission"),
           "Select submission",
           choices = "",
-          width = "428px"
+          width = "455px"
         )
       )
     ),
@@ -314,10 +314,17 @@ show_review_table <- function(input, output, reviews, submission_id) {
         .data$scorer,
         .data$comments
       ) %>%
+      dplyr::mutate(SortingKey = purrr::map(.data$step, extract_base_category)) %>%
+      dplyr::ungroup() %>%
       dplyr::mutate(
-        step = factor(.data$step, levels = reorder_steps(.data$step))
+        BaseCategory = purrr::map_chr(SortingKey, function(x) x[[1]]),
+        Suffix = purrr::map_dbl(SortingKey, function(x) x[[2]])
       ) %>%
-      dplyr::arrange(step)
+      dplyr::mutate(
+        BaseCategory = factor(.data$BaseCategory, levels = default_order)
+      ) %>%
+      dplyr::arrange(.data$BaseCategory, .data$Suffix) %>%
+      dplyr::select(-.data$BaseCategory, -.data$Suffix, -.data$SortingKey)
   })
 
   output$averaged_scores <- reactable::renderReactable({
