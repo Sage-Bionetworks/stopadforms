@@ -196,16 +196,15 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
     if (!is.null(input$submission) && nchar(input$submission) > 0) {
       query <- "SELECT * FROM {submissions_table} WHERE form_data_id = {submission_id()}"
       
-      result <- readr::read_csv(
-        existing_syn_submission()$filepath
-      )
+      result <- existing_syn_submission_data()
+      user_name <- existing_syn_submission_username()  
 
       if (nrow(result) > 0) {
         updateNumericInput(session, "reviewed_overall_score", value = result$overall_score[1])
         updateTextAreaInput(session, "internal_comment", value = result$internal_comment[1])
         updateTextAreaInput(session, "external_comment", value = result$external_comment[1])
         
-        updateActionButton(session, "submit", label = "Overwrite")
+        updateActionButton(session, "submit", label = paste0("Overwrite ", user_name, "'s input"))
       } else {
         updateNumericInput(session, "reviewed_overall_score", value = 0)
         updateTextAreaInput(session, "internal_comment", value = "")
@@ -227,6 +226,16 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
       )
     )
   })
+  
+  existing_syn_submission_data <- reactive({
+    readr::read_csv(
+      existing_syn_submission()$filepath
+    )
+  })
+  
+  existing_syn_submission_username <- reactive({
+    get_display_name(syn, existing_syn_submission_data()$scorer)
+  })
 
   ## Save new row to table
   observeEvent(input$submit, {
@@ -245,9 +254,8 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
       }
       
       syn_result <- existing_syn_submission()
-      result <- readr::read_csv(
-        syn_result$filepath
-      )
+      result <- existing_syn_submission_data()
+      user_name <- existing_syn_submission_username()
       
       if (nrow(result) == 0) {
         new_row <- data.frame(
@@ -263,6 +271,7 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
         etag <- NULL
       } else if (nrow(result) == 1) {
         new_row <- result
+        new_row$scorer <- syn$getUserProfile()$ownerId
         new_row$overall_score <- input$reviewed_overall_score
         new_row$internal_comment <- input$internal_comment
         new_row$external_comment <- input$external_comment
@@ -280,12 +289,12 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
       
       # Store into the synapse table
       syn$store(synapse$Table(submissions_table, temp_file, etag=etag))
-      
+
       # Refresh the query now that data has been modified
       query_trigger(query_trigger() + 1)
       
       ## Update the label of the button now
-      updateActionButton(session, "submit", label = "Overwrite")
+      updateActionButton(session, "submit", label = paste0("Overwrite ", get_display_name(syn, syn$getUserProfile()$ownerId), "'s input"))
     })
   })
 }
