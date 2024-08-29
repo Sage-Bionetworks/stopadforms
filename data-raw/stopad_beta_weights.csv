@@ -1,11 +1,11 @@
-﻿section,variable,partial_beta,notes
+section,variable,partial_beta,notes
 naming,data_sharing,1,
 basic,moa_description,1,
 basic,therapeutic_approach,,based on values
 binding,binding_affinity,1,
 efficacy,efficacy_measure_type,,based on values
 in_vivo_data,ed50,0.67,
-in_vivo_data,dose_range.dose_range_min,,
+in_vivo_data,dose_range.dose_range_min,0.33,
 pk_in_silico,partition_coefficient,0.5,
 pk_in_silico,dissociation_constant,0.3333333,
 pk_in_silico,molecular_weight,0.1666667,
