@@ -458,9 +458,10 @@ test_that("Step is added even if variable isn't in lookup table", {
 # append_exp_nums() ------------------------------------------------------------
 
 test_that("append_exp_nums() adds number to step column", {
-  dat <- tibble::tibble(step = c("LD50", "LD50"), exp_num = c(1, 2))
+  dat <- tibble::tibble(section = c("ld50", "ld50"), exp_num = c(1, 2))
   res <- stopadforms:::append_exp_nums(dat)
   expected <- tibble::tibble(
+    section = c("ld50", "ld50"),
     step = c("LD50 [1]", "LD50 [2]"),
     exp_num = c(1, 2)
   )
