@@ -287,7 +287,7 @@ append_exp_nums <- function(data) {
     data,
     step = dplyr::case_when(
       !is.na(exp_num) ~ as.character(glue::glue("{step} [{exp_num}]")),
-      section %in% rel_sections ~ as.character(glue::glue("{step} [1]")),
+      step %in% rel_sections ~ as.character(glue::glue("{step} [1]")),
       TRUE ~ as.character(glue::glue("{step}"))
     )
   )
