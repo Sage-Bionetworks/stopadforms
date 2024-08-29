@@ -314,13 +314,16 @@ show_review_table <- function(input, output, reviews, submission_id) {
         .data$score,
         .data$weighted_score,
         .data$scorer,
+        .data$species,
         .data$comments
       ) %>%
-      dplyr::mutate(SortingKey = purrr::map(.data$step, extract_base_category)) %>%
+      dplyr::mutate(SortingKey = purrr::map(.data$step, extract_base_category),
+                    species = tools::toTitleCase(as.character(species))) %>%
       dplyr::ungroup() %>%
       dplyr::mutate(
         BaseCategory = purrr::map_chr(SortingKey, function(x) x[[1]]),
-        Suffix = purrr::map_dbl(SortingKey, function(x) x[[2]])
+        Suffix = purrr::map_dbl(SortingKey, function(x) x[[2]]),
+        species = ifelse(is.na(species), "N/A", species)
       ) %>%
       dplyr::mutate(
         BaseCategory = factor(.data$BaseCategory, levels = default_order)
@@ -360,6 +363,7 @@ show_review_table <- function(input, output, reviews, submission_id) {
           ")
         ),
         scorer = reactable::colDef(name = "Scorer(s)", aggregate = "unique"),
+        species = reactable::colDef(name = "Species", aggregate = "unique"),
         comments = reactable::colDef(
           name = "Comments",
           aggregate = reactable::JS("function(values, rows) { return '...' }")
