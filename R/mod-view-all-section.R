@@ -19,7 +19,7 @@ mod_view_all_section_ui <- function(id) {
         offset = 1,
         checkboxGroupInput(
           ns("status"),
-          "Select statuses to include",
+          "Include status:",
           choices = c(
             "In Review" = "SUBMITTED_WAITING_FOR_REVIEW",
             "Accepted" = "ACCEPTED",
