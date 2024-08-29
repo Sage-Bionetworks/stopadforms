@@ -280,11 +280,15 @@ map_names <- function(data, lookup_table, complete = TRUE) {
 #'
 #' @param data Data frame containing submission data
 append_exp_nums <- function(data) {
+  rel_sections <- c("binding", "efficacy", "ld50", "acute_dosing", "chronic_dosing",
+                    "teratogenicity", "in_vivo_data", "pk_in_vivo")
+  
   dplyr::mutate(
     data,
     step = dplyr::case_when(
       !is.na(exp_num) ~ as.character(glue::glue("{step} [{exp_num}]")),
-      TRUE ~ as.character(glue::glue("{step} [1]"))
+      section %in% rel_sections ~ as.character(glue::glue("{step} [1]")),
+      TRUE ~ as.character(glue::glue("{step}"))
     )
   )
 }
