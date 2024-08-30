@@ -34,6 +34,10 @@ mod_main_ui <- function(id) {
 mod_main_server <- function(input, output, session, syn) {
   shiny::req(inherits(syn, "synapseclient.client.Synapse") & logged_in(syn))
   
+  # Load in the static data
+  load("data/partial_betas.rda")
+  load("data/lookup_table.rda")
+
   tryCatch({
     ## Check if user is in STOP-AD_Reviewers team
     team <- "3403721"
@@ -168,7 +172,9 @@ mod_main_server <- function(input, output, session, syn) {
   
   tryCatch({
     callModule(mod_panel_section_server, "panel_section",
-               synapse = synapse, syn = syn, user = user, submissions = sub_data, reviews_table = "syn22014561", submissions_table = "syn22213241")
+               synapse = synapse, syn = syn, user = user, submissions = sub_data, 
+               reviews_table = "syn22014561", submissions_table = "syn22213241",
+               partial_betas = partial_betas)
   }, error = function(err) {
     Sys.sleep(2)
     waiter::waiter_update(

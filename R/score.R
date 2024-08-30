@@ -140,9 +140,10 @@ calculate_section_score <- function(data, lookup, score = 1, species = 1,
       )
     )
   }
+  
   section_multiplier <- section * clinical * species * score
-  partial_betas <- dplyr::inner_join(data, lookup, by = c("section", "variable"))
-  sum(section_multiplier * partial_betas$partial_beta, na.rm = TRUE)
+  partial_betas_join <- dplyr::inner_join(data, lookup, by = c("section", "variable"))
+  sum(section_multiplier * partial_betas_join$partial_beta, na.rm = TRUE)
 }
 
 ## Betas for therapeutic approach
@@ -251,12 +252,13 @@ append_clinical_to_submission <- function(submissions) {
 #' @param submissions Data frame of submissions *including* clinical multiplier
 #'   (i.e. the output from [append_clinical_to_submission()]).
 #' @export
-calculate_scores_rowwise <- function(reviews, submissions) {
+calculate_scores_rowwise <- function(reviews, submissions, partial_betas) {
   if (nrow(reviews) == 0) {
     return(
       dplyr::mutate(reviews, weighted_score = numeric(0))
     )
   }
+
   reviews %>%
     ## We have both "abstain" and "none" as scoring options, ideally they'd both
     ## represent 0 but shiny won't let two options have the same underlying
@@ -335,10 +337,10 @@ geom_mean_score <- function(values) {
 #'   "submission", "scorer", "score", "comments", "species", "clinical", "step",
 #'   "weighted_score").
 #' @export
-pull_reviews_table <- function(syn, reviews_table, submissions) {
+pull_reviews_table <- function(syn, reviews_table, submissions, partial_betas) {
   reviews <- syn$tableQuery(glue::glue("SELECT * FROM {reviews_table}"))
   reviews <- readr::read_csv(reviews$filepath) %>%
     dplyr::mutate(scorer = get_display_name(syn, .data$scorer)) %>%
     dplyr::mutate(form_data_id = as.character(.data$form_data_id)) %>%
-    calculate_scores_rowwise(submissions)
+    calculate_scores_rowwise(submissions, partial_betas)
 }

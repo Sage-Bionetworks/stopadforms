@@ -94,11 +94,11 @@ mod_panel_section_ui <- function(id) {
 #' @keywords internal
 mod_panel_section_server <- function(input, output, session, synapse, syn, user,
                                      submissions, reviews_table,
-                                     submissions_table) {
+                                     submissions_table, partial_betas) {
   ## Load submissions and reviews
   submissions <- append_clinical_to_submission(submissions) %>%
     dplyr::mutate(submission = submission %>% trimws())
-  reviews <- pull_reviews_table(syn, reviews_table, submissions)
+  reviews <- pull_reviews_table(syn, reviews_table, submissions, partial_betas)
 
   submission_id <- reactive({
     input$submission
@@ -159,7 +159,7 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
 
   observeEvent(input$refresh_data, {
     with_busy_indicator_server("refresh_data", {
-      reviews <<- pull_reviews_table(syn, reviews_table, submissions)
+      reviews <<- pull_reviews_table(syn, reviews_table, submissions, partial_betas)
       updateSelectInput(
         session = getDefaultReactiveDomain(),
         "submission",
