@@ -28,7 +28,8 @@ mod_review_section_ui <- function(id) {
         selectInput(
           ns("submission"),
           "Select submission",
-          choices = ""
+          choices = "",
+          width = "100%"
         )
       ),
       column(
