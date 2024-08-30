@@ -104,7 +104,9 @@ mod_view_all_section_server <- function(input, output, session, synapse, syn,
           submission = paste0(submitted_on, ": ", submission)
         ) %>%
         ## Arrange by submission and step
-        dplyr::arrange(desc(.data$submission), .data$step)
+        dplyr::arrange(desc(.data$submission), .data$step) %>%
+        dplyr::rename(Response = .data$Reponse) %>%
+        dplyr::select(-.data$section, -.data$submitted_on)
       
       output$submissions <- reactable::renderReactable({
         reactable::reactable(
