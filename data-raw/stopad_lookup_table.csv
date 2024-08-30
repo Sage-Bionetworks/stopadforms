@@ -42,10 +42,10 @@ Efficacy,Outcome measures,efficacy,outcome_measures
 Efficacy,"If this study has been published, please provide a reference.",efficacy,reference
 Efficacy,Efficacy,efficacy,efficacy_measure
 Efficacy,Efficacy Measure,efficacy,efficacy_measure_type
-In Vivo Data,Minimum Subject Age,in_vivo_data,age_range.age_range_min
-In Vivo Data,Maximum Subject Age,in_vivo_data,age_range.age_range_max
-In Vivo Data,Minimum Dose Range,in_vivo_data,dose_range.dose_range_min
-In Vivo Data,Maximum Dose Range,in_vivo_data,dose_range.dose_range_max
+In Vivo Data,Minimum Subject Age (months),in_vivo_data,age_range.age_range_min
+In Vivo Data,Maximum Subject Age (months),in_vivo_data,age_range.age_range_max
+In Vivo Data,Minimum Dose Range (mg/kg),in_vivo_data,dose_range.dose_range_min
+In Vivo Data,Maximum Dose Range (mg/kg),in_vivo_data,dose_range.dose_range_max
 In Vivo Data,Experiment Name,in_vivo_data,name
 In Vivo Data,"If this study has been published, please provide a reference.",in_vivo_data,reference
 In Vivo Data,Species,in_vivo_data,species
@@ -80,10 +80,10 @@ PK In Vivo,Fractional bioavailability,pk_in_vivo,fractional_bioavailability
 PK In Vivo,Plasma maximum concentration (Cmax),pk_in_vivo,plasma_max_concentration
 PK In Vivo,Volume of distribution (Vd),pk_in_vivo,volume
 PK In Vivo,Subject Sex,pk_in_vivo,sex
-LD50,Minimum Subject Age,ld50,age_range.age_range_min
-LD50,Maximum Subject Age,ld50,age_range.age_range_max
-LD50,Minimum Dose Range,ld50,dose_range.dose_range_min
-LD50,Maximum Dose Range,ld50,dose_range.dose_range_max
+LD50,Minimum Subject Age (months),ld50,age_range.age_range_min
+LD50,Maximum Subject Age (months),ld50,age_range.age_range_max
+LD50,Minimum Dose Range (mg/kg),ld50,dose_range.dose_range_min
+LD50,Maximum Dose Range (mg/kg),ld50,dose_range.dose_range_max
 LD50,Experiment Name,ld50,name
 LD50,"If this study has been published, please provide a reference.",ld50,reference
 LD50,Species,ld50,species
@@ -94,10 +94,10 @@ LD50,LD50,ld50,ld50
 LD50,What was the route of administration?,ld50,route
 LD50,Drug Formulation,ld50,drug_formulation
 LD50,Subject sex,ld50,sex
-Acute Dosing,Minimum Subject Age,acute_dosing,age_range.age_range_min
-Acute Dosing,Maximum Subject Age,acute_dosing,age_range.age_range_max
-Acute Dosing,Minimum Dose Range,acute_dosing,dose_range.dose_range_min
-Acute Dosing,Maximum Dose Range,acute_dosing,dose_range.dose_range_max
+Acute Dosing,Minimum Subject Age (months),acute_dosing,age_range.age_range_min
+Acute Dosing,Maximum Subject Age (months),acute_dosing,age_range.age_range_max
+Acute Dosing,Minimum Dose Range (mg/kg),acute_dosing,dose_range.dose_range_min
+Acute Dosing,Maximum Dose Range (mg/kg),acute_dosing,dose_range.dose_range_max
 Acute Dosing,Experiment Name,acute_dosing,name
 Acute Dosing,"If this study has been published, please provide a reference.",acute_dosing,reference
 Acute Dosing,Species,acute_dosing,species
@@ -108,10 +108,10 @@ Acute Dosing,What was the route of administration?,acute_dosing,route
 Acute Dosing,Drug Formulation,acute_dosing,drug_formulation
 Acute Dosing,Adverse events,acute_dosing,adverse_events_description
 Acute Dosing,Subject sex,acute_dosing,sex
-Chronic Dosing,Minimum Subject Age,chronic_dosing,age_range.age_range_min
-Chronic Dosing,Maximum Subject Age,chronic_dosing,age_range.age_range_max
-Chronic Dosing,Minimum Dose Range,chronic_dosing,dose_range.dose_range_min
-Chronic Dosing,Maximum Dose Range,chronic_dosing,dose_range.dose_range_max
+Chronic Dosing,Minimum Subject Age (months),chronic_dosing,age_range.age_range_min
+Chronic Dosing,Maximum Subject Age (months),chronic_dosing,age_range.age_range_max
+Chronic Dosing,Minimum Dose Range (mg/kg),chronic_dosing,dose_range.dose_range_min
+Chronic Dosing,Maximum Dose Range (mg/kg),chronic_dosing,dose_range.dose_range_max
 Chronic Dosing,Experiment Name,chronic_dosing,name
 Chronic Dosing,"If this study has been published, please provide a reference.",chronic_dosing,reference
 Chronic Dosing,Species,chronic_dosing,species
@@ -122,10 +122,10 @@ Chronic Dosing,What was the route of administration?,chronic_dosing,route
 Chronic Dosing,Drug Formulation,chronic_dosing,drug_formulation
 Chronic Dosing,Adverse events,chronic_dosing,adverse_events_description
 Chronic Dosing,Subject sex,chronic_dosing,sex
-Teratogenicity,Minimum Subject Age,teratogenicity,age_range.age_range_min
-Teratogenicity,Maximum Subject Age,teratogenicity,age_range.age_range_max
-Teratogenicity,Minimum Dose Range,teratogenicity,dose_range.dose_range_min
-Teratogenicity,Maximum Dose Range,teratogenicity,dose_range.dose_range_max
+Teratogenicity,Minimum Subject Age (months),teratogenicity,age_range.age_range_min
+Teratogenicity,Maximum Subject Age (months),teratogenicity,age_range.age_range_max
+Teratogenicity,Minimum Dose Range (mg/kg),teratogenicity,dose_range.dose_range_min
+Teratogenicity,Maximum Dose Range (mg/kg),teratogenicity,dose_range.dose_range_max
 Teratogenicity,Experiment Name,teratogenicity,name
 Teratogenicity,"If this study has been published, please provide a reference.",teratogenicity,reference
 Teratogenicity,Species,teratogenicity,species
@@ -138,8 +138,8 @@ Teratogenicity,Adverse events,teratogenicity,adverse_events_description
 Teratogenicity,Subject Sex,teratogenicity,sex
 Clinical Data,Were you involved in this clinical study?,clinical_data,clinical_data_involvement
 Clinical Data,What sex is the clinical data subject population?,clinical_data,sex
-Clinical Data,Minimum Subject Age,clinical_data,age_range.age_range_min
-Clinical Data,Maximum Subject Age,clinical_data,age_range.age_range_max
+Clinical Data,Minimum Subject Age (years),clinical_data,age_range.age_range_min
+Clinical Data,Maximum Subject Age (years),clinical_data,age_range.age_range_max
 Clinical Data,"If this study has been published, please provide a reference.",clinical_data,clinical_publication_status
 Clinical Data,Clinical Trials Reference,clinical_data,clinical_trials_reference
 Clinical Data,What is the clinical indication of the patient population?,clinical_data,diagnosis
