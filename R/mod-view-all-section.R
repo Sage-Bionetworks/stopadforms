@@ -105,7 +105,6 @@ mod_view_all_section_server <- function(input, output, session, synapse, syn,
         ) %>%
         ## Arrange by submission and step
         dplyr::arrange(desc(.data$submission), .data$step) %>%
-        dplyr::rename(Response = .data$Reponse) %>%
         dplyr::select(-.data$section, -.data$submitted_on)
       
       output$submissions <- reactable::renderReactable({
@@ -133,7 +132,7 @@ mod_view_all_section_server <- function(input, output, session, synapse, syn,
               )
             ),
             response = reactable::colDef(
-              name = "Reponse",
+              name = "Response",
               aggregate = reactable::JS(
                 "function(values, rows) { return '...' }"
               )
