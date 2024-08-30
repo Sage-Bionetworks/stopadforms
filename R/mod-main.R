@@ -34,6 +34,8 @@ mod_main_ui <- function(id) {
 mod_main_server <- function(input, output, session, syn) {
   shiny::req(inherits(syn, "synapseclient.client.Synapse") & logged_in(syn))
   
+  source('data-raw/lookup_table.R', chdir = TRUE)
+  
   # Load in the static data
   load("data/partial_betas.rda")
   load("data/lookup_table.rda")
