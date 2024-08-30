@@ -65,8 +65,8 @@ PK In Silico,Molecular Weight (g/mol),pk_in_silico,molecular_weight
 PK In Vitro,Cell Permeablity Assay,pk_in_vitro,assay_description
 PK In Vitro,Permeability,pk_in_vitro,permeability
 PK In Vitro,Drug Lipophilicity Coefficient (LogD),pk_in_vitro,lipophilicity
-PK In Vivo,Minimum Subject Age,pk_in_vivo,age_range.age_range_min
-PK In Vivo,Maximum Subject Age,pk_in_vivo,age_range.age_range_max
+PK In Vivo,Minimum Subject Age (months),pk_in_vivo,age_range.age_range_min
+PK In Vivo,Maximum Subject Age (months),pk_in_vivo,age_range.age_range_max
 PK In Vivo,Experiment Name,pk_in_vivo,name
 PK In Vivo,"If this study has been published, please provide a reference.",pk_in_vivo,reference
 PK In Vivo,Species,pk_in_vivo,species
