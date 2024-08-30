@@ -160,12 +160,14 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
   observeEvent(input$refresh_data, {
     with_busy_indicator_server("refresh_data", {
       reviews <<- pull_reviews_table(syn, reviews_table, submissions, partial_betas)
+      
       updateSelectInput(
         session = getDefaultReactiveDomain(),
         "submission",
         choices = get_submission_list(reviews),
         selected = submission_id()
       )
+      
       # Something is weird here and I don't know why this is necessary
       current_reviews <<- show_review_table(
         input = input,
@@ -186,32 +188,32 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
   })
   certified <- check_certified_user(user$ownerId, syn = syn)
   
-  observeEvent(input$submission, {
-    if (!is.null(input$submission) && nchar(input$submission) > 0) {
-      query <- "SELECT * FROM {submissions_table} WHERE form_data_id = {submission_id()}"
-      
-      result <- existing_syn_submission_data()
-      user_name <- existing_syn_submission_username()  
+  observeEvent(c(input$submission, input$refresh_data), {
+    query_trigger(query_trigger() + 1)
+    
+    result <- existing_syn_submission_data()
+    user_name <- existing_syn_submission_username()
 
-      if (nrow(result) > 0) {
-        updateNumericInput(session, "reviewed_overall_score", value = result$overall_score[1])
-        updateTextAreaInput(session, "internal_comment", value = result$internal_comment[1])
-        updateTextAreaInput(session, "external_comment", value = result$external_comment[1])
-        
-        updateActionButton(session, "submit", label = paste0("Overwrite ", user_name, "'s input"))
-      } else {
-        updateNumericInput(session, "reviewed_overall_score", value = 0)
-        updateTextAreaInput(session, "internal_comment", value = "")
-        updateTextAreaInput(session, "external_comment", value = "")
-        
-        updateActionButton(session, "submit", label = "Submit")
-      }
+    if (nrow(result) > 0) {
+      updateNumericInput(session, "reviewed_overall_score", value = result$overall_score[1])
+      updateTextAreaInput(session, "internal_comment", value = result$internal_comment[1])
+      updateTextAreaInput(session, "external_comment", value = result$external_comment[1])
+      
+      updateActionButton(session, "submit", label = paste0("Overwrite ", user_name, "'s input"))
+    } else {
+      updateNumericInput(session, "reviewed_overall_score", value = 0)
+      updateTextAreaInput(session, "internal_comment", value = "")
+      updateTextAreaInput(session, "external_comment", value = "")
+      
+      updateActionButton(session, "submit", label = "Submit")
     }
   })
   
   query_trigger <- reactiveVal(0)
   
   existing_syn_submission <- reactive({
+    req(submission_id())
+    
     query_trigger() # If triggered, will automatically re-run the query
     
     syn$tableQuery(
@@ -222,12 +224,16 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
   })
   
   existing_syn_submission_data <- reactive({
+    req(existing_syn_submission())
+    
     readr::read_csv(
       existing_syn_submission()$filepath
     )
   })
   
   existing_syn_submission_username <- reactive({
+    req(existing_syn_submission_data())
+    
     get_display_name(syn, existing_syn_submission_data()$scorer)
   })
 
