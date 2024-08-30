@@ -4,13 +4,19 @@
 \alias{calculate_scores_rowwise}
 \title{Calculate scores rowwise}
 \usage{
-calculate_scores_rowwise(reviews, submissions)
+calculate_scores_rowwise(
+  reviews,
+  submissions,
+  partial_betas = stopadforms::partial_betas
+)
 }
 \arguments{
 \item{reviews}{Dataframe review table.}
 
 \item{submissions}{Data frame of submissions *including* clinical multiplier
 (i.e. the output from [append_clinical_to_submission()]).}
+
+\item{partial_betas}{The partial betas for the scoring routine}
 }
 \description{
 Given a data frame of scores, adds a column with the weighted score

@@ -16,7 +16,8 @@ mod_panel_section_server(
   user,
   submissions,
   reviews_table,
-  submissions_table
+  submissions_table,
+  partial_betas
 )
 }
 \arguments{
