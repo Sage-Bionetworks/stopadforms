@@ -251,8 +251,9 @@ append_clinical_to_submission <- function(submissions) {
 #' @inheritParams show_review_table
 #' @param submissions Data frame of submissions *including* clinical multiplier
 #'   (i.e. the output from [append_clinical_to_submission()]).
+#' @param partial_betas The partial betas for the scoring routine
 #' @export
-calculate_scores_rowwise <- function(reviews, submissions, partial_betas) {
+calculate_scores_rowwise <- function(reviews, submissions, partial_betas = stopadforms::partial_betas) {
   if (nrow(reviews) == 0) {
     return(
       dplyr::mutate(reviews, weighted_score = numeric(0))
@@ -332,6 +333,7 @@ geom_mean_score <- function(values) {
 #'
 #' @seealso [calculate_scores_rowwise()]
 #' @inheritParams mod_panel_section_server
+#' @param partial_betas The partial betas for scoring
 #' @return Data frame containing the reviewers' scores, comments, and calculated
 #'   weighted score (columns will be "ROW_ID", "ROW_VERSION", "form_data_id",
 #'   "submission", "scorer", "score", "comments", "species", "clinical", "step",
