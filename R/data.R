@@ -5,6 +5,8 @@
 #' readable versions. "section" and "variable" are the original names that are
 #' in the JSON data.
 #'
+#' @export
+#'
 #' @format A data frame with 148 rows and 4 columns:
 #' \describe{
 #'   \item{step}{Name of the section of the form (user-friendly), e.g. "Naming"}
@@ -19,6 +21,8 @@
 #'
 #' The partial beta weight is one of the multipliers used to calculate the score
 #' for a section.
+#' 
+#' @export
 #'
 #' @format A data frame with 23 rows and 4 columns:
 #' \describe{

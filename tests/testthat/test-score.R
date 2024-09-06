@@ -25,7 +25,7 @@ test_that("calculate_submission_score returns expected values", {
     submissions = append_clinical_to_submission(dat)
   )
   expect_equal(
-    calculate_submission_score(
+    stopadforms:::calculate_submission_score(
       submission = dat,
       reviews = reviews
     ),
@@ -56,7 +56,7 @@ test_that("calculate_submission_score uses geometric mean", {
     submissions = append_clinical_to_submission(dat)
   )
   expect_equal(
-    calculate_submission_score(
+    stopadforms:::calculate_submission_score(
       submission = dat,
       reviews = reviews
     ),
@@ -87,7 +87,7 @@ test_that("If no reviews, calculate_submission_score returns 0", {
     submissions = append_clinical_to_submission(dat)
   )
   expect_equal(
-    calculate_submission_score(
+    stopadforms:::calculate_submission_score(
       submission = dat,
       reviews = reviews_table
     ),
@@ -227,21 +227,21 @@ test_that("the many PK in vivo betas are summed", {
 # approach_beta() --------------------------------------------------------------
 
 test_that("approach_beta returns correct values", {
-  expect_equal(approach_beta("prophylactic"), 0.4)
-  expect_equal(approach_beta("symptomatic"), 0.2)
-  expect_equal(approach_beta("prophylactic, symptomatic"), 0.3)
-  expect_equal(approach_beta("both"), 0.3)
-  expect_equal(approach_beta("unknown"), 0.1)
-  expect_null(approach_beta(NA))
+  expect_equal(stopadforms:::approach_beta("prophylactic"), 0.4)
+  expect_equal(stopadforms:::approach_beta("symptomatic"), 0.2)
+  expect_equal(stopadforms:::approach_beta("prophylactic, symptomatic"), 0.3)
+  expect_equal(stopadforms:::approach_beta("both"), 0.3)
+  expect_equal(stopadforms:::approach_beta("unknown"), 0.1)
+  expect_null(stopadforms:::approach_beta(NA))
 })
 
 # efficacy_beta() --------------------------------------------------------------
 
 test_that("efficacy_beta returns correct values", {
-  expect_equal(efficacy_beta("EC50"), 0.67)
-  expect_equal(efficacy_beta("IC50"), 0.33)
-  expect_equal(efficacy_beta("anything else"), 0)
-  expect_null(efficacy_beta(NA))
+  expect_equal(stopadforms:::efficacy_beta("EC50"), 0.67)
+  expect_equal(stopadforms:::efficacy_beta("IC50"), 0.33)
+  expect_equal(stopadforms:::efficacy_beta("anything else"), 0)
+  expect_null(stopadforms:::efficacy_beta(NA))
 })
 
 # get_clinical() ---------------------------------------------------------------
@@ -256,7 +256,7 @@ test_that("get_clinical warns if data lacks clinical information", {
     ~step, ~score, ~species,
     "LD50 [1]",    0.1, "within"
   )
-  expect_warning(get_clinical(data = dat))
+  expect_warning(stopadforms:::get_clinical(data = dat))
 })
 
 # calculate_denominator() ------------------------------------------------------
@@ -354,23 +354,23 @@ test_that("clinical variable is identified and used" , {
 # geom_mean_score() ------------------------------------------------------------
 
 test_that("geom_mean_score calculates the geometric mean", {
-  expect_equal(geom_mean_score(0.85), 0.85)
-  expect_equal(geom_mean_score(c(1, 1, 1)), 1)
-  expect_equal(geom_mean_score(c(1, 2, 3)), 1.81712059283214)
-  expect_equal(geom_mean_score(0.85), 0.85)
+  expect_equal(stopadforms:::geom_mean_score(0.85), 0.85)
+  expect_equal(stopadforms:::geom_mean_score(c(1, 1, 1)), 1)
+  expect_equal(stopadforms:::geom_mean_score(c(1, 2, 3)), 1.81712059283214)
+  expect_equal(stopadforms:::geom_mean_score(0.85), 0.85)
 })
 
 test_that("geom_mean_score can handle zeroes", {
-  expect_equal(geom_mean_score(0), 0)
+  expect_equal(stopadforms:::geom_mean_score(0), 0)
   expect_equal(
-    geom_mean_score(c(1, 2, 3, 0, 0, 0)),
-    geom_mean_score(c(1, 2, 3))
+    stopadforms:::geom_mean_score(c(1, 2, 3, 0, 0, 0)),
+    stopadforms:::geom_mean_score(c(1, 2, 3))
   )
 })
 
 test_that("geom_mean_score can handle NAs", {
   expect_equal(
-    geom_mean_score(c(1, 2, 3, NA, NA, NA)),
-    geom_mean_score(c(1, 2, 3))
+    stopadforms:::geom_mean_score(c(1, 2, 3, NA, NA, NA)),
+    stopadforms:::geom_mean_score(c(1, 2, 3))
   )
 })

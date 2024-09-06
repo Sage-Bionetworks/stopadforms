@@ -2,13 +2,9 @@
 % Please edit documentation in R/score.R
 \name{pull_reviews_table}
 \alias{pull_reviews_table}
-\title{Pull latest review table
-
-Pull latest review table from Synapse and calculate weighted scores based on
-the reviewers' scores, clinical/preclinical modifiers, partial beta weights,
-species, etc.}
+\title{Pull latest review table}
 \usage{
-pull_reviews_table(syn, reviews_table, submissions)
+pull_reviews_table(syn, reviews_table, submissions, partial_betas)
 }
 \arguments{
 \item{syn}{Synapse client object (e.g. output of `synapse$Synapse()`)}
@@ -16,6 +12,8 @@ pull_reviews_table(syn, reviews_table, submissions)
 \item{reviews_table}{Synapse table that stores the scores and comments}
 
 \item{submissions}{Data frame containing tidied submissions}
+
+\item{partial_betas}{The partial betas for scoring}
 }
 \value{
 Data frame containing the reviewers' scores, comments, and calculated
@@ -24,8 +22,6 @@ Data frame containing the reviewers' scores, comments, and calculated
   "weighted_score").
 }
 \description{
-Pull latest review table
-
 Pull latest review table from Synapse and calculate weighted scores based on
 the reviewers' scores, clinical/preclinical modifiers, partial beta weights,
 species, etc.

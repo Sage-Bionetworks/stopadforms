@@ -1,11 +1,8 @@
 #' @import shiny
 app_ui <- function(request) {
-  if (interactive()) {
-    ## Running locally; skip OAuth
-    mod_main_ui("main")
-  } else {
-    mod_synapse_oauth_ui(id = "oauth", request = request)
-  }
+  shinyjs::useShinyjs()
+  
+  mod_synapse_oauth_ui(id = "oauth", request = request)
 }
 
 #' @import shiny
@@ -19,6 +16,22 @@ golem_add_external_resources <- function() {
     golem::activate_js(),
     golem::favicon(),
     tags$script(src = "www/readCookie.js"),
-    tags$script(htmlwidgets::JS("setTimeout(function(){history.pushState({}, 'STOP-AD submission reviewer', window.location.pathname);},2000);"))
+    tags$script(htmlwidgets::JS("setTimeout(function(){history.pushState({}, 'STOP-AD submission reviewer', window.location.pathname);},2000);")),
+    
+    tags$style(HTML("
+      .rt-search {
+        align-self: flex-start;
+        margin-top: -33px;
+      }
+    ")),
+    
+    # Ensure that the user cannot type the letter 'e' in the overall score input
+    tags$script(HTML("
+      $(document).on('keydown', '#main-panel_section-reviewed_overall_score', function (e) {
+        if (e.key === 'e' || e.key === 'E') {
+          e.preventDefault();
+        }
+      });
+    "))
   )
 }

@@ -9,3 +9,5 @@ docs
 .project
 ./tests/testthat/*.json
 
+.synapseConfig
+data

@@ -23,11 +23,8 @@ Installation
 ------------
 
 ``` r
-#install latest dccvalidator
-install.packages("dccvalidator")
 #install app from package
 devtools::install_github("Sage-Bionetworks/stopadforms")
-
 ```
 
 Calculating scores for a submission
@@ -89,8 +86,9 @@ localDevelopment = TRUE
 
 2. Modify `config.yml`
 Populate the `testing` profile's `client_secret` with the local client password, 
-which is stored in lastpass as "stopadforms synapse client". Contact IT if you 
-need access to the shared secret.
+which is stored in lastpass as "stopadforms synapse client". You can create your
+own OAuth client following these [instructions](https://help.synapse.org/docs/Using-Synapse-as-an-OAuth-Server.2048327904.html).
+Make sure to use `http://127.0.0.1:8100` as the URL if you are testing locally.
 ```
 testing:
   app_url: http://127.0.0.1:8100
@@ -113,7 +111,7 @@ required python3 virtual environment and install the required Python packages.
 ```
 venv_folder<-'./python3_env'
 reticulate::virtualenv_create(envname = venv_folder, python = '/usr/bin/python3')
-reticulate::virtualenv_install(venv_folder, packages = c('synapseclient<2.8', 'pandas<1.5'))
+reticulate::virtualenv_install(venv_folder, packages = c('synapseclient[pandas]==4.0.0'))
 reticulate::use_virtualenv(venv_folder, required = T)
 
 ```
@@ -127,10 +125,10 @@ Check to ensure that the required environment variables are set with the
 expected values:
 ```
 Sys.getenv("R_CONFIG_ACTIVE")
-Sys.setenv(app_url)  
-Sys.setenv(client_name)
-Sys.setenv(client_id)
-Sys.setenv(client_secret)
+Sys.getenv("app_url")
+Sys.getenv("client_name")
+Sys.getenv("client_id")
+Sys.getenv("client_secret")
 ```
 
 If they are not, you can manually set them:
@@ -186,17 +184,22 @@ test_file("tests/testthat/<path/to/filename.R>")
 
 ------------------------------------------------------------------------
 
-Setting up github actions to deploy
+Deploying via GitHub Actions
 -------------------------------
-
+## Prerequisites
 - Enable workflows in the GitHub repository
 - Under [secrets](https://github.com/Sage-Bionetworks/stopadforms/settings/secrets/actions) click 'New repository secret'
 - Enter secrets for `RSCONNECT_USER`, `RSCONNECT_TOKEN`, and `RSCONNECT_SECRET`, the values for which are saved in Sage's LastPass.
 - Enter secrets for `OAUTH_CLIENT_ID`, and `OAUTH_CLIENT_SECRET` for a Synapse OAuth client configured for this application.
-- Trigger the GitHub action.
-- Check out the app here: https://sagebio.shinyapps.io/stopadforms-staging.
-- After verifying correctness, create a Git branch named release*, e.g., `release-1.0`.
-- The app' will become available at https://sagebio.shinyapps.io/stopadforms
+
+## Deploying
+- Merging a PR to the `master` branch will trigger a deployment to the staging environment
+- Validate the release candidate in the staging environment
+- Create a PR that merges `master` to the `prod` branch
+- Merging the PR to `prod` will trigger a deployment to the production environment
+- Validate the production instance
+
+You can manually trigger a redeployment of an environment's current release using the `workflow_dispatch` event trigger via GitHub's UI on the appropriate branch.
 
 ------------------------------------------------------------------------
 

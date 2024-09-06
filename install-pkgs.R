@@ -42,6 +42,5 @@ install.packages(cran)
 # https://community.rstudio.com/t/unable-to-deploy-on-shinyapp-io/170160
 remotes::install_version("rsconnect", "0.8.29")
 
-packages_installed_from_github <- c("dreamRs/shinypop", "Sage-Bionetworks/dccvalidator", "Sage-Bionetworks/synapseforms")
+packages_installed_from_github <- c("dreamRs/shinypop", "Sage-Bionetworks/synapseforms")
 remotes::install_github(packages_installed_from_github)
-

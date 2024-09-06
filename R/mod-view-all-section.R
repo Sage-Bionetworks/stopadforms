@@ -19,29 +19,40 @@ mod_view_all_section_ui <- function(id) {
         offset = 1,
         checkboxGroupInput(
           ns("status"),
-          "Select statuses to include",
+          "Include status:",
           choices = c(
             "In Review" = "SUBMITTED_WAITING_FOR_REVIEW",
             "Accepted" = "ACCEPTED",
             "Rejected" = "REJECTED"
           ),
           selected = "SUBMITTED_WAITING_FOR_REVIEW",
-          inline = TRUE
         )
       )
     ),
     fluidRow(
       column(
-        4,
+        2,
         offset = 1,
-        dccvalidator::with_busy_indicator_ui(
+        div(
+          style = "display: flex;",
           actionButton(
             ns("select_status"),
-            "Submit Selection"
+            "Get Submissions",
+            style = "flex-grow: 1;"
           )
         )
       )
     ),
+    br(),
+    fluidRow(
+      column(2, offset = 1,
+             div(
+               actionButton(ns("expand_all"), "Expand All"),
+               actionButton(ns("collapse_all"), "Collapse All")
+             )
+      )
+    ),
+    br(), br(), br(),
     fluidRow(
       column(
         10,
@@ -55,9 +66,18 @@ mod_view_all_section_ui <- function(id) {
 #' @rdname mod_view_all_section
 #' @keywords internal
 mod_view_all_section_server <- function(input, output, session, synapse, syn,
-                                        group, lookup_table) {
+                                        group, lookup_table, sub_metadata) {
+  
+  observeEvent(input$expand_all, {
+    reactable::updateReactable("submissions", expanded = TRUE, session = getDefaultReactiveDomain())
+  })
+  
+  observeEvent(input$collapse_all, {
+    reactable::updateReactable("submissions", expanded = FALSE, session = getDefaultReactiveDomain())
+  })
+  
   observeEvent(input$select_status, {
-    dccvalidator::with_busy_indicator_server("select_status", {
+    with_busy_indicator_server("select_status", {
       submissions <- get_submissions(
         syn,
         group,
@@ -71,13 +91,22 @@ mod_view_all_section_server <- function(input, output, session, synapse, syn,
             levels = reorder_steps(unique(.data$step)),
             ordered = TRUE
           )
-        ) %>%
-        ## Arrange by submission and step
-        dplyr::arrange(.data$submission, .data$step)
+        )
 
       if (is.null(submissions)) {
         stop("No submissions found with requested status(es)")
       }
+      
+      sub_metadata$submitted_on <- clean_date_strings(sub_metadata$submitted_on)
+      
+      submissions <- dplyr::left_join(submissions, sub_metadata) %>%
+        dplyr::mutate(
+          submission = paste0(submitted_on, ": ", submission)
+        ) %>%
+        ## Arrange by submission and step
+        dplyr::arrange(desc(.data$submission), .data$step) %>%
+        dplyr::select(-.data$section, -.data$submitted_on)
+      
       output$submissions <- reactable::renderReactable({
         reactable::reactable(
           submissions,
@@ -103,7 +132,7 @@ mod_view_all_section_server <- function(input, output, session, synapse, syn,
               )
             ),
             response = reactable::colDef(
-              name = "Reponse",
+              name = "Response",
               aggregate = reactable::JS(
                 "function(values, rows) { return '...' }"
               )

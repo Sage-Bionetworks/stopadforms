@@ -27,20 +27,20 @@ authorization_url <- NULL
     	# start up the first time the app' is run.
     	# From https://stackoverflow.com/questions/54651700/use-python-3-in-reticulate-on-shinyapps-io
     	reticulate::virtualenv_create(envname = venv_folder, python = '/usr/bin/python3')
-    	reticulate::virtualenv_install(venv_folder, packages = c('synapseclient<2.8', 'pandas<1.5'))
+      reticulate::virtualenv_install(venv_folder, packages = c(
+          'synapseclient[pandas]==4.4.1'
+      ))
      }
      reticulate::use_virtualenv(venv_folder, required = T)
   }
   
   synapse <<- reticulate::import("synapseclient", delay_load = TRUE)
-  if (!interactive()) {
-    setup_global_oauth_vars(
-      app_url = Sys.getenv("app_url"),
-      client_name = Sys.getenv("client_name"),
-      client_id = Sys.getenv("client_id"),
-      client_secret = Sys.getenv("client_secret")
-    )
-  }
+  setup_global_oauth_vars(
+    app_url = Sys.getenv("app_url"),
+    client_name = Sys.getenv("client_name"),
+    client_id = Sys.getenv("client_id"),
+    client_secret = Sys.getenv("client_secret")
+  )
 }
 
 #' @title Synapse Oauth Module
@@ -71,7 +71,6 @@ authorization_url <- NULL
 #' to "main".
 #' @examples
 #' \dontrun{
-#' library("dccvalidator")
 #' app_ui <- function(request) {
 #'   mod_synapse_oauth_ui(id = "oauth", request = request)
 #' }

@@ -1,10 +1,15 @@
+name: pkgdown
+
 on:
   push:
     branches:
-      - main
       - master
-
-name: pkgdown
+      - prod
+  pull_request:
+    branches:
+      - master
+      - prod
+  workflow_dispatch:
 
 jobs:
   pkgdown:
@@ -13,11 +18,16 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - uses: actions/checkout@v3
+      - name: checkout code
+        uses: actions/checkout@v3
       
       - name: update ubuntu repos
-        run: sudo apt update
-      - uses: r-lib/actions/setup-pandoc@v2
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config git zlib1g-dev libcurl4-openssl-dev libharfbuzz-dev libfribidi-dev libfontconfig1-dev libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev libxml2-dev
+          
+      - name: setup pandoc
+        uses: r-lib/actions/setup-pandoc@v2
 
       - name: Query dependencies
         run: |
@@ -26,28 +36,23 @@ jobs:
           writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
         shell: Rscript {0}
 
-      - name: Cache R packages
-        uses: actions/cache@v2
-        with:
-          path: ${{ env.R_LIBS_USER }}
-          key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
-          restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
+#      - name: Cache R packages
+#        uses: actions/cache@v2
+#        with:
+#          path: ${{ env.R_LIBS_USER }}
+#          key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
+#          restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
       - name: Install dependencies
         run: |
           install.packages("stringi", configure.args="--with-extra-cxxflags='--std=c++11'", version = "1.5.3")
           install.packages("renv", repos = "https://cloud.r-project.org/")
+          install.packages("httr", repos = "https://cloud.r-project.org/")
           source("renv/activate.R")
           renv::restore()
           remotes::install_deps(dependencies = TRUE)
           install.packages("pkgdown", type = "binary")
         shell: Rscript {0}
 
-      - name: Install package
-        run: R CMD INSTALL .
-
-      - name: Deploy package
-        run: |
-          git config --local user.email "actions@github.com"
-          git config --local user.name "GitHub Actions"
-          Rscript -e 'pkgdown::deploy_to_branch(new_process = FALSE)'
+#      - name: Deploy package
+#        run: Rscript -e 'pkgdown::deploy_to_branch(new_process = FALSE)'
