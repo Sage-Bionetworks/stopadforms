@@ -90,7 +90,7 @@ LD50,Species,ld50,species
 LD50,Model Strain,ld50,strain
 LD50,Assay Description,ld50,assay_description
 LD50,Study Duration,ld50,duration
-LD50,LD50,ld50,ld50
+LD50,LD50 (mg/kg),ld50,ld50
 LD50,What was the route of administration?,ld50,route
 LD50,Drug Formulation,ld50,drug_formulation
 LD50,Subject sex,ld50,sex
