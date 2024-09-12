@@ -62,6 +62,7 @@ In Vivo Data,Dosing Regimen,in_vivo_data,dose_regimen
 PK In Silico,Drug Partition Coefficient (LogP),pk_in_silico,partition_coefficient
 PK In Silico,Acid Dissociation Constant (pKA),pk_in_silico,dissociation_constant
 PK In Silico,Molecular Weight (g/mol),pk_in_silico,molecular_weight
+PK In Vitro,Ignore me,pk_in_vitro,hidden_field
 PK In Vitro,Cell Permeablity Assay,pk_in_vitro,assay_description
 PK In Vitro,Permeability,pk_in_vitro,permeability
 PK In Vitro,Drug Lipophilicity Coefficient (LogD),pk_in_vitro,lipophilicity

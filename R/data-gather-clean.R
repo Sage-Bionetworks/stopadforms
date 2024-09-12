@@ -37,8 +37,8 @@ get_submissions <- function(syn, group, statuses) {
 #' Process submissions
 #'
 #' Process JSON files into a single table containing all submissions. Cleans up
-#' the data to provide user-friendly variable and section names, and remove the
-#' `metadata` section.
+#' the data to provide user-friendly variable and section names, removes the
+#' `metadata` section, and removes any fields with the hidden_field key (see ALZ-283).
 #'
 #' @param submissions A named list of paths to JSON files, i.e. the output of
 #'   [get_submissions()]. The name of each element should be its form data ID.
@@ -77,7 +77,8 @@ process_submissions <- function(submissions, lookup_table, complete = TRUE) {
   all_subs <- dplyr::filter(all_subs, .data$section != "metadata") %>%
     ## Fix display of some responses
     change_logical_responses() %>%
-    therapeutic_approach_response()
+    therapeutic_approach_response() %>%
+    remove_hidden_fields()
   
   all_subs
 }
@@ -304,6 +305,16 @@ therapeutic_approach_response <- function(data) {
         "prophylactic, symptomatic",
       TRUE ~ response
     )
+  )
+}
+
+#' ALZ-283: Remove hidden fields so they aren't displayed
+#'
+#' @inheritParams append_exp_nums
+remove_hidden_fields <- function(data) {
+  dplyr::filter(
+    data,
+    variable != "hidden_field"
   )
 }
 
