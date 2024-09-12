@@ -30,12 +30,16 @@ Basic Data,Is the drug orally active?,basic,orally_active
 Basic Data,Solubility Limitations,basic,solubility_limitations
 Basic Data,What is the therapeutic approach?,basic,therapeutic_approach
 Binding,Experiment Name,binding,name
+Binding,Species,binding,species
+Binding,Other Species,binding,species_other
 Binding,What cell line was used for the binding assay?,binding,cell_line
 Binding,Binding assay details,binding,assay_description
 Binding,"If this study has been published, please provide a reference.",binding,reference
 Binding,Binding Affinity (nM),binding,binding_affinity
 Binding,Binding Affinity Constant,binding,binding_affinity_constant
 Efficacy,Experiment Name,efficacy,name
+Efficacy,Species,efficacy,species
+Efficacy,Other Species,efficacy,species_other
 Efficacy,What cell line was used for the efficacy assay?,efficacy,cell_line
 Efficacy,Efficacy assay details,efficacy,assay_description
 Efficacy,Outcome measures,efficacy,outcome_measures
@@ -49,6 +53,7 @@ In Vivo Data,Maximum Dose Range (mg/kg),in_vivo_data,dose_range.dose_range_max
 In Vivo Data,Experiment Name,in_vivo_data,name
 In Vivo Data,"If this study has been published, please provide a reference.",in_vivo_data,reference
 In Vivo Data,Species,in_vivo_data,species
+In Vivo Data,Other Species,in_vivo_data,species_other
 In Vivo Data,Model Strain,in_vivo_data,strain
 In Vivo Data,Outcome Measure,in_vivo_data,outcome_measures
 In Vivo Data,Assay Description,in_vivo_data,assay_description
@@ -70,6 +75,7 @@ PK In Vivo,Maximum Subject Age (months),pk_in_vivo,age_range.age_range_max
 PK In Vivo,Experiment Name,pk_in_vivo,name
 PK In Vivo,"If this study has been published, please provide a reference.",pk_in_vivo,reference
 PK In Vivo,Species,pk_in_vivo,species
+PK In Vivo,Other Species,pk_in_vivo,species_other
 PK In Vivo,Model Strain,pk_in_vivo,strain
 PK In Vivo,Clearance Rate (Clp),pk_in_vivo,clearance_rate
 PK In Vivo,Half-life (T 1/2),pk_in_vivo,half_life
@@ -87,6 +93,7 @@ LD50,Maximum Dose Range (mg/kg),ld50,dose_range.dose_range_max
 LD50,Experiment Name,ld50,name
 LD50,"If this study has been published, please provide a reference.",ld50,reference
 LD50,Species,ld50,species
+LD50,Other Species,ld50,species_other
 LD50,Model Strain,ld50,strain
 LD50,Assay Description,ld50,assay_description
 LD50,Study Duration,ld50,duration
@@ -101,6 +108,7 @@ Acute Dosing,Maximum Dose Range (mg/kg),acute_dosing,dose_range.dose_range_max
 Acute Dosing,Experiment Name,acute_dosing,name
 Acute Dosing,"If this study has been published, please provide a reference.",acute_dosing,reference
 Acute Dosing,Species,acute_dosing,species
+Acute Dosing,Other Species,acute_dosing,species_other
 Acute Dosing,Model Strain,acute_dosing,strain
 Acute Dosing,Assay Description,acute_dosing,assay_description
 Acute Dosing,Study Duration,acute_dosing,duration
@@ -115,6 +123,7 @@ Chronic Dosing,Maximum Dose Range (mg/kg),chronic_dosing,dose_range.dose_range_m
 Chronic Dosing,Experiment Name,chronic_dosing,name
 Chronic Dosing,"If this study has been published, please provide a reference.",chronic_dosing,reference
 Chronic Dosing,Species,chronic_dosing,species
+Chronic Dosing,Other Species,chronic_dosing,species_other
 Chronic Dosing,Model Strain,chronic_dosing,strain
 Chronic Dosing,Assay Description,chronic_dosing,assay_description
 Chronic Dosing,Study Duration,chronic_dosing,duration
@@ -129,6 +138,7 @@ Teratogenicity,Maximum Dose Range (mg/kg),teratogenicity,dose_range.dose_range_m
 Teratogenicity,Experiment Name,teratogenicity,name
 Teratogenicity,"If this study has been published, please provide a reference.",teratogenicity,reference
 Teratogenicity,Species,teratogenicity,species
+Teratogenicity,Other Species,teratogenicity,species_other
 Teratogenicity,Model Strain,teratogenicity,strain
 Teratogenicity,Assay Description,teratogenicity,assay_description
 Teratogenicity,Study Duration,teratogenicity,duration
