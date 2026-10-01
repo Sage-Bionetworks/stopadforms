@@ -7,8 +7,12 @@
 process_submissions(submissions, lookup_table, complete = TRUE)
 }
 \arguments{
-\item{submissions}{A named list of paths to JSON files, i.e. the output of
-[get_submissions()]. The name of each element should be its form data ID.}
+\item{submissions}{A named list, i.e. the output of [get_submissions()].
+The name of each element should be its form data ID. Each element is
+either a URL or path to a JSON file, or a function that returns one (see
+[create_table_from_json_file()]). A function's `"form_name"` and
+`"submitted_on"` attributes, if present, are included when a failure is
+logged.}
 
 \item{lookup_table}{Dataframe with columns "section",
 "step", "variable" , and "label" used for user-friendly section and
@@ -21,7 +25,12 @@ the data that was present in the JSON file.}
 }
 \value{
 A data frame containing the combined responses for all submissions
-  provided to the `submissions` argument
+  provided to the `submissions` argument that could be processed. Any
+  submission that fails to download or parse is skipped and logged, and its
+  form data ID is recorded in the `"failed_ids"` attribute of the result
+  (a character vector, empty if none failed). The `"failed_names"` attribute
+  holds the matching submission names, `NA` where the name is not known. If
+  no submissions can be processed, an error is thrown.
 }
 \description{
 Process JSON files into a single table containing all submissions. Cleans up

@@ -2,6 +2,9 @@ context("data-gather-clean.R")
 
 library(stopadforms)
 
+## Don't wait between download retries in tests
+old_options <- options(stopadforms.download_retry_wait = 0)
+
 ## Base URL for downloading local json files
 download_path <- paste('file://', getwd(), sep = "")
 
@@ -163,6 +166,240 @@ test_that("create_table_from_json_file returns correct columns", {
   )
   expect_equal(setdiff(correct, names(res)), character(0))
 })
+
+# process_submissions() --------------------------------------------------------
+
+write("{ this is not valid json", "malformed.json")
+malformed_download_path <- paste(download_path, "/malformed.json", sep = "")
+missing_download_path <- paste(download_path, "/does-not-exist.json", sep = "")
+
+test_that("process_submissions skips submissions that fail and records their IDs", { # nolint
+  submissions <- list(
+    "1" = json1_download_path,
+    "2" = missing_download_path,
+    "3" = malformed_download_path
+  )
+  expect_no_warning(
+    msgs <- capture_messages(
+      res <- process_submissions(submissions, lookup_table)
+    )
+  )
+  expect_true(any(grepl("Failed to process form data ID 2", msgs)))
+  expect_true(any(grepl("Failed to process form data ID 3", msgs)))
+  expect_equal(unique(res$form_data_id), "1")
+  expect_equal(attr(res, "failed_ids"), c("2", "3"))
+})
+
+test_that("process_submissions records no failed IDs if all succeed", {
+  res <- process_submissions(list("1" = json1_download_path), lookup_table)
+  expect_equal(attr(res, "failed_ids"), character(0))
+})
+
+test_that("process_submissions errors if no submissions can be processed", {
+  submissions <- list(
+    "2" = missing_download_path,
+    "3" = malformed_download_path
+  )
+  expect_error(
+    suppressMessages(suppressWarnings(
+      process_submissions(submissions, lookup_table)
+    )),
+    "Could not process any submissions \\(form data IDs: 2, 3\\)"
+  )
+})
+
+test_that("A failed parse does not leave downloaded files behind", {
+  json_files_before <- list.files(pattern = "\\.json$")
+  suppressMessages(suppressWarnings(
+    process_submissions(
+      list("1" = json1_download_path, "3" = malformed_download_path),
+      lookup_table
+    )
+  ))
+  expect_equal(list.files(pattern = "\\.json$"), json_files_before)
+})
+
+test_that("process_submissions accepts functions that return URLs", {
+  res <- process_submissions(
+    list("1" = function() json1_download_path),
+    lookup_table
+  )
+  expect_equal(unique(res$form_data_id), "1")
+  expect_equal(attr(res, "failed_ids"), character(0))
+  expect_equal(attr(res, "failed_names"), character(0))
+})
+
+test_that("process_submissions logs and records the names of failed submissions", { # nolint
+  named_source <- function() missing_download_path
+  attr(named_source, "form_name") <- "CNS4.json"
+  attr(named_source, "submitted_on") <- "2026-09-09T18:39:03.067Z"
+  submissions <- list(
+    "1" = json1_download_path,
+    "774" = named_source,
+    "3" = malformed_download_path
+  )
+  msgs <- capture_messages(
+    res <- process_submissions(submissions, lookup_table)
+  )
+  expect_true(any(grepl(
+    "Failed to process form data ID 774 (CNS4.json, submitted 2026-09-09T18:39:03.067Z): ", # nolint
+    msgs,
+    fixed = TRUE
+  )))
+  ## A plain path has no name, so its log line has no details
+  expect_true(any(grepl("Failed to process form data ID 3: ", msgs, fixed = TRUE)))
+  expect_equal(attr(res, "failed_ids"), c("774", "3"))
+  expect_equal(attr(res, "failed_names"), c("CNS4.json", NA_character_))
+})
+
+# download_with_retry() --------------------------------------------------------
+
+## A fake download.file() that fails (as an HTTP 403 does) a set number of
+## times, then writes a file. Records the URL used for each call.
+fake_download <- function(failures) {
+  calls <- character(0)
+  download <- function(url, destfile, quiet) {
+    calls <<- c(calls, url)
+    if (length(calls) <= failures) {
+      warning("cannot open URL '", url, "': HTTP status was '403 Forbidden'")
+      stop("cannot open URL '", url, "'")
+    }
+    writeLines("{}", destfile)
+  }
+  list(download = download, calls = function() calls)
+}
+
+test_that("download_with_retry retries a failed download", {
+  fake <- fake_download(failures = 2)
+  destfile <- tempfile()
+  msgs <- capture_messages(
+    stopadforms:::download_with_retry(
+      "https://example.org/file.json", destfile, label = "1",
+      download = fake$download
+    )
+  )
+  expect_true(file.exists(destfile))
+  expect_length(fake$calls(), 3)
+  expect_length(msgs, 2)
+  expect_true(all(grepl("failed for form data ID 1: .*403 Forbidden", msgs)))
+  ## The URL itself is not logged
+  expect_false(any(grepl("example.org", msgs)))
+})
+
+test_that("download_with_retry gets a fresh URL from a function for each attempt", { # nolint
+  fake <- fake_download(failures = 2)
+  n <- 0
+  source <- function() {
+    n <<- n + 1
+    paste0("https://example.org/file.json?attempt=", n)
+  }
+  suppressMessages(
+    stopadforms:::download_with_retry(
+      source, tempfile(), label = "1", download = fake$download
+    )
+  )
+  expect_equal(
+    fake$calls(),
+    paste0("https://example.org/file.json?attempt=", 1:3)
+  )
+})
+
+test_that("download_with_retry counts a failure to get a URL as a failed attempt", { # nolint
+  fake <- fake_download(failures = 0)
+  n <- 0
+  source <- function() {
+    n <<- n + 1
+    if (n == 1) stop("Synapse returned no pre-signed URL")
+    "https://example.org/file.json"
+  }
+  msgs <- capture_messages(
+    stopadforms:::download_with_retry(
+      source, tempfile(), label = "1", download = fake$download
+    )
+  )
+  expect_length(fake$calls(), 1)
+  expect_true(grepl("no pre-signed URL", msgs[1]))
+})
+
+test_that("download_with_retry errors after the last failed attempt", {
+  fake <- fake_download(failures = Inf)
+  expect_error(
+    suppressMessages(
+      stopadforms:::download_with_retry(
+        "https://example.org/file.json", tempfile(), label = "1",
+        download = fake$download
+      )
+    ),
+    "download failed after 3 attempts: .*403 Forbidden"
+  )
+  expect_length(fake$calls(), 3)
+})
+
+test_that("download_with_retry makes one attempt if the first succeeds", {
+  fake <- fake_download(failures = 0)
+  expect_silent(
+    stopadforms:::download_with_retry(
+      "https://example.org/file.json", tempfile(), label = "1",
+      download = fake$download
+    )
+  )
+  expect_length(fake$calls(), 1)
+})
+
+# get_presigned_url() ----------------------------------------------------------
+
+## A fake Synapse client whose restPOST() returns `response` and records the
+## request body
+fake_syn <- function(response) {
+  bodies <- character(0)
+  list(
+    restPOST = function(uri, body) {
+      bodies <<- c(bodies, body)
+      response
+    },
+    bodies = function() bodies
+  )
+}
+
+test_that("get_presigned_url returns the pre-signed URL", {
+  syn <- fake_syn(list(requestedFiles = list(list(
+    preSignedURL = "https://data.prod.sagebase.org/file.json"
+  ))))
+  url <- stopadforms:::get_presigned_url(syn, "94297170", "41")
+  expect_equal(url, "https://data.prod.sagebase.org/file.json")
+  body <- jsonlite::fromJSON(syn$bodies())
+  expect_equal(body$requestedFiles$fileHandleId, "94297170")
+  expect_equal(body$requestedFiles$associateObjectId, "41")
+  expect_equal(body$requestedFiles$associateObjectType, "FormData")
+  expect_true(body$includePreSignedURLs)
+})
+
+test_that("get_presigned_url errors with Synapse's failure code if there is no URL", { # nolint
+  syn <- fake_syn(list(requestedFiles = list(list(
+    fileHandleId = "94297170", failureCode = "UNAUTHORIZED"
+  ))))
+  expect_error(
+    stopadforms:::get_presigned_url(syn, "94297170", "41"),
+    "no pre-signed URL for form data ID 41 \\(failure code: UNAUTHORIZED\\)"
+  )
+})
+
+# format_failed_submissions() --------------------------------------------------
+
+test_that("format_failed_submissions labels submissions with their names where known", { # nolint
+  expect_equal(
+    stopadforms:::format_failed_submissions(
+      c("774", "3"), c("CNS4.json", NA_character_)
+    ),
+    c("form data ID 774 (CNS4.json)", "form data ID 3")
+  )
+  expect_equal(
+    stopadforms:::format_failed_submissions("774"),
+    "form data ID 774"
+  )
+})
+
+file.remove("malformed.json")
 
 # clean up test1.json file
 file.remove("test1.json")
@@ -669,3 +906,5 @@ test_that("remove_empty_objects removes only empty inner age_range objects", {
   expect_equal(length(data_in$pk_in_vivo[[1]]), 5)
   expect_equal(length(data_out$pk_in_vivo[[1]]), 2)
 })
+
+options(old_options)
