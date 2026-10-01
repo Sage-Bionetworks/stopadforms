@@ -384,6 +384,109 @@ test_that("get_presigned_url errors with Synapse's failure code if there is no U
   )
 })
 
+# get_submissions() ------------------------------------------------------------
+
+## A fake Synapse client for the forms service. restPOST() returns
+## `pages_by_state[[state]]` for submission list requests, and a pre-signed URL
+## of "https://example.org/<file handle ID>/<form data ID>" for file requests.
+## Records every request.
+fake_forms_syn <- function(pages_by_state) {
+  requests <- list()
+  list(
+    restPOST = function(uri, body) {
+      request <- jsonlite::fromJSON(body)
+      requests[[length(requests) + 1]] <<- list(uri = uri, request = request)
+      if (grepl("/form/data/list", uri)) {
+        page <- pages_by_state[[request$filterByState]]
+        list(page = if (is.null(page)) list() else page)
+      } else {
+        files <- request$requestedFiles
+        list(requestedFiles = list(list(preSignedURL = paste0(
+          "https://example.org/", files$fileHandleId, "/", files$associateObjectId
+        ))))
+      }
+    },
+    requests = function() requests
+  )
+}
+
+## A submission's metadata as the forms service lists it
+fake_submission <- function(form_data_id, file_handle_id, name, submitted_on,
+                            state = "SUBMITTED_WAITING_FOR_REVIEW") {
+  list(
+    formDataId = form_data_id,
+    name = name,
+    dataFileHandleId = file_handle_id,
+    submissionStatus = list(submittedOn = submitted_on, state = state)
+  )
+}
+
+file_requests <- function(syn) {
+  Filter(function(r) grepl("/fileHandle/batch", r$uri), syn$requests())
+}
+
+test_that("get_submissions gives each submission a URL source for its own IDs", { # nolint
+  syn <- fake_forms_syn(list(SUBMITTED_WAITING_FOR_REVIEW = list(
+    fake_submission("774", "177144258", "CNS4.json", "2026-09-09T18:39:03.067Z"),
+    fake_submission("481", "160000001", "EPGN2742.json", "2024-08-01T21:41:15.412Z"),
+    fake_submission("503", "160000002", "Nezavist.json", "2025-01-13T23:03:34.906Z")
+  )))
+  sources <- get_submissions(syn, group = 9, statuses = "SUBMITTED_WAITING_FOR_REVIEW")
+
+  expect_equal(names(sources), c("774", "481", "503"))
+  expect_true(all(vapply(sources, is.function, logical(1))))
+  ## No URLs are requested until they're needed
+  expect_length(file_requests(syn), 0)
+
+  ## Call them in reverse order, so mixed-up IDs can't pass by coincidence
+  expect_equal(sources[["503"]](), "https://example.org/160000002/503")
+  expect_equal(sources[["481"]](), "https://example.org/160000001/481")
+  expect_equal(sources[["774"]](), "https://example.org/177144258/774")
+
+  expect_equal(attr(sources[["774"]], "form_name"), "CNS4.json")
+  expect_equal(attr(sources[["774"]], "submitted_on"), "2026-09-09T18:39:03.067Z")
+  expect_equal(attr(sources[["481"]], "form_name"), "EPGN2742.json")
+  expect_equal(attr(sources[["481"]], "submitted_on"), "2024-08-01T21:41:15.412Z")
+  expect_equal(attr(sources[["503"]], "form_name"), "Nezavist.json")
+  expect_equal(attr(sources[["503"]], "submitted_on"), "2025-01-13T23:03:34.906Z")
+
+  ## Each call requests a fresh URL
+  sources[["774"]]()
+  expect_length(file_requests(syn), 4)
+})
+
+test_that("get_submissions combines submissions from several states", {
+  syn <- fake_forms_syn(list(
+    SUBMITTED_WAITING_FOR_REVIEW = list(
+      fake_submission("774", "177144258", "CNS4.json", "2026-09-09T18:39:03.067Z")
+    ),
+    REJECTED = list(
+      fake_submission("468", "150000000", "Notum.json", "2024-07-01T12:46:28.774Z",
+                      state = "REJECTED")
+    )
+  ))
+  sources <- get_submissions(
+    syn, group = 9, statuses = c("SUBMITTED_WAITING_FOR_REVIEW", "REJECTED")
+  )
+
+  expect_equal(names(sources), c("774", "468"))
+  expect_equal(sources[["468"]](), "https://example.org/150000000/468")
+  list_states <- vapply(
+    Filter(function(r) grepl("/form/data/list", r$uri), syn$requests()),
+    function(r) r$request$filterByState,
+    character(1)
+  )
+  expect_equal(list_states, c("SUBMITTED_WAITING_FOR_REVIEW", "REJECTED"))
+})
+
+test_that("get_submissions returns NULL if there are no submissions", {
+  syn <- fake_forms_syn(list())
+  expect_null(get_submissions(
+    syn, group = 9, statuses = c("SUBMITTED_WAITING_FOR_REVIEW", "REJECTED")
+  ))
+  expect_null(get_submissions(syn, group = 9, statuses = NULL))
+})
+
 # format_failed_submissions() --------------------------------------------------
 
 test_that("format_failed_submissions labels submissions with their names where known", { # nolint
