@@ -106,7 +106,7 @@ mod_view_all_section_server <- function(input, output, session, synapse, syn,
       
       sub_metadata$submitted_on <- clean_date_strings(sub_metadata$submitted_on)
       
-      submissions <- dplyr::left_join(submissions, sub_metadata) %>%
+      submissions <- dplyr::left_join(submissions, sub_metadata, by = "form_data_id") %>%
         dplyr::mutate(
           submission = paste0(submitted_on, ": ", submission)
         ) %>%
