@@ -356,6 +356,33 @@ test_that("download_with_retry makes one attempt if the first succeeds", {
   expect_length(fake$calls(), 1)
 })
 
+test_that("download_with_retry keeps the end of long download.file() messages", { # nolint
+  ## Pre-signed URLs are long, and download.file() puts the useful part of its
+  ## message (the HTTP status, or here the reason) after the URL. R's default
+  ## 1000-byte message limit cut that part off.
+  long_url <- paste0("file:///nonexistent/", strrep("x", 1500), ".json")
+  expect_error(
+    suppressMessages(stopadforms:::download_with_retry(
+      long_url, tempfile(), label = "1", attempts = 1
+    )),
+    "No such file or directory"
+  )
+})
+
+test_that("download_with_retry restores the message length limit", {
+  before <- getOption("warning.length")
+  during <- NULL
+  fake <- function(url, destfile, quiet) {
+    during <<- getOption("warning.length")
+    writeLines("{}", destfile)
+  }
+  stopadforms:::download_with_retry(
+    "https://example.org/file.json", tempfile(), label = "1", download = fake
+  )
+  expect_equal(during, 8170)
+  expect_equal(getOption("warning.length"), before)
+})
+
 # get_presigned_url() ----------------------------------------------------------
 
 ## A fake Synapse client whose restPOST() returns `response` and records the
