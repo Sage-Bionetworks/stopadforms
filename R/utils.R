@@ -55,7 +55,6 @@ attempt_login <- function(syn, ...) {
     
     tryCatch(
       {
-        print(is_logged_in)
         syn$login(...)
       },
       error = function(e) {

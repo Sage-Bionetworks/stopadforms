@@ -167,6 +167,16 @@ test_that("create_table_from_json_file returns correct columns", {
   expect_equal(setdiff(correct, names(res)), character(0))
 })
 
+test_that("create_table_from_json_file logs only the form data ID", {
+  ## One log line per submission, not one per section, to keep logs short
+  out <- capture.output(invisible(create_table_from_json_file(
+    json1_download_path,
+    data_id = "1",
+    lookup_table = lookup_table
+  )))
+  expect_equal(out, '[1] "Form Data ID: 1"')
+})
+
 # process_submissions() --------------------------------------------------------
 
 write("{ this is not valid json", "malformed.json")
@@ -563,6 +573,18 @@ file.remove("test1.json")
 
 # Convert sample JSON to list
 dat_list <- jsonlite::fromJSON(json, simplifyDataFrame = FALSE)
+
+test_that("create_section_table doesn't print anything", {
+  ## Only printed output matters here, not (e.g. deprecation) warnings
+  out <- capture.output(invisible(suppressWarnings(
+    stopadforms:::create_section_table(
+      dat_list[["pk_in_vitro"]],
+      "pk_in_vitro",
+      lookup_table = lookup_table
+    )
+  )))
+  expect_length(out, 0)
+})
 
 test_that("create_section_table creates rows for each response", {
   res <- stopadforms:::create_section_table(

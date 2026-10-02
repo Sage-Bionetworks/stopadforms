@@ -238,8 +238,8 @@ describe_submission <- function(source) {
 create_table_from_json_file <- function(filename, data_id, lookup_table,
                                         complete = TRUE) {
   
-  # Log the data id
-  cat("\n")  # Handles newlines properly
+  # Log the data id. Sections aren't logged individually: if one fails, the
+  # error logged by process_submissions() names it.
   print(paste0("Form Data ID: ", data_id))
 
   # Download file first to avoid parsing error from Amazon tokens
@@ -356,9 +356,6 @@ redact_urls <- function(x) {
 #' @param section The section name
 #' @inheritParams process_submissions
 create_section_table <- function(data, section, lookup_table, complete = TRUE) {
-  
-    # Log the section
-    print(paste0("Section: ", section))
 
     # ALZ-157: remove empty objects from inner lists
     if (length(names(data)) == 1 && names(data) %in% c("experiments", "cell_line_efficacy", "cell_line_binding")) {

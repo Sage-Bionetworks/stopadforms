@@ -341,7 +341,7 @@ geom_mean_score <- function(values) {
 #' @export
 pull_reviews_table <- function(syn, reviews_table, submissions, partial_betas) {
   reviews <- syn$tableQuery(glue::glue("SELECT * FROM {reviews_table}"))
-  reviews <- readr::read_csv(reviews$filepath) %>%
+  reviews <- readr::read_csv(reviews$filepath, show_col_types = FALSE) %>%
     dplyr::mutate(scorer = get_display_name(syn, .data$scorer)) %>%
     dplyr::mutate(form_data_id = as.character(.data$form_data_id)) %>%
     calculate_scores_rowwise(submissions, partial_betas)

@@ -227,7 +227,8 @@ mod_panel_section_server <- function(input, output, session, synapse, syn, user,
     req(existing_syn_submission())
     
     readr::read_csv(
-      existing_syn_submission()$filepath
+      existing_syn_submission()$filepath,
+      show_col_types = FALSE
     )
   })
   
