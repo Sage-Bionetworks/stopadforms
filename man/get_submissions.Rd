@@ -15,10 +15,15 @@ get_submissions(syn, group, statuses)
 `SUBMITTED_WAITING_FOR_REVIEW`, `ACCEPTED`, `REJECTED`.}
 }
 \value{
-A list of file paths to JSON files containing the submissions that
-  have the requested status.
+A list, named by form data ID, of functions that each return a new
+  pre-signed URL for the submission's JSON file, for submissions that have
+  the requested status. Each function has `"form_name"` and `"submitted_on"`
+  attributes. `NULL` if there are no such submissions.
 }
 \description{
-Get the submissions based on status. JSON files are downloaded to a temp
-directory whose path is returned, along with the submission's form data ID.
+Get the submissions based on status. No files are downloaded and no URLs
+are generated here: each submission gets a function that requests a fresh
+pre-signed URL for its JSON file when called. Pre-signed URLs from Synapse
+are more likely to be refused (HTTP 403) the longer they wait before use, so
+the URL is generated just before each download attempt instead of up front.
 }

@@ -1,37 +1,111 @@
 #' Get the submissions based on status
 #'
-#' Get the submissions based on status. JSON files are downloaded to a temp
-#' directory whose path is returned, along with the submission's form data ID.
+#' Get the submissions based on status. No files are downloaded and no URLs
+#' are generated here: each submission gets a function that requests a fresh
+#' pre-signed URL for its JSON file when called. Pre-signed URLs from Synapse
+#' are more likely to be refused (HTTP 403) the longer they wait before use, so
+#' the URL is generated just before each download attempt instead of up front.
 #'
 #' @param statuses A character vector of statuses to include from the set:
 #'   `SUBMITTED_WAITING_FOR_REVIEW`, `ACCEPTED`, `REJECTED`.
 #' @param group The number for a specific Synapse forms group.
 #' @inheritParams mod_review_section_server
-#' @return A list of file paths to JSON files containing the submissions that
-#'   have the requested status.
+#' @return A list, named by form data ID, of functions that each return a new
+#'   pre-signed URL for the submission's JSON file, for submissions that have
+#'   the requested status. Each function has `"form_name"` and `"submitted_on"`
+#'   attributes. `NULL` if there are no such submissions.
 #' @importFrom rlang .data
 #' @export
 get_submissions <- function(syn, group, statuses) {
-  
+
   if (is.null(statuses)) {
     return(NULL)
   }
-  
-  json_file_paths <- purrr::flatten(
+
+  url_sources <- purrr::flatten(
     purrr::map(statuses, function(x) {
-      synapseforms::download_all_submissions_temp(
+      metadata <- synapseforms::get_submissions_metadata(
         syn = syn,
-        state_filter = x,
-        group = group
+        group = group,
+        state_filter = x
       )
+      if (is.null(metadata)) {
+        return(list())
+      }
+      url_sources <- purrr::pmap(
+        list(
+          metadata$dataFileHandleId,
+          metadata$formDataId,
+          metadata$name,
+          metadata$submissionStatus_submittedOn
+        ),
+        function(file_handle_id, form_data_id, name, submitted_on) {
+          ## Evaluate now, so each function gets its own submission's IDs
+          force(file_handle_id)
+          force(form_data_id)
+          url_source <- function() {
+            get_presigned_url(syn, file_handle_id, form_data_id)
+          }
+          attr(url_source, "form_name") <- name
+          attr(url_source, "submitted_on") <- submitted_on
+          url_source
+        }
+      )
+      names(url_sources) <- metadata$formDataId
+      url_sources
     })
   )
 
-  if (all(is.null(unlist(json_file_paths)))) {
+  if (length(url_sources) == 0) {
     return(NULL)
   } else {
-    return(json_file_paths)
+    return(url_sources)
   }
+}
+
+#' Get a pre-signed URL for a submission's file
+#'
+#' Request a new pre-signed URL for a form submission's file from Synapse. This
+#' is the same request as `synapseforms:::get_ps_url()` makes.
+#'
+#' @noRd
+#' @inheritParams mod_review_section_server
+#' @param file_handle_id The submission's data file handle ID.
+#' @param form_data_id The submission's form data ID.
+#' @return The pre-signed URL.
+get_presigned_url <- function(syn, file_handle_id, form_data_id) {
+  ## Synapse expects the IDs as strings
+  body <- as.character(jsonlite::toJSON(
+    list(
+      requestedFiles = list(list(
+        fileHandleId = as.character(file_handle_id),
+        associateObjectId = as.character(form_data_id),
+        associateObjectType = "FormData"
+      )),
+      includePreSignedURLs = TRUE,
+      includeFileHandles = FALSE
+    ),
+    auto_unbox = TRUE
+  ))
+  response <- synapseforms::rest_post(
+    syn = syn,
+    uri = "https://repo-prod.prod.sagebase.org/file/v1/fileHandle/batch",
+    body = body
+  )
+  ## An empty requestedFiles list gets the same error as a missing URL
+  requested <- if (length(response$requestedFiles) > 0) {
+    response$requestedFiles[[1]]
+  } else {
+    list()
+  }
+  if (is.null(requested$preSignedURL)) {
+    stop(
+      "Synapse returned no pre-signed URL for form data ID ", form_data_id,
+      " (failure code: ", requested$failureCode %||% "none", ")",
+      call. = FALSE
+    )
+  }
+  requested$preSignedURL
 }
 
 #' Process submissions
@@ -40,8 +114,12 @@ get_submissions <- function(syn, group, statuses) {
 #' the data to provide user-friendly variable and section names, and remove the
 #' `metadata` section.
 #'
-#' @param submissions A named list of paths to JSON files, i.e. the output of
-#'   [get_submissions()]. The name of each element should be its form data ID.
+#' @param submissions A named list, i.e. the output of [get_submissions()].
+#'   The name of each element should be its form data ID. Each element is
+#'   either a URL or path to a JSON file, or a function that returns one (see
+#'   [create_table_from_json_file()]). A function's `"form_name"` and
+#'   `"submitted_on"` attributes, if present, are included when a failure is
+#'   logged.
 #' @param lookup_table Dataframe with columns "section",
 #'   "step", "variable" , and "label" used for user-friendly section and
 #'   variable display. "step" maps desired "section" names. "label" maps
@@ -50,36 +128,100 @@ get_submissions <- function(syn, group, statuses) {
 #'   were not provided as part of the submission. If `FALSE`, will only return
 #'   the data that was present in the JSON file.
 #' @return A data frame containing the combined responses for all submissions
-#'   provided to the `submissions` argument
+#'   provided to the `submissions` argument that could be processed. Any
+#'   submission that fails to download or parse is skipped and logged, and its
+#'   form data ID is recorded in the `"failed_ids"` attribute of the result
+#'   (a character vector, empty if none failed). The `"failed_names"` attribute
+#'   holds the matching submission names, `NA` where the name is not known. If
+#'   no submissions can be processed, an error is thrown.
 #' @export
 #' @importFrom rlang .data
 process_submissions <- function(submissions, lookup_table, complete = TRUE) {
   if (is.null(submissions)) {
     stop("No submissions to process", call. = FALSE)
   }
-  
+
   ## Main table creation, along with submission name. Suppress warnings about
-  ## vectorizing 'glue' attributes.
-  suppressWarnings(
-    all_subs <- purrr::map2_dfr(
-      submissions,
-      names(submissions), # this is the form data ID
-      ~ create_table_from_json_file(
-        .x,
-        .y,
-        lookup_table = lookup_table,
-        complete = complete
+  ## vectorizing 'glue' attributes. Each submission is processed separately so
+  ## that one bad submission does not prevent the others from loading.
+  sub_tables <- purrr::imap(
+    submissions, # names are the form data IDs
+    function(filename, data_id) {
+      ## Warnings are muffled, but kept so they can be logged if processing
+      ## fails; e.g. download.file() reports the HTTP status as a warning
+      warns <- character(0)
+      withCallingHandlers(
+        tryCatch(
+          create_table_from_json_file(
+            filename,
+            data_id,
+            lookup_table = lookup_table,
+            complete = complete
+          ),
+          error = function(err) {
+            message(
+              "Failed to process form data ID ", data_id,
+              describe_submission(filename), ": ",
+              conditionMessage(err),
+              if (length(warns) > 0) {
+                paste0(" [warnings: ", paste(unique(warns), collapse = "; "), "]")
+              }
+            )
+            NULL
+          }
+        ),
+        warning = function(w) {
+          warns <<- c(warns, conditionMessage(w))
+          invokeRestart("muffleWarning")
+        }
       )
-    )
+    }
   )
-  
+  failed_ids <- names(sub_tables)[purrr::map_lgl(sub_tables, is.null)]
+
+  if (length(failed_ids) == length(sub_tables)) {
+    stop(
+      "Could not process any submissions (form data IDs: ",
+      paste(failed_ids, collapse = ", "), ")",
+      call. = FALSE
+    )
+  }
+
   ## Remove metadata section
-  all_subs <- dplyr::filter(all_subs, .data$section != "metadata") %>%
+  all_subs <- dplyr::bind_rows(sub_tables) %>%
+    dplyr::filter(.data$section != "metadata") %>%
     ## Fix display of some responses
     change_logical_responses() %>%
     therapeutic_approach_response()
-  
+
+  attr(all_subs, "failed_ids") <- failed_ids
+  attr(all_subs, "failed_names") <- vapply(
+    submissions[failed_ids],
+    function(x) attr(x, "form_name") %||% NA_character_,
+    character(1),
+    USE.NAMES = FALSE
+  )
   all_subs
+}
+
+#' Describe a submission for logging
+#'
+#' @noRd
+#' @param source An element of the `submissions` list given to
+#'   [process_submissions()].
+#' @return `" (<name>, submitted <date>)"` from the source's `"form_name"` and
+#'   `"submitted_on"` attributes, or `""` if it has neither.
+describe_submission <- function(source) {
+  details <- c(
+    attr(source, "form_name"),
+    if (!is.null(attr(source, "submitted_on"))) {
+      paste("submitted", attr(source, "submitted_on"))
+    }
+  )
+  if (length(details) == 0) {
+    return("")
+  }
+  paste0(" (", paste(details, collapse = ", "), ")")
 }
 
 
@@ -87,27 +229,32 @@ process_submissions <- function(submissions, lookup_table, complete = TRUE) {
 #'
 #' Convert a JSON file containing submission data to a data frame.
 #'
-#' @param filename Path to JSON file
-#' @param data_id Data file handle ID
+#' @param filename URL or path to the JSON file, or a function that returns
+#'   one, such as an element of [get_submissions()]. A function is called again
+#'   for each download attempt, so every attempt uses a fresh URL.
+#' @param data_id Form data ID
 #' @inheritParams process_submissions
 #' @export
 create_table_from_json_file <- function(filename, data_id, lookup_table,
                                         complete = TRUE) {
   
-  # Log the data id
-  cat("\n")  # Handles newlines properly
+  # Log the data id. Sections aren't logged individually: if one fails, the
+  # error logged by process_submissions() names it.
   print(paste0("Form Data ID: ", data_id))
 
   # Download file first to avoid parsing error from Amazon tokens
-  # ALZ-88
+  # ALZ-88: never pass a URL straight to jsonlite::fromJSON(). It only treats a
+  # string as a URL if it is shorter than 2084 bytes, and parses longer ones as
+  # JSON text, which fails. Pre-signed URLs can be longer than that.
   R_string <- MHmakeRandomString(length = 10)
   newFilename <- paste0(R_string, ".json")
-  
-  utils::download.file(filename, newFilename)
+
+  ## Always clean up the downloaded file, even if downloading or parsing fails
+  on.exit(unlink(newFilename), add = TRUE)
+  download_with_retry(filename, newFilename, label = data_id)
 
   ## Load JSON
   data <- jsonlite::fromJSON(newFilename, simplifyVector = FALSE)
-  file.remove(newFilename)
   
   ## Iterate over list of sections to create data frame
   sub <- purrr::imap_dfr(
@@ -129,6 +276,83 @@ create_table_from_json_file <- function(filename, data_id, lookup_table,
     dplyr::mutate(submission = glue::glue("{user_name} - {compound_name}"))
 }
 
+#' Download a file, retrying on failure
+#'
+#' Synapse's download service sometimes refuses valid pre-signed URLs (HTTP
+#' 403), so failed downloads are retried. If `source` is a function, it is
+#' called on each attempt to get a fresh URL, which is much more likely to
+#' succeed than retrying the same URL.
+#'
+#' @noRd
+#' @param source URL or path to download, or a function that returns one.
+#' @param destfile Where to save the file.
+#' @param label Form data ID, used in log messages.
+#' @param attempts Number of attempts to make.
+#' @param wait Seconds to wait before each retry; recycled as needed.
+#' @param download Function used to download the file, with the arguments of
+#'   [utils::download.file()].
+#' @return `destfile`, invisibly. Errors if every attempt fails.
+download_with_retry <- function(source, destfile, label, attempts = 3,
+                                wait = getOption("stopadforms.download_retry_wait", c(1, 2)),
+                                download = utils::download.file) {
+  ## download.file()'s error and warning messages contain the whole pre-signed
+  ## URL, followed by the useful part (e.g. "HTTP status was '403 Forbidden'").
+  ## R cuts messages from its C code off at warning.length (1000 bytes by
+  ## default), which can lose that part, so allow the maximum while
+  ## downloading. The URL is removed before anything is logged.
+  old_options <- options(warning.length = 8170)
+  on.exit(options(old_options), add = TRUE)
+  wait <- rep_len(wait, max(attempts - 1, 1))
+  for (i in seq_len(attempts)) {
+    ## download.file() reports the HTTP status of a failed download as a
+    ## warning, so keep each attempt's warnings for the log
+    warns <- character(0)
+    result <- withCallingHandlers(
+      tryCatch(
+        {
+          url <- if (is.function(source)) source() else source
+          ## quiet = TRUE also keeps pre-signed URLs out of the logs
+          download(url, destfile, quiet = TRUE)
+          NULL
+        },
+        error = function(err) err
+      ),
+      warning = function(w) {
+        warns <<- c(warns, conditionMessage(w))
+        invokeRestart("muffleWarning")
+      }
+    )
+    if (is.null(result)) {
+      return(invisible(destfile))
+    }
+
+    ## Report the error and warnings, but not the URL they may contain
+    problem <- paste0(
+      redact_urls(conditionMessage(result)),
+      if (length(warns) > 0) {
+        paste0(" [", redact_urls(paste(unique(warns), collapse = "; ")), "]")
+      }
+    )
+    if (i < attempts) {
+      message(
+        "Download attempt ", i, " of ", attempts, " failed for form data ID ",
+        label, ": ", problem, "; retrying in ", wait[i], " s"
+      )
+      Sys.sleep(wait[i])
+    }
+  }
+  stop("download failed after ", attempts, " attempts: ", problem, call. = FALSE)
+}
+
+#' Remove URLs from a message
+#'
+#' @noRd
+#' @param x Character vector.
+#' @return `x` with any http(s) URLs replaced by `<URL>`.
+redact_urls <- function(x) {
+  gsub("https?://[^ '\"]+", "<URL>", x)
+}
+
 #' Create table for a section
 #'
 #' Create table for a section of a submission. Some sections contain multiple
@@ -139,9 +363,6 @@ create_table_from_json_file <- function(filename, data_id, lookup_table,
 #' @param section The section name
 #' @inheritParams process_submissions
 create_section_table <- function(data, section, lookup_table, complete = TRUE) {
-  
-    # Log the section
-    print(paste0("Section: ", section))
 
     # ALZ-157: remove empty objects from inner lists
     if (length(names(data)) == 1 && names(data) %in% c("experiments", "cell_line_efficacy", "cell_line_binding")) {

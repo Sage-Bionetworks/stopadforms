@@ -1,6 +1,6 @@
 ## code to prepare `lookup_table` dataset goes here
-lookup_table <- readr::read_csv("stopad_lookup_table.csv")
-partial_betas <- readr::read_csv("stopad_beta_weights.csv")
+lookup_table <- readr::read_csv("stopad_lookup_table.csv", show_col_types = FALSE)
+partial_betas <- readr::read_csv("stopad_beta_weights.csv", show_col_types = FALSE)
 
 if (!dir.exists("../data")) {
     dir.create("../data")

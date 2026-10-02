@@ -83,7 +83,14 @@ mod_view_all_section_server <- function(input, output, session, synapse, syn,
         group,
         input$status
       ) %>%
-        process_submissions(lookup_table) %>%
+        process_submissions(lookup_table)
+      ## Flag any submissions that were skipped because they couldn't be read
+      show_failed_submissions_notice(
+        attr(submissions, "failed_ids"),
+        attr(submissions, "failed_names")
+      )
+
+      submissions <- submissions %>%
         ## Make step an ordered factor
         dplyr::mutate(
           step = factor(
@@ -99,7 +106,7 @@ mod_view_all_section_server <- function(input, output, session, synapse, syn,
       
       sub_metadata$submitted_on <- clean_date_strings(sub_metadata$submitted_on)
       
-      submissions <- dplyr::left_join(submissions, sub_metadata) %>%
+      submissions <- dplyr::left_join(submissions, sub_metadata, by = "form_data_id") %>%
         dplyr::mutate(
           submission = paste0(submitted_on, ": ", submission)
         ) %>%

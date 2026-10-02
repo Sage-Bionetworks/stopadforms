@@ -7,9 +7,11 @@
 create_table_from_json_file(filename, data_id, lookup_table, complete = TRUE)
 }
 \arguments{
-\item{filename}{Path to JSON file}
+\item{filename}{URL or path to the JSON file, or a function that returns
+one, such as an element of [get_submissions()]. A function is called again
+for each download attempt, so every attempt uses a fresh URL.}
 
-\item{data_id}{Data file handle ID}
+\item{data_id}{Form data ID}
 
 \item{lookup_table}{Dataframe with columns "section",
 "step", "variable" , and "label" used for user-friendly section and
