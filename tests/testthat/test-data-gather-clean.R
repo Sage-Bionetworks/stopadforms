@@ -521,12 +521,37 @@ test_that("format_failed_submissions labels submissions with their names where k
     stopadforms:::format_failed_submissions(
       c("774", "3"), c("CNS4.json", NA_character_)
     ),
-    c("form data ID 774 (CNS4.json)", "form data ID 3")
+    c("Title: CNS4, ID: 774", "ID: 3")
+  )
+  ## Only a trailing ".json" is removed (in any case); a bare ".json" leaves
+  ## no name, so just the ID is shown
+  expect_equal(
+    stopadforms:::format_failed_submissions(
+      c("1", "2", "3"), c("Pagano Lab Inhibitors.JSON", "data.json.backup", ".json")
+    ),
+    c("Title: Pagano Lab Inhibitors, ID: 1", "Title: data.json.backup, ID: 2",
+      "ID: 3")
   )
   expect_equal(
     stopadforms:::format_failed_submissions("774"),
-    "form data ID 774"
+    "ID: 774"
   )
+})
+
+test_that("format_failed_submissions ignores names that don't match the IDs", { # nolint
+  ## Too few names would otherwise be recycled onto the wrong IDs
+  expect_warning(
+    labels <- stopadforms:::format_failed_submissions(
+      c("774", "3", "468"), c("CNS4.json", "other.json")
+    ),
+    "got 2 names for 3 form data IDs"
+  )
+  expect_equal(labels, c("ID: 774", "ID: 3", "ID: 468"))
+  expect_warning(
+    labels <- stopadforms:::format_failed_submissions("774", c("a.json", "b.json")),
+    "got 2 names for 1 form data IDs"
+  )
+  expect_equal(labels, "ID: 774")
 })
 
 file.remove("malformed.json")

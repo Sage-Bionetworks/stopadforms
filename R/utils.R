@@ -150,15 +150,29 @@ show_failed_submissions_notice <- function(failed_ids, failed_names = NULL,
 #'
 #' @noRd
 #' @inheritParams show_failed_submissions_notice
-#' @return A character vector of labels such as `"form data ID 774 (CNS4.json)"`,
-#'   or just `"form data ID 774"` where the name is not known.
+#' @return A character vector of labels such as `"Title: CNS4, ID: 774"`
+#'   (names are shown without their ".json" suffix), or just `"ID: 774"`
+#'   where the name is not known.
 format_failed_submissions <- function(failed_ids, failed_names = NULL) {
+  if (!is.null(failed_names) && length(failed_names) != length(failed_ids)) {
+    ## Never pair an ID with the wrong name; still show the IDs rather than
+    ## failing while the notice is shown
+    warning(
+      "Ignoring submission names: got ", length(failed_names), " names for ",
+      length(failed_ids), " form data IDs",
+      call. = FALSE
+    )
+    failed_names <- NULL
+  }
   if (is.null(failed_names)) {
     failed_names <- rep(NA_character_, length(failed_ids))
   }
+  ## Submission names are file names, e.g. "CNS4.json"; show them without the
+  ## ".json" suffix, which means nothing to users
+  failed_names <- trimws(sub("\\.json$", "", failed_names, ignore.case = TRUE))
   ifelse(
     is.na(failed_names) | failed_names == "",
-    paste("form data ID", failed_ids),
-    paste0("form data ID ", failed_ids, " (", failed_names, ")")
+    paste0("ID: ", failed_ids),
+    paste0("Title: ", failed_names, ", ID: ", failed_ids)
   )
 }
