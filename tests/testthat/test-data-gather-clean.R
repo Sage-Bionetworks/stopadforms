@@ -384,6 +384,25 @@ test_that("get_presigned_url errors with Synapse's failure code if there is no U
   )
 })
 
+test_that("get_presigned_url sends valid JSON with the IDs as strings", {
+  syn <- fake_syn(list(requestedFiles = list(list(
+    preSignedURL = "https://data.prod.sagebase.org/file.json"
+  ))))
+  ## Numbers are sent as strings
+  stopadforms:::get_presigned_url(syn, 94297170, 41)
+  ## Characters that would break hand-built JSON are escaped
+  stopadforms:::get_presigned_url(syn, 'a"b}', "c\\d")
+  bodies <- lapply(syn$bodies(), jsonlite::fromJSON)
+  expect_identical(bodies[[1]]$requestedFiles$fileHandleId, "94297170")
+  expect_identical(bodies[[1]]$requestedFiles$associateObjectId, "41")
+  expect_identical(bodies[[2]]$requestedFiles$fileHandleId, 'a"b}')
+  expect_identical(bodies[[2]]$requestedFiles$associateObjectId, "c\\d")
+  ## requestedFiles is a JSON array, and the flags are booleans
+  expect_true(grepl('"requestedFiles":\\[\\{', syn$bodies()[[1]]))
+  expect_identical(bodies[[1]]$includePreSignedURLs, TRUE)
+  expect_identical(bodies[[1]]$includeFileHandles, FALSE)
+})
+
 test_that("get_presigned_url errors helpfully if Synapse returns no requested files", { # nolint
   syn <- fake_syn(list(requestedFiles = list()))
   expect_error(

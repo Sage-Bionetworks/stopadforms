@@ -74,11 +74,19 @@ get_submissions <- function(syn, group, statuses) {
 #' @param form_data_id The submission's form data ID.
 #' @return The pre-signed URL.
 get_presigned_url <- function(syn, file_handle_id, form_data_id) {
-  body <- glue::glue(
-    '{{"requestedFiles": [{{"fileHandleId": "{file_handle_id}", ',
-    '"associateObjectId": "{form_data_id}", "associateObjectType": "FormData"}}], ',
-    '"includePreSignedURLs": true, "includeFileHandles": false}}'
-  )
+  ## Synapse expects the IDs as strings
+  body <- as.character(jsonlite::toJSON(
+    list(
+      requestedFiles = list(list(
+        fileHandleId = as.character(file_handle_id),
+        associateObjectId = as.character(form_data_id),
+        associateObjectType = "FormData"
+      )),
+      includePreSignedURLs = TRUE,
+      includeFileHandles = FALSE
+    ),
+    auto_unbox = TRUE
+  ))
   response <- synapseforms::rest_post(
     syn = syn,
     uri = "https://repo-prod.prod.sagebase.org/file/v1/fileHandle/batch",
