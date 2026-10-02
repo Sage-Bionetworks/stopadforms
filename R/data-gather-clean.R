@@ -295,6 +295,13 @@ create_table_from_json_file <- function(filename, data_id, lookup_table,
 download_with_retry <- function(source, destfile, label, attempts = 3,
                                 wait = getOption("stopadforms.download_retry_wait", c(1, 2)),
                                 download = utils::download.file) {
+  ## download.file()'s error and warning messages contain the whole pre-signed
+  ## URL, followed by the useful part (e.g. "HTTP status was '403 Forbidden'").
+  ## R cuts messages from its C code off at warning.length (1000 bytes by
+  ## default), which can lose that part, so allow the maximum while
+  ## downloading. The URL is removed before anything is logged.
+  old_options <- options(warning.length = 8170)
+  on.exit(options(old_options), add = TRUE)
   wait <- rep_len(wait, max(attempts - 1, 1))
   for (i in seq_len(attempts)) {
     ## download.file() reports the HTTP status of a failed download as a
