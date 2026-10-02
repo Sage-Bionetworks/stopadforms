@@ -1,19 +1,15 @@
 name: pkgdown
 
+# Manual runs only, until ALZ-162 restores it: this workflow installs
+# dependencies but doesn't build or deploy the site (the deploy step below is
+# commented out), so running it on every push and pull request only left a
+# check that never completed.
 on:
-  push:
-    branches:
-      - master
-      - prod
-  pull_request:
-    branches:
-      - master
-      - prod
   workflow_dispatch:
 
 jobs:
   pkgdown:
-    runs-on: Ubuntu-20.04
+    runs-on: ubuntu-22.04
     container: rocker/rstudio:4.1.3
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
