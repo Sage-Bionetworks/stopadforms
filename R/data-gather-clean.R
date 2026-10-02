@@ -84,7 +84,12 @@ get_presigned_url <- function(syn, file_handle_id, form_data_id) {
     uri = "https://repo-prod.prod.sagebase.org/file/v1/fileHandle/batch",
     body = body
   )
-  requested <- response$requestedFiles[[1]]
+  ## An empty requestedFiles list gets the same error as a missing URL
+  requested <- if (length(response$requestedFiles) > 0) {
+    response$requestedFiles[[1]]
+  } else {
+    list()
+  }
   if (is.null(requested$preSignedURL)) {
     stop(
       "Synapse returned no pre-signed URL for form data ID ", form_data_id,

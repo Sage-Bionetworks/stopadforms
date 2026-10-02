@@ -384,6 +384,14 @@ test_that("get_presigned_url errors with Synapse's failure code if there is no U
   )
 })
 
+test_that("get_presigned_url errors helpfully if Synapse returns no requested files", { # nolint
+  syn <- fake_syn(list(requestedFiles = list()))
+  expect_error(
+    stopadforms:::get_presigned_url(syn, "94297170", "41"),
+    "no pre-signed URL for form data ID 41 \\(failure code: none\\)"
+  )
+})
+
 # get_submissions() ------------------------------------------------------------
 
 ## A fake Synapse client for the forms service. restPOST() returns
